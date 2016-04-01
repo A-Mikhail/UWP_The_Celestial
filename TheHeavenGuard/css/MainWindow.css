@@ -1,0 +1,110 @@
+﻿body {
+    background-color: #607286;
+}
+
+/*
+    Grid-template: 
+        fi      - #fileInformation
+        csi     - #cloudServiceInfromation
+        fp      - #filePicker
+        csw     - #cloudService-webview
+
+    20px borders.
+
+    6 - colums.
+    5 - rows. 
+*/
+
+#grid {
+    height: 100%;
+    display: -ms-grid;
+    -ms-grid-columns: 0px 1fr 10px 0.3fr 1fr 0px;
+    -ms-grid-rows: 0px 1fr 0px;
+}
+
+#filePicker {
+    grid-cell: "fp";
+    
+    position: relative;
+
+    -ms-grid-column: 2; 
+    -ms-grid-row: 2;
+
+    -ms-grid-column-span: 1;
+    -ms-grid-row-span: 3;
+
+    background-color: #243b53;
+}
+
+#cloudService-webview {
+    grid-cell: "csw";
+
+    -ms-grid-column: 4; 
+    -ms-grid-row: 2; 
+
+    -ms-grid-column-span: 2;
+    -ms-grid-row-span: 1;
+
+    background-color: #243b53;
+}
+
+
+/* File picker button */
+#chooseFiles-btn {
+    text-align: center;
+    margin-top: 1em;
+}
+
+.dropFile-msg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: darkgray;
+    padding: 1em;
+}
+
+/* Categories */
+.categories {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    padding: 0.5em 0 0.5em 0.5em;
+}
+
+#name-category {
+    float: left;
+    text-align: left;
+}
+
+#path-category {
+    text-align: right;
+}
+
+/* Work with file */
+.file:hover {
+    cursor: pointer;
+    background-color: #607286;
+}
+
+/* SplitView pane content style*/
+.content,
+#app {
+    height: 100%;
+}
+
+    #app .header {
+        white-space: nowrap;
+    }
+
+    #app .title {
+        font-size: 25px;
+        display: inline-block;
+}
+
+#output {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}

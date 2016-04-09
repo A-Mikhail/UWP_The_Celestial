@@ -19,14 +19,18 @@
     <script src="/js/pouchdb-5.3.1.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
 
     <script src="/js/Configurations.js"></script> <!-- cloud's uri for xhr -->
+
     <!--
         MainWindow.js use
+        PouchDB as local database,
         Configurator as cloud uri for xhr
     -->
     <script src="/js/MainWindow.js"></script> 
+
     <script src="/js/Databases.js"></script> <!-- Configure databases -->
     <script src="/js/FileSystem.js"></script> <!-- Client side files to synchronize -->
     <script src="/js/GoogleDrive.js"></script> <!-- Google Drive cloud -->
+    <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->     
 </head>
 
 <body role="application" class="win-type-body">
@@ -40,7 +44,11 @@
                 </div>
 
                 <div class="nav-commands">
+                    <!-- Test button -->
                     <div id="gdrive-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Google Drive', icon: 'home'}"></div>
+                    <div id="destroyUserDB" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Delete user DB', icon: 'clear'}"></div>
+                    <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'RepeatAll'}"></div>
+
                     <div id="user"></div>
                     <img id="userImage" src="" />
                 </div>

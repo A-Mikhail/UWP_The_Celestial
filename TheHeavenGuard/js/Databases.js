@@ -15,8 +15,18 @@
         return googleFilesDB = new PouchDB("google");
     }
 
+    // destrou db: user
+    function destroyUserDB() {
+        userDB().destroy().then(function (response) {
+            console.log("database 'user' destroyed");
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }
+
     WinJS.Namespace.define("Databases", {
         userDB: userDB,
-        googleDB: googleDB
+        googleDB: googleDB,
+        destroyUserDB: destroyUserDB
     });
 })();

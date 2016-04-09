@@ -16,9 +16,13 @@
   <Applications>
     <Application Id="App" StartPage="html/MainWindow.html">
       <uap:VisualElements DisplayName="The Heaven Guard" Description="The Heaven Guard Application for backup files from computer to all posible cloud-service" BackgroundColor="transparent" Square150x150Logo="images\Square150x150Logo.png" Square44x44Logo="images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png">
+        <uap:DefaultTile Wide310x150Logo="images\Wide310x150Logo.png" ShortName="The Heaven Guard">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+          </uap:ShowNameOnTiles>
         </uap:DefaultTile>
-        <uap:SplashScreen Image="images\splashscreen.png" BackgroundColor="#607286" />
+        <uap:SplashScreen Image="images\splashscreen.png" BackgroundColor="#3db8ff" />
       </uap:VisualElements>
     </Application>
   </Applications>

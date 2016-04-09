@@ -14,6 +14,10 @@
         var chFilesBtn = document.getElementById("chooseFiles-btn");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
+        // DestroyDB button
+        var dstUserDB = document.getElementById("destroyUserDB");
+        dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
+
         databaseRead(); // add data from DB to app
     }
 
@@ -121,7 +125,7 @@
             _id: `${id}`,
             path: `${path}`
         }).then(function (response) {
-            console.log("response_id: " + response._id + " path: " + response.path);
+            console.log("response_id: " + response.id);
         }, function (err) {
             messageDialog = new Windows.UI.Popups.MessageDialog("Cannot add data to DB 'user'" +
             "; Status: " + err.name + "; Message: " + err.message, "Error: " + err.status);

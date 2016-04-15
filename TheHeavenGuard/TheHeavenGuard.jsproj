@@ -75,6 +75,7 @@
     <Content Include="js\GoogleDrive.js" />
     <Content Include="js\MainWindow.js" />
     <Content Include="js\pouchdb-5.3.1.min.js" />
+    <Content Include="js\XMLHttpRequest.js" />
     <Content Include="packages.config" />
     <Content Include="WinJS\css\ui-dark.min.css" />
     <Content Include="WinJS\css\ui-light.min.css" />

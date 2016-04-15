@@ -173,9 +173,6 @@
         console.log("Drag and Drop: " + " count: " + nFiles);
     }
 
-    //TO-DO Write data to the array; from array to sqlite.database and read
-    //TO-DO Write, Read are functions
-
     WinJS.Namespace.defineWithParent(MainWindow, "FileSystem", {
         init: init
     });

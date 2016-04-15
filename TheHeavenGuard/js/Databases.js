@@ -15,7 +15,7 @@
         return googleFilesDB = new PouchDB("google");
     }
 
-    // destrou db: user
+    // destroy db: user
     function destroyUserDB() {
         userDB().destroy().then(function (response) {
             console.log("database 'user' destroyed");

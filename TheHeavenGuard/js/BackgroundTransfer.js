@@ -2,9 +2,6 @@
     "use strict";
 
     function init() {
-        // On load check if there are uploads in progress from a previous activaiton
-        printLog("Loading uploads...");
-
         Windows.Networking.BackgroundTransfer.BackgroundUploader.getCurrentUploadsAsync().done(function (uploads) {
             printLog("done.<br/>");
 
@@ -15,35 +12,17 @@
                 uploadOperations.push(upload);
             }
         });
-
-        if (Windows.ApplicationModel.Activation.ActivationKind.pickFileContinuation !== undefined &&
-            options !== undefined &&
-            options.activationKind === Windows.ApplicationModel.Activation.ActivationKind.pickFileContinuation) {
-            
-            continueFileOpenPicker(options.activatedEventArgs);
-
-        }
-    }
-    
-    function continueFileOpenPicker(args) {
-        if (args.length > 0) {
-            var uri = new Windows.Foundation.Uri(args[0].continuatuindata["uri"]);
-
-            if(args[0].files.length === 1) {
-                uploadSingleFileAsync(uri, args[0].files[0]).done(null, displayException);
-            } else if (args[0].files.length > 1) {
-                uploadMultipleFilesAsync(uri, args[0].files).done(null, displayException);
-            }
-        }
     }
 
     // Global array used to persist operations.
     var uploadOperations = [];
 
-    var maxUploadFileSize = 100 * 1024 * 1024; // TO-DO Change 100 MB file limit to cload's file limit
+    var maxUploadFileSize = 100 * 1024 * 1024; // TODO: Change 100 MB file limit to cload's file limit
 
     // Class associated with each upload.
     function UploadOperation() {
+        console.log("Start Upload Operation");
+
         var upload = null;
         var promise = null;
 
@@ -194,7 +173,7 @@
         return document.getElementById(elementId);
     }
 
-    function uploadFile() {
+    function uploadFiles() {
         // Validating the URI is requierd since it was received from an untrusted source (user input).
         // The URI is validated by catching exceptions thrown by the Uri constructor.
         // Note that when enabling the text box users may provide URIs to machines on the intrAnet that require
@@ -203,7 +182,7 @@
         var uri = null;
 
         try {
-            uri = new Wind.Foundation.Uri(document.getElementById("serverAddressField").value);
+            uri = new Windows.Foundation.Uri(document.getElementById("serverAddressField").value);
         } catch (error) {
             displayError("Error: Invalid URI." + error.message);
             return;
@@ -212,13 +191,68 @@
         var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
         filePicker.fileTypeFilter.replaceAll(["*"]);
 
-        if (filePicker.pickSingleFileAndContinue !== undefined) {
+        if (filePicker.pickMultipleFilesAndContinue !== undefined) {
             filePicker.continuationData["uri"] = uri.absoluteCanonicalUri;
-            filePicker.pickSingleFileAndContinue();
+            filePicker.pickMultipleFilesAndContinue();
         } else {
-            filePicker.pickSingleFileAsync().then(function (file) {
-                uploadSingleFileAsync(uri, file);
+            filePicker.pickMultipleFilesAsync().then(function (files) {
+                uploadSingleFileAsync(uri, files);
             }).done(null, displayException);
+        }
+    }
+
+    function uploadMultipleFilesAsync(uri, files) {
+        var promise = validateFilesAsync(files);
+
+        if (!promise) {
+            return;
+        }
+
+        return promise.then(function (validatedFiles) {
+            if (!validatedFiles) {
+                return;
+            }
+
+            var upload = new UploadOperation();
+            upload.startMultipart(uri, validatedFiles);
+
+            // Persist the upload operation in the global array.
+            uploadOperations.push(upload);
+        });
+    }
+
+    function validateFilesAsync(files) {
+        if (files.size == 0) {
+            displayError("Error: No file selected");
+            return;
+        }
+
+        var getPropertiesPromises = [];
+        var totalFileSize = 0;
+
+        // Get file size of all files. if the sum exceeds the maximum upload size, return null to indicate
+        // invalid files.
+        files.forEach(function (file, index) {
+            getPropertiesPromises.push(file.getBasicPropertiesAsync().then(function (properties) {
+                totalFileSize += properties.size;
+            }));
+        });
+
+        return WinJS.Promise.join(getPropertiesPromises).then(function () {
+            if (totalFileSize > maxUploadFileSize) {
+                displayError("Size of selected files exceeds max. upload file size (" + (maxUploadFileSize / (1024 * 1024)) + "MB).");
+
+                return null;
+            }
+
+            return files;
+        });
+    }
+
+    // Cancel all uploads.
+    function cancelAll() {
+        for (var i = 0; i < uploadOperations.length; i++) {
+            uploadOperations[i].cancel();
         }
     }
 

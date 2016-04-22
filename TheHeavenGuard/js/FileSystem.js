@@ -2,7 +2,8 @@
     "use strict";
 
     var messageDialog;
-
+    var storageFileArr = [];
+    
     function init() {
         // Drag and Drop
         var dropbox = document.getElementById("filePicker");
@@ -17,7 +18,7 @@
         // DestroyDB button
         var dstUserDB = document.getElementById("destroyUserDB");
         dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
-
+        
         databaseRead(); // add data from DB to app
     }
 
@@ -97,6 +98,9 @@
                     fileDiv;
 
                 for (var i = 0; i < files.size; i++) {
+                    // Send array of choosen files to global 
+                    storageFileArr.push(files[i]);
+
                     outputString = files[i].name; // get name of the selected files
                     path = files[i].path; // get path of the selected files
 
@@ -172,8 +176,11 @@
         console.log("Drag and Drop: " + " size: " + sOutput);
         console.log("Drag and Drop: " + " count: " + nFiles);
     }
+    
+    console.log("Out:" + storageFileArr);
 
-    WinJS.Namespace.defineWithParent(MainWindow, "FileSystem", {
-        init: init
+    WinJS.Namespace.define("FileSystem", {
+        init: init,
+        storageFileArr: storageFileArr
     });
 })();

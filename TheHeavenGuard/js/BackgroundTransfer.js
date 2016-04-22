@@ -2,12 +2,26 @@
     "use strict";
 
     function init() {
-        Windows.Networking.BackgroundTransfer.BackgroundUploader.getCurrentUploadsAsync().done(function (uploads) {
-            printLog("done.<br/>");
+        Windows.Networking.BackgroundTransfer.BackgroundUploader.getCurrentUploadsAsync().then(function (uploads) {
+            printLog("Start Upload.<br/>");
 
+            var upload = new UploadOperation();
+
+            var baseUrl = googleConfig.baseUrl;
+            var url = baseUrl + "/upload/drive/v3/files?uploadType=multipart";
+
+            Databases.userDB().query(function (doc, emit) {
+                emit(doc.path);
+            }).then(function (result) {
+                var fileName = result.rows[0].id; // File Name
+
+                upload.start(url, fileName);
+            });
+
+            console.log("storageFile from FileSystem file: " + FileSystem.storageFileArr);
+            
             // If uploads from previous application state exist, reassign callback and persist to global array.
             for (var i = 0; i < uploads.size; i++) {
-                var upload = new UploadOperation();
                 upload.load(uploads[i]);
                 uploadOperations.push(upload);
             }
@@ -26,16 +40,40 @@
         var upload = null;
         var promise = null;
 
-        this.start = function (uri, file) {
-            printLog("Using URI: " + uri.absoluteUri + "<br/>");
+        function uploadFiles(token) {
+            var headers = {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/related; boundary=foo_bar_baz",
+                "Content-Length": `${number}`
+            };
+
+            var url = baseUrl + "/upload/drive/v3/files?uploadType=multipart";
+
+            var dataParams = dataFromDB; // :C
+
+            return WinJS.xhr({
+                type: "POST",
+                url: url,
+                data: dataParams,
+                headers: headers,
+                // Example of name request - name: `${BackgroundTransfer.name}`
+            }).then(function (x) { return JSON.parse(x.response); });
+        }
+
+        this.start = function (uri, fileName) {
+            printLog("Using URI: " + uri + "<br/>");
 
             var uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
+            var uploadURI = new Windows.Foundation.Uri(uri); 
+            var storageFile = FileSystem.storageFileArr[0]; // Get first storageFile for send
 
-            // Set a header, so the server can save the file (this is specific to the sample server).
-            uploader.setRequestHeader("FileName", file.name);
+            // Set a header, so the server can save the file (configuration for Google Disc).
+            uploader.setRequestHeader("Authorization", `Bearer ${token}`); // authorization token
+            uploader.setRequestHeader("Content-Type", "multipart/related; boundary=foo_bar_baz"); 
+            uploader.setRequestHeader("Content-Length", `${storageFile.length}`); // File size
 
             // Create a new upload operation.
-            upload = uploader.createUpload(uri, file);
+            upload = uploader.createUpload(uploadURI, storageFile);
 
             // Start the upload and persist the promise to be able to cancel the upload.
             promise = upload.startAsync().then(complete, error, progress);
@@ -173,34 +211,6 @@
         return document.getElementById(elementId);
     }
 
-    function uploadFiles() {
-        // Validating the URI is requierd since it was received from an untrusted source (user input).
-        // The URI is validated by catching exceptions thrown by the Uri constructor.
-        // Note that when enabling the text box users may provide URIs to machines on the intrAnet that require
-        // the "Home or Work Networking" capability.
-
-        var uri = null;
-
-        try {
-            uri = new Windows.Foundation.Uri(document.getElementById("serverAddressField").value);
-        } catch (error) {
-            displayError("Error: Invalid URI." + error.message);
-            return;
-        }
-
-        var filePicker = new Windows.Storage.Pickers.FileOpenPicker();
-        filePicker.fileTypeFilter.replaceAll(["*"]);
-
-        if (filePicker.pickMultipleFilesAndContinue !== undefined) {
-            filePicker.continuationData["uri"] = uri.absoluteCanonicalUri;
-            filePicker.pickMultipleFilesAndContinue();
-        } else {
-            filePicker.pickMultipleFilesAsync().then(function (files) {
-                uploadSingleFileAsync(uri, files);
-            }).done(null, displayException);
-        }
-    }
-
     function uploadMultipleFilesAsync(uri, files) {
         var promise = validateFilesAsync(files);
 
@@ -256,7 +266,7 @@
         }
     }
 
-    WinJS.Namespace.defineWithParent(MainWindow, "BackgroundTransfer", {
+    WinJS.Namespace.define("BackgroundTransfer", {
         init: init
     });
 })();

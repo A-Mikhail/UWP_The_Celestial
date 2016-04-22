@@ -53,6 +53,7 @@
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>TheHeavenGuard_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>7DBB662976EA34B16D4525F50EC3F1717B86C2CB</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="package.appxmanifest">

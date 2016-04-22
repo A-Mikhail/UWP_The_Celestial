@@ -31,6 +31,7 @@
     <script src="/js/FileSystem.js"></script> <!-- Client side files to synchronize -->
     <script src="/js/GoogleDrive.js"></script> <!-- Google Drive cloud -->
     <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->     
+    <script src="/js/XMLHttpRequest.js"></script> <!-- XHR over all app -->
 </head>
 
 <body role="application" class="win-type-body">
@@ -47,7 +48,7 @@
                     <!-- Test button -->
                     <div id="gdrive-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Google Drive', icon: 'home'}"></div>
                     <div id="destroyUserDB" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Delete user DB', icon: 'clear'}"></div>
-                    <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'done'}"></div>
+                    <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'Refresh'}"></div>
 
                     <div id="user"></div>
                     <img id="userImage" src="" />

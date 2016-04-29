@@ -7,19 +7,12 @@
 
             var upload = new UploadOperation();
 
-            var baseUrl = googleConfig.baseUrl;
-            var url = baseUrl + "/upload/drive/v3/files?uploadType=multipart";
+            var url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
 
-            Databases.userDB().query(function (doc, emit) {
-                emit(doc.path);
-            }).then(function (result) {
-                var fileName = result.rows[0].id; // File Name
-
-                upload.start(url, fileName);
-            });
+            upload.startMultipart(url);
 
             console.log("storageFile from FileSystem file: " + FileSystem.storageFileArr);
-            
+
             // If uploads from previous application state exist, reassign callback and persist to global array.
             for (var i = 0; i < uploads.size; i++) {
                 upload.load(uploads[i]);
@@ -40,62 +33,43 @@
         var upload = null;
         var promise = null;
 
-        function uploadFiles(token) {
-            var headers = {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "multipart/related; boundary=foo_bar_baz",
-                "Content-Length": `${number}`
-            };
-
-            var url = baseUrl + "/upload/drive/v3/files?uploadType=multipart";
-
-            var dataParams = dataFromDB; // :C
-
-            return WinJS.xhr({
-                type: "POST",
-                url: url,
-                data: dataParams,
-                headers: headers,
-                // Example of name request - name: `${BackgroundTransfer.name}`
-            }).then(function (x) { return JSON.parse(x.response); });
-        }
-
-        this.start = function (uri, fileName) {
-            printLog("Using URI: " + uri + "<br/>");
-
+        this.startMultipart = function (url) {
             var uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
-            var uploadURI = new Windows.Foundation.Uri(uri); 
-            var storageFile = FileSystem.storageFileArr[0]; // Get first storageFile for send
+            var uploadURI = new Windows.Foundation.Uri(url);
+            
+            var storageFile = FileSystem.storageFileArr; // Get storageFile for send
 
-            // Set a header, so the server can save the file (configuration for Google Disc).
-            uploader.setRequestHeader("Authorization", `Bearer ${token}`); // authorization token
-            uploader.setRequestHeader("Content-Type", "multipart/related; boundary=foo_bar_baz"); 
-            uploader.setRequestHeader("Content-Length", `${storageFile.length}`); // File size
+            var oauth = new GoogleDrive.oauth();
 
-            // Create a new upload operation.
-            upload = uploader.createUpload(uploadURI, storageFile);
-
-            // Start the upload and persist the promise to be able to cancel the upload.
-            promise = upload.startAsync().then(complete, error, progress);
-        };
-
-        this.startMultipart = function (uri, files) {
-            printLog("Using URI:" + uri.absoluteUri + "<br/>");
-
-            var uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
+            // Variable for stream
+            var boundaryStart = "test"; // start|middle boundary
+  
             var contentParts = [];
-
-            files.forEach(function (file, index) {
+            
+            storageFile.forEach(function (file, index) {
+                var partHeader = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart("text");
                 var part = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart("File" + index, file.name);
+
+                partHeader.setHeader("Content-Type", "application/json; charset=UTF-8");
+                partHeader.setText('{' + '\r "name" ' + ' : ' + `"${file.displayName}" \r` + '}');
+                
+                part.setHeader("Content-Type", file.contentType);
                 part.setFile(file);
+
+                contentParts.push(partHeader);
                 contentParts.push(part);
             });
 
-            // Create a new upload operation
-            uploader.createUploadAsync(uri, contentParts).then(function (uploadOperation) {
-                // Start the upload and persist the promise to be able to cancel the upload.
-                upload = uploadOpertion;
-                promise = uploadOperation.startAsync().then(complete, error, progress);
+            oauth.connect().then(function (token) {
+                uploader.setRequestHeader("Authorization", `Bearer ${token.access_token}`); // authorization token
+                uploader.setRequestHeader("Content-Type", "multipart/related; boundary=" + boundaryStart); // header boundary
+
+                // Create a new upload operation
+                uploader.createUploadAsync(uploadURI, contentParts, "related", `${boundaryStart}`).then(function (uploadOperation) {
+                    // Start the upload and persist the promise to be able to cancel the upload.
+                    upload = uploadOperation;
+                    promise = uploadOperation.startAsync().then(complete, error, progress);
+                });
             });
         };
 
@@ -160,7 +134,7 @@
             removeUpload(upload.guid);
 
             printLog(upload.guid + " - upload complete. Status code: " + upload.getResponseInformation().statusCode + "<br/>");
-            displayStatus("Completed: " + uploaded.guid + ", Status Code: " + upload.getResponseInformation().statusCode);
+            displayStatus("Completed: " + upload.guid + ", Status Code: " + upload.getResponseInformation().statusCode);
         }
 
         // Error callback.
@@ -185,6 +159,8 @@
         }
 
         var errorStatus = Windows.Networking.BackgroundTransfer.BackgroundTransferError.getStatus(err.number);
+
+        console.log("Status of error: " + errorStatus);
 
         if (errorStatus === Windows.Web.WebErrorStatus.cannotConnect) {
             message = "App cannot connected. Network may be down, connection was refused or the host is unreachable.";

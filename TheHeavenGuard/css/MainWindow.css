@@ -1,53 +1,61 @@
-﻿body {
-    background-color: #607286;
-}
+﻿/*
+    Info color:
+        Positive: done, completed
+        Green - #128B44;
+        
+        Neutral: help, notification
+        Blue - #2C71B9;
 
-/*
-    Grid-template: 
-        fi      - #fileInformation
-        csi     - #cloudServiceInfromation
-        fp      - #filePicker
-        csw     - #cloudService-webview
+        Cautionary: alert, attention, warning
+        Yellow - #FDC214;
+        
+        Negative: error, disconnected
+        Red - #D82429;
 
-    20px borders.
-
-    6 - colums.
-    5 - rows. 
+    Every space and dimension should be a multiply of 4
 */
+* {
+    margin: 0;
+    padding: 0;
+}
 
-#grid {
+html, body {
+    width: 100%;
     height: 100%;
-    display: -ms-grid;
-    -ms-grid-columns: 0px 1fr 10px 0.3fr 1fr 0px;
-    -ms-grid-rows: 0px 1fr 0px;
+    background-color: #fff;
 }
 
-#filePicker {
-    grid-cell: "fp";
-    
-    position: relative;
-
-    -ms-grid-column: 2; 
-    -ms-grid-row: 2;
-
-    -ms-grid-column-span: 1;
-    -ms-grid-row-span: 3;
-
-    background-color: #243b53;
+/* 
+ * Pivot style
+ *
+ * Remove Scroll from Pivotitem-content 
+ *
+*/
+.win-pivot-item .win-pivot-item-content {
+    margin: 0;
+    padding: 0;
 }
 
-#cloudService-webview {
-    grid-cell: "csw";
-
-    -ms-grid-column: 4; 
-    -ms-grid-row: 2; 
-
-    -ms-grid-column-span: 2;
-    -ms-grid-row-span: 1;
-
-    background-color: #243b53;
+.win-pivot-item, .win-pivot-viewport {
+    overflow-y: scroll;
 }
 
+.vertical-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+.win-toolbar .win-toolbar-actionarea {
+    background: transparent;
+}
+
+.win-toolbar .win-toolbar-overflowarea {
+    background-color: rgb(74, 61, 78);
+    border: 0;
+}
 
 /* File picker button */
 #chooseFiles-btn {
@@ -56,13 +64,7 @@
 }
 
 .dropFile-msg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
     color: darkgray;
-    padding: 1em;
 }
 
 /* Categories */
@@ -86,25 +88,4 @@
 .file:hover {
     cursor: pointer;
     background-color: #607286;
-}
-
-/* SplitView pane content style*/
-.content,
-#app {
-    height: 100%;
-}
-
-    #app .header {
-        white-space: nowrap;
-    }
-
-    #app .title {
-        font-size: 25px;
-        display: inline-block;
-}
-
-#output {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
 }

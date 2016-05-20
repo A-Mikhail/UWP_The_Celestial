@@ -12,7 +12,7 @@
         dropbox.addEventListener("drop", drop, false);
 
         // File choose button
-        var chFilesBtn = document.getElementById("chooseFiles-btn");
+        var chFilesBtn = document.getElementById("cmdAdd");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
         // DestroyDB button

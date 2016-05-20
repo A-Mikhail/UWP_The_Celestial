@@ -3,15 +3,16 @@
 
     function init() {
         Windows.Networking.BackgroundTransfer.BackgroundUploader.getCurrentUploadsAsync().then(function (uploads) {
-            printLog("Start Upload.<br/>");
-
             var upload = new UploadOperation();
 
             var url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
 
-            upload.startMultipart(url);
-
-            console.log("storageFile from FileSystem file: " + FileSystem.storageFileArr);
+            if (FileSystem.storageFileArr == 0) {
+                var messageDialog = new Windows.UI.Popups.MessageDialog("Add file to your sync library");
+                messageDialog.showAsync();
+            } else {
+                upload.startMultipart(url);
+            }
 
             // If uploads from previous application state exist, reassign callback and persist to global array.
             for (var i = 0; i < uploads.size; i++) {
@@ -41,13 +42,16 @@
 
             var oauth = new GoogleDrive.oauth();
 
-            // Variable for stream
-            var boundaryStart = "test"; // start|middle boundary
-  
+            // Boundary
+            var str = storageFile[0].displayName;
+            var boundary = str.replace(/[^\da-zA-Z0-9]/g, ''); // start|middle boundary
+            
+            console.log(boundary);
+
             var contentParts = [];
             
             storageFile.forEach(function (file, index) {
-                var partHeader = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart("text");
+                var partHeader = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart();
                 var part = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart("File" + index, file.name);
 
                 partHeader.setHeader("Content-Type", "application/json; charset=UTF-8");
@@ -56,16 +60,17 @@
                 part.setHeader("Content-Type", file.contentType);
                 part.setFile(file);
 
+                //contentParts.push(partHeader, part);
                 contentParts.push(partHeader);
                 contentParts.push(part);
             });
 
             oauth.connect().then(function (token) {
                 uploader.setRequestHeader("Authorization", `Bearer ${token.access_token}`); // authorization token
-                uploader.setRequestHeader("Content-Type", "multipart/related; boundary=" + boundaryStart); // header boundary
+                uploader.setRequestHeader("Content-Type", "multipart/related; boundary=" + boundary); // header boundary
 
                 // Create a new upload operation
-                uploader.createUploadAsync(uploadURI, contentParts, "related", `${boundaryStart}`).then(function (uploadOperation) {
+                uploader.createUploadAsync(uploadURI, contentParts, "related", `${boundary}`).then(function (uploadOperation) {
                     // Start the upload and persist the promise to be able to cancel the upload.
                     upload = uploadOperation;
                     promise = uploadOperation.startAsync().then(complete, error, progress);

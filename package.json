@@ -1,12 +1,7 @@
 {
-  "name": "someProj",
-  "version": "0.0.0",
-  "description": "",
-  "scripts": {},
-  "author": "",
-  "license": "",
-  "devDependencies": {
-    "google-auth-library": "^0.9.7",
-    "googleapis": "^2.1.7"
-  }
+	"name": "THG-project",
+	"version": "0.6",
+	"devDependencies": {
+		"grunt": "~0.4.1"
+	}
 }

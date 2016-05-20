@@ -13,21 +13,23 @@
                 // To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
             }
 
-
             args.setPromise(WinJS.UI.processAll().then(function completed() {
                 var splitView = document.querySelector(".splitView").winControl;
-                new WinJS.UI._WinKeyboard(splitView.paneElement); // Temporary workaround: Draw keyboard focus visuals on NavBarCommands
+                var host = document.querySelector("#app");
+
+                // Temporary workaround: Draw keyboard focus visuals on NavBarCommands
+                new WinJS.UI._WinKeyboard(splitView.paneElement);
 
                 var syncBtn = document.getElementById("startSync-btn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
 
-                // Init Additional files
-                FileSystem.init();
-
                 // NavBar Clouds button
                 var authBtn = document.getElementById("gdrive-btn");
                 authBtn.addEventListener("click", googleDriveAuth, false);
-          }));
+
+                // Init Additional files
+                FileSystem.init();
+            }));
         }
     };
 
@@ -38,13 +40,13 @@
     };
 
     app.start();
-    
+
     function googleDriveAuth(e) {
         console.log("Stage One - Push the button");
 
         var oauth = new GoogleDrive.oauth();
         var googleIdArray = [];
-       
+
         oauth.connect().then(function (token) {
             Xhr.getFiles(token.access_token).then(function (result) {
                 for (let i = 0; i < result.files.length; i++) {
@@ -53,7 +55,7 @@
                     document.getElementById("icon").innerHTML += result.files[i].createdTime + "\r"; // Put all files into DB or object or array
                 }
             });
-            
+
             Xhr.getAbout(token.access_token).then(function (result) {
                 document.getElementById("user").innerHTML = result.user.displayName; // Get User Name
                 document.getElementById("userImage").src = result.user.photoLink; // Get User Photo
@@ -64,6 +66,6 @@
             })
         });
     }
-    
+
     WinJS.Namespace.define("MainWindow"); // define parent
 })();

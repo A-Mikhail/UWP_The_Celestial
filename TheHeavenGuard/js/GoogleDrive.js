@@ -111,7 +111,7 @@
             var credential = passwordVault.retrieve("OauthToken", "CurrentUser");
             storedToken = credential.password;
 
-            // passwordVault.remove(credential); 
+            // passwordVault.remove(credential); // Uncomment to delete authorization token from password vault
         } catch (e) {
             // no stored credentials
         }

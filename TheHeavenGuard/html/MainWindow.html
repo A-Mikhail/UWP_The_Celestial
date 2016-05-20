@@ -6,91 +6,112 @@
     <title>The Heaven Guard</title>
 
     <!-- WinJS references -->
-    <link href="/WinJS/css/ui-light.min.css" rel="stylesheet" />
-	<link href="/WinJS/css/ui-dark.min.css" rel="stylesheet" />
+    <link href="/WinJS/css/ui-dark.css" rel="stylesheet" />
+    <link href="/WinJS/css/ui-light.css" rel="stylesheet" />
 
     <script src="/WinJS/js/base.js"></script>
     <script src="/WinJS/js/ui.js"></script>
 
     <!-- TheHeavenGuard references -->
-    <link href="/css/Reset.css" rel="stylesheet" />
-	<link href="/css/MainWindow.css" rel="stylesheet"/>
+    <link href="/css/MainWindow.css" rel="stylesheet" />
 
     <script src="/js/pouchdb-5.3.1.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
-
     <script src="/js/Configurations.js"></script> <!-- cloud's uri for xhr -->
-
     <!--
         MainWindow.js use
         PouchDB as local database,
         Configurator as cloud uri for xhr
     -->
-    <script src="/js/MainWindow.js"></script> 
+    <script src="/js/MainWindow.js"></script>
 
     <script src="/js/Databases.js"></script> <!-- Configure databases -->
     <script src="/js/FileSystem.js"></script> <!-- Client side files to synchronize -->
     <script src="/js/GoogleDrive.js"></script> <!-- Google Drive cloud -->
-    <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->     
-    <script src="/js/XMLHttpRequest.js"></script> <!-- XHR over all app -->
+    <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->
+    <script src="/js/XMLHttpRequest.js"></script> <!-- XHR over all -->
 </head>
 
-<body role="application" class="win-type-body">
-    <div id="app">
-        <div class="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{ panePlacement: 'right'}">
-            <!-- Pane area -->
-            <div>
-                <div class="header">
-                    <button class="win-splitviewpanetoggle" data-win-control="WinJS.UI.SplitViewPaneToggle" data-win-options="{ splitView: select('.splitView') }"></button>
-                    <div class="title">Web Cloud's</div>
+<body>
+    <div class="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{ panePlacement: 'right', openedDisplayMode: 'inline', closedDisplayMode: 'inline'}">
+
+        <!-- Pane area -->
+        <div>
+            <div class="header">
+                <button class="win-splitviewpanetoggle"
+                        data-win-control="WinJS.UI.SplitViewPaneToggle"
+                        data-win-options="{ splitView: select('.splitView') }"></button>
+            </div>
+
+            <div class="nav-commands">
+                <div id="gdrive-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Google Drive', icon: 'home'}"></div>
+                <div id="destroyUserDB" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Delete user DB', icon: 'clear'}"></div>
+                <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'Refresh'}"></div>
+
+                <div id="user"></div>
+                <img id="userImage" src="" />
+
+                <div id="outputConsole"></div> <!-- console for BackgroundTransfer -->
+            </div>
+        </div>
+
+        <!-- Content area -->
+        <div data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo')}">
+            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
+
+                <div class="toolbar">
+                    <div data-win-control="WinJS.UI.ToolBar">
+                        <!-- Primary commands -->
+                        <button id="cmdAdd" data-win-control="WinJS.UI.Command" data-win-options="{
+                label:'add Files',
+                section:'primary',
+                type:'button',
+                icon: 'add'}"></button>
+                    </div>
                 </div>
 
-                <div class="nav-commands">
-                    <!-- Test button -->
-                    <div id="gdrive-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Google Drive', icon: 'home'}"></div>
-                    <div id="destroyUserDB" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Delete user DB', icon: 'clear'}"></div>
-                    <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'Refresh'}"></div>
+                <div id="file-browse">
+                    <div id="filePicker">
+                        <div class="dropFile-msg vertical-center">
+                            <div>
+                                <p>Drop files here or click to</p>
+                                <p><span aria-hidden="true">+</span> icon on top</p>
+                            </div>
+                        </div>
+                        <!--<a class="btn btn-block btn-primary" id="chooseFiles-btn">Browse</a>-->
+                    </div>
 
-                    <div id="user"></div>
-                    <img id="userImage" src="" />
-                    
-                    <div id="outputConsole"></div> <!-- console for BackgroundTransfer --> 
+                    <!-- List of current user files -->
+                    <div id="list"></div>
                 </div>
             </div>
 
-            <!-- Content area -->
-            <div id="grid">
-                <!-- First section Information about file, download, free space, etc... -->
+            <!-- Settings Page  -->
+            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Settings'}">
+                <div>Settings</div>
+
                 <div id="cloudServiceInformations">
                     <h3 id="cloudInformationTitle">Cloud Information</h3>
 
                     <div>
-                        Memory Allowed: 
+                        Memory Allowed:
                         <p id="storageQuota"></p>
-                    </div>                    
-                    
+                    </div>
+
                     <div>
-                        Usage memory in all places: 
+                        Usage memory in all places:
                         <p id="usage"></p>
-                    </div>
-                </div>
-
-                <!-- Second section work with file, choose webclouds -->
-                <div id="filePicker">
-                    <div class="dropFile-msg">
-                        <p>Drop files here or click to</p>
-                        <button class="win-button" id="chooseFiles-btn">browse</button>
-                    </div>
-
-                    <!-- List of current user files -->
-                    <div id="list">
                     </div>
                 </div>
 
                 <div id="cloudService-webview">
                     <img id="icon" src="" />
-                        <pre id="output"></pre>
+                    <pre id="output"></pre>
                 </div>
             </div>
+        </div>
+
+        <div id="logo">
+            <p>There where be a logo</p>
         </div>
     </div>
 </body>

@@ -14,17 +14,11 @@
             }
 
             args.setPromise(WinJS.UI.processAll().then(function completed() {
-                var splitView = document.querySelector(".splitView").winControl;
-                var host = document.querySelector("#app");
-
-                // Temporary workaround: Draw keyboard focus visuals on NavBarCommands
-                new WinJS.UI._WinKeyboard(splitView.paneElement);
-
-                var syncBtn = document.getElementById("startSync-btn");
+                var syncBtn = document.getElementById("start-sync-btn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
 
                 // NavBar Clouds button
-                var authBtn = document.getElementById("gdrive-btn");
+                var authBtn = document.getElementById("google-drive-btn");
                 authBtn.addEventListener("click", googleDriveAuth, false);
 
                 // Init Additional files

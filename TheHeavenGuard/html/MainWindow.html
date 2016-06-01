@@ -6,14 +6,15 @@
     <title>The Heaven Guard</title>
 
     <!-- WinJS references -->
-    <link href="/WinJS/css/ui-dark.css" rel="stylesheet" />
     <link href="/WinJS/css/ui-light.css" rel="stylesheet" />
+    <link href="/WinJS/css/ui-dark.css" rel="stylesheet" />
 
     <script src="/WinJS/js/base.js"></script>
     <script src="/WinJS/js/ui.js"></script>
 
     <!-- TheHeavenGuard references -->
     <link href="/css/MainWindow.css" rel="stylesheet" />
+    <link href="/css/font-awesome.css" rel="stylesheet" />
 
     <script src="/js/pouchdb-5.3.1.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
     <script src="/js/Configurations.js"></script> <!-- cloud's uri for xhr -->
@@ -32,66 +33,60 @@
 </head>
 
 <body>
-    <div class="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{ panePlacement: 'right', openedDisplayMode: 'inline', closedDisplayMode: 'inline'}">
 
-        <!-- Pane area -->
-        <div>
-            <div class="header">
-                <button class="win-splitviewpanetoggle"
-                        data-win-control="WinJS.UI.SplitViewPaneToggle"
-                        data-win-options="{ splitView: select('.splitView') }"></button>
-            </div>
+    <img id="logo-img" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" />
 
-            <div class="nav-commands">
-                <div id="gdrive-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Google Drive', icon: 'home'}"></div>
-                <div id="destroyUserDB" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Delete user DB', icon: 'clear'}"></div>
-                <div id="startSync-btn" data-win-control="WinJS.UI.SplitViewCommand" data-win-options="{ label: 'Start Sync', icon: 'Refresh'}"></div>
+    <div class="btn-panel">
+        <div id="google-drive-btn"></div>
+        <div id="destroyUserDB"></div>
+    </div>
 
-                <div id="user"></div>
-                <img id="userImage" src="" />
-
-                <div id="outputConsole"></div> <!-- console for BackgroundTransfer -->
-            </div>
-        </div>
-
-        <!-- Content area -->
-        <div data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo')}">
-            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
-
+    <!-- Content area -->
+    <div data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo-img'), customRightHeader: select('.btn-panel')}">
+        <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
+            <div class="main-page">
                 <div class="toolbar">
-                    <div data-win-control="WinJS.UI.ToolBar">
-                        <!-- Primary commands -->
-                        <button id="cmdAdd" data-win-control="WinJS.UI.Command" data-win-options="{
-                label:'add Files',
-                section:'primary',
-                type:'button',
-                icon: 'add'}"></button>
-                    </div>
+                    <a id="start-sync-btn" class="toolbar-btn toolbar-btn-left">
+                        <i class="fa fa-refresh fa-fw"></i>&nbsp; Start sync
+                    </a>
+
+                    <a id="toolbar-btn-add" class="toolbar-btn toolbar-btn-right">
+                        <i class="fa fa-plus"></i>&nbsp; Add Files
+                    </a>
                 </div>
 
-                <div id="file-browse">
-                    <div id="filePicker">
-                        <div class="dropFile-msg vertical-center">
-                            <div>
-                                <p>Drop files here or click to</p>
-                                <p><span aria-hidden="true">+</span> icon on top</p>
-                            </div>
-                        </div>
-                        <!--<a class="btn btn-block btn-primary" id="chooseFiles-btn">Browse</a>-->
+                <div id="file-browser">
+                    <div class="drag-n-drop-msg vertical-center">
+                        <p>Drag & Drop files here or click to</p>
+                        <p style="text-align: center;">
+                            <i class="fa fa-plus"></i> icon on top
+                        </p>
                     </div>
 
                     <!-- List of current user files -->
                     <div id="list"></div>
                 </div>
+
+                <div class="clouds-authorization-panel">
+                    <p>Click on button below to auth in your accounts</p>
+
+                    <button class="google-drive-auth auth-pannel-btn">
+                        <img class="img-circle" src="../img/Google-Drive-Icon.png" width="48" height="48" />
+                        <p>Google Drive</p>
+                    </button>
+
+                    <button class="onedrive-auth auth-pannel-btn">
+                        <img class="img-circle" src="../img/OneDrive.png" width="48" height="48" />
+                        <p>OneDrive</p>
+                    </button>
+                </div>
             </div>
+        </div>
 
-            <!-- Settings Page  -->
-            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Settings'}">
-                <div>Settings</div>
-
-                <div id="cloudServiceInformations">
-                    <h3 id="cloudInformationTitle">Cloud Information</h3>
-
+        <!-- Settings Page  -->
+        <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Settings'}">
+            <div class="settings-page">
+                <div class="information-panel">
                     <div>
                         Memory Allowed:
                         <p id="storageQuota"></p>
@@ -101,18 +96,29 @@
                         Usage memory in all places:
                         <p id="usage"></p>
                     </div>
+
+                    <div id="cloudService-webview">
+                        <img id="icon" src="" />
+                        <pre id="output"></pre>
+                    </div>
                 </div>
 
-                <div id="cloudService-webview">
-                    <img id="icon" src="" />
-                    <pre id="output"></pre>
+                <div class="delete-db-panel horizontal-center">
+                    <h1> Delete Databases </h1>
+
+                    <input type="checkbox" value="delete-all-db" /> Delete All DB
+                    <input type="checkbox" value="delete-user-db" /> Delete User DB
+                    <input type="checkbox" value="delete-google-db" /> Detele Google DB
+
+                    <br />
+
+                    <button type="submit" class="win-button showButton delete-db-btn">Delete</button>
+
+                    <h4> Information! After deleting database all your files keep in safe, deleting database affects only clear items </h4>
                 </div>
             </div>
         </div>
-
-        <div id="logo">
-            <p>There where be a logo</p>
-        </div>
     </div>
+
 </body>
 </html>

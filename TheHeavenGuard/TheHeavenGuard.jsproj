@@ -59,7 +59,9 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="css\font-awesome.css" />
     <Content Include="css\MainWindow.css" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="html\MainWindow.html" />
     <Content Include="images\splashscreen.scale-200.png" />
     <Content Include="images\splashscreen.scale-400.png" />
@@ -81,6 +83,9 @@
     <Content Include="images\Wide310x150Logo.scale-100.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="img\Google-Drive-Icon.png" />
+    <Content Include="img\LeftHeaderLogo-68x48.png" />
+    <Content Include="img\OneDrive.png" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />
     <Content Include="js\Databases.js" />

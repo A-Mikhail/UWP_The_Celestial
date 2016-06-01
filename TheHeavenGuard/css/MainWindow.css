@@ -14,6 +14,23 @@
 
     Every space and dimension should be a multiply of 4
 */
+
+.color-green {
+    color: #128B44;
+}
+
+.color-blue {
+    color: #2C71B9;
+}
+
+.color-yellow {
+    color: #FDC214;
+}
+
+.color-red {
+    color: #D82429;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -22,22 +39,17 @@
 html, body {
     width: 100%;
     height: 100%;
-    background-color: #fff;
+    background-color: #f2f2f2;
+    font-family: "Segoe UI", sans-serif;
+    font-weight: 200;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
 }
 
-/* 
- * Pivot style
- *
- * Remove Scroll from Pivotitem-content 
- *
-*/
-.win-pivot-item .win-pivot-item-content {
-    margin: 0;
-    padding: 0;
-}
-
-.win-pivot-item, .win-pivot-viewport {
-    overflow-y: scroll;
+.horizontal-center {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
 }
 
 .vertical-center {
@@ -47,6 +59,48 @@ html, body {
     transform: translate(-50%, -50%);
 }
 
+#logo-img {
+    padding-left: 12px;
+}
+
+/* Top menu */
+.win-pivot-header-area {
+    background-color: #556270;
+    height: 48px;
+}
+
+.win-pivot-header-items {
+    height: 48px;
+}
+
+/* Right panel */
+.win-splitview-pane {
+    background-color: #0288d1;
+}
+
+/* 
+ * Pivot style
+ *
+ * Remove Scroll from Pivotitem-content 
+ *
+*/
+.win-pivot-item {
+    width: 33.4%;
+}
+
+    .win-pivot-item .win-pivot-item-content {
+        margin: 0;
+        padding: 0;
+    }
+
+.win-pivot-item, .win-pivot-viewport {
+    overflow-y: scroll;
+}
+
+/* Remove margin-top: 13px from left header item */
+.win-pivot-header-area > .win-pivot-header-leftcustom {
+    margin: 0;
+}
 
 .win-toolbar .win-toolbar-actionarea {
     background: transparent;
@@ -57,14 +111,82 @@ html, body {
     border: 0;
 }
 
-/* File picker button */
-#chooseFiles-btn {
-    text-align: center;
-    margin-top: 1em;
+/* Main Page */
+.main-page {
+    display: -ms-grid;
+    -ms-grid-columns: 4fr 1fr;
+    -ms-grid-rows: 48px 100%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-.dropFile-msg {
-    color: darkgray;
+/* Toolbar */
+.toolbar {
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    -ms-grid-column-span: 2;
+    color: #000;
+    border-bottom: 1px solid grey;
+    margin: 0 12px;
+}
+
+.toolbar-btn {
+    padding: 12px;
+    text-align: center;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+
+    .toolbar-btn:hover {
+        opacity: 1;
+    }
+
+.toolbar-btn-right {
+    position: absolute;
+    right: 0px;
+}
+
+.toolbar-btn-left {
+    position: absolute;
+    left: 0px;
+}
+
+button.win-splitviewpanetoggle::after {
+    font-size: 20px;
+}
+
+#file-browser {
+    -ms-grid-row: 2;
+    -ms-grid-column: 1;
+}
+
+.clouds-authorization-panel {
+    -ms-grid-row: 2;
+    -ms-grid-column: 2;
+    color: #000;
+    list-style: none;
+    margin: 12px;
+    border-left: 1px solid grey;
+    padding-left: 12px;
+}
+
+.auth-pannel-btn {
+    width: 100%;
+}
+
+.img-circle {
+    border-radius: 50%;
+    background-color: #fff;
+    padding: 4px;
+}
+
+.drag-n-drop-msg {
+    color: #000;
+    font-size: 24px;
+    opacity: 0.4;
 }
 
 /* Categories */
@@ -88,4 +210,19 @@ html, body {
 .file:hover {
     cursor: pointer;
     background-color: #607286;
+}
+
+/* Settings Page */
+.settings-page {
+    color: #000;
+}
+
+.delete-db-panel {
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    padding: 24px;
+    background-color: #fdc214;
+    color: #fff;
+    text-align: center;
 }

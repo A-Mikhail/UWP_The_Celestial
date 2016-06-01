@@ -6,13 +6,13 @@
     
     function init() {
         // Drag and Drop
-        var dropbox = document.getElementById("filePicker");
+        var dropbox = document.getElementById("file-browser");
         dropbox.addEventListener("dragenter", dragenter, false);
         dropbox.addEventListener("dragover", dragover, false);
         dropbox.addEventListener("drop", drop, false);
 
         // File choose button
-        var chFilesBtn = document.getElementById("cmdAdd");
+        var chFilesBtn = document.getElementById("toolbar-btn-add");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
         // DestroyDB button

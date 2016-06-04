@@ -36,13 +36,8 @@
 
     <img id="logo-img" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" />
 
-    <div class="btn-panel">
-        <div id="google-drive-btn"></div>
-        <div id="destroyUserDB"></div>
-    </div>
-
     <!-- Content area -->
-    <div data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo-img'), customRightHeader: select('.btn-panel')}">
+    <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo-img') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
             <div class="main-page">
                 <div class="toolbar">
@@ -68,16 +63,16 @@
                 </div>
 
                 <div class="clouds-authorization-panel">
-                    <p>Click on button below to auth in your accounts</p>
+                    <p class="auth-panel-title"> Click on button below to auth in your accounts </p>
 
-                    <button class="google-drive-auth auth-pannel-btn">
-                        <img class="img-circle" src="../img/Google-Drive-Icon.png" width="48" height="48" />
-                        <p>Google Drive</p>
+                    <button id="google-drive-btn" class="google-drive-auth auth-panel-btn win-button">
+                        <img id="google-drive-avatar" class="img-circle" src="../img/THG-avatar-48x48.png" />
+                        <p id="google-drive-btn-text"> Google Drive </p>
                     </button>
 
-                    <button class="onedrive-auth auth-pannel-btn">
-                        <img class="img-circle" src="../img/OneDrive.png" width="48" height="48" />
-                        <p>OneDrive</p>
+                    <button id="onedrive-btn" class="onedrive-auth auth-panel-btn win-button">
+                        <img id="onedrive-avatar" class="img-circle" src="../img/THG-avatar-48x48.png" />
+                        <p id="onedrive-btn-text"> OneDrive </p>
                     </button>
                 </div>
             </div>
@@ -112,13 +107,12 @@
 
                     <br />
 
-                    <button type="submit" class="win-button showButton delete-db-btn">Delete</button>
+                    <button type="submit" id="destroyUserDB" class="win-button showButton delete-db-btn">Delete</button>
 
                     <h4> Information! After deleting database all your files keep in safe, deleting database affects only clear items </h4>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
 </html>

@@ -35,9 +35,15 @@
 
     app.start();
 
-    function googleDriveAuth(e) {
-        console.log("Stage One - Push the button");
+    function createPivotElement() {
+        // Use document.createElement("div") to build up the DOM for the Pivot Item
+        // Or you could render a page using the WinJS.UI.Pages API
 
+        // Return a DOM element
+        return document.createElement('div');
+    }
+
+    function googleDriveAuth(e) {
         var oauth = new GoogleDrive.oauth();
         var googleIdArray = [];
 
@@ -45,14 +51,23 @@
             Xhr.getFiles(token.access_token).then(function (result) {
                 for (let i = 0; i < result.files.length; i++) {
                     document.getElementById("output").innerHTML += result.files[i].name + "\r"; // Get All files
-
-                    document.getElementById("icon").innerHTML += result.files[i].createdTime + "\r"; // Put all files into DB or object or array
                 }
             });
 
+            // When criteria is met...
+            // Find the pivot in the DOM
+            var pivot = document.getElementById("pivot").winControl;
+
+            var element = createPivotElement();
+            var pivotItem = new WinJS.UI.PivotItem(element, { header: 'Google Drive' });
+
+            // Add new PivotItem
+            // You could use other things like splice to add it to a specific index etc.
+            pivot.items.push(pivotItem);
+
             Xhr.getAbout(token.access_token).then(function (result) {
-                document.getElementById("user").innerHTML = result.user.displayName; // Get User Name
-                document.getElementById("userImage").src = result.user.photoLink; // Get User Photo
+                document.getElementById("google-drive-btn-text").innerText = result.user.displayName; // Get User Name
+                document.getElementById("google-drive-avatar").src = result.user.photoLink; // Get User Photo
 
                 // Information from get response receive in Kib format
                 document.getElementById("storageQuota").innerHTML = result.storageQuota.limit / 1024 / 1024 + " GB"; // Google Drive limit

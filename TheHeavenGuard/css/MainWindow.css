@@ -53,10 +53,11 @@ html, body {
 }
 
 .vertical-center {
-    position: absolute;
+    position: relative;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    text-align: center;
 }
 
 #logo-img {
@@ -65,7 +66,7 @@ html, body {
 
 /* Top menu */
 .win-pivot-header-area {
-    background-color: #556270;
+    background-color: #376996;
     height: 48px;
 }
 
@@ -123,22 +124,18 @@ html, body {
 
 /* Toolbar */
 .toolbar {
+    position: relative;
     -ms-grid-row: 1;
     -ms-grid-column: 1;
-    -ms-grid-column-span: 2;
-    color: #000;
-    border-bottom: 1px solid grey;
-    margin: 0 12px;
+    -ms-grid-column-span: 1;
+    background-color: #1d3461;
 }
 
 .toolbar-btn {
     padding: 12px;
-    text-align: center;
-    font-size: 18px;
     cursor: pointer;
     opacity: 0.6;
 }
-
 
     .toolbar-btn:hover {
         opacity: 1;
@@ -164,23 +161,31 @@ button.win-splitviewpanetoggle::after {
 }
 
 .clouds-authorization-panel {
-    -ms-grid-row: 2;
+    -ms-grid-row: 1;
     -ms-grid-column: 2;
-    color: #000;
+    -ms-grid-row-span: 2;
     list-style: none;
-    margin: 12px;
-    border-left: 1px solid grey;
-    padding-left: 12px;
+    background-color: #1d3461;
 }
 
-.auth-pannel-btn {
+.auth-panel-btn {
     width: 100%;
+    margin: 1px 0px;
+    line-height: 3;
+}
+
+.auth-panel-title {
+    padding: 14px;
+}
+
+.google-drive-auth img, .onedrive-auth img {
+    width: 48px;
+    height: 48px;
+    float: left;
 }
 
 .img-circle {
     border-radius: 50%;
-    background-color: #fff;
-    padding: 4px;
 }
 
 .drag-n-drop-msg {
@@ -226,3 +231,5 @@ button.win-splitviewpanetoggle::after {
     color: #fff;
     text-align: center;
 }
+
+/* Google Drive Page */

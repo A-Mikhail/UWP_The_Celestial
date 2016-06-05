@@ -35,14 +35,6 @@
 
     app.start();
 
-    function createPivotElement() {
-        // Use document.createElement("div") to build up the DOM for the Pivot Item
-        // Or you could render a page using the WinJS.UI.Pages API
-
-        // Return a DOM element
-        return document.createElement('div');
-    }
-
     function googleDriveAuth(e) {
         var oauth = new GoogleDrive.oauth();
         var googleIdArray = [];
@@ -58,8 +50,11 @@
             // Find the pivot in the DOM
             var pivot = document.getElementById("pivot").winControl;
 
-            var element = createPivotElement();
-            var pivotItem = new WinJS.UI.PivotItem(element, { header: 'Google Drive' });
+            var pivotItem = new WinJS.UI.PivotItem(document.createElement("div"), { isHeaderStatic: true, header: 'Google Drive' });
+
+            var pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
+
+            WinJS.UI.Pages.render("/html/GoogleDrive.html", pivotItemContent);
 
             // Add new PivotItem
             // You could use other things like splice to add it to a specific index etc.

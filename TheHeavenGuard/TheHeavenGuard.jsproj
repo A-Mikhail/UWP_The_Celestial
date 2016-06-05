@@ -62,6 +62,7 @@
     <Content Include="css\font-awesome.css" />
     <Content Include="css\MainWindow.css" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="html\GoogleDrive.html" />
     <Content Include="html\MainWindow.html" />
     <Content Include="images\splashscreen.scale-200.png" />
     <Content Include="images\splashscreen.scale-400.png" />

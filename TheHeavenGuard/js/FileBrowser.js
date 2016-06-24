@@ -1,9 +1,13 @@
 ﻿(function () {
     "use strict";
 
+    // Global Variables
     var messageDialog;
     var storageFileArr = [];
-    
+
+    var div = document.createElement('div'); // create <div> container
+    var li  = document.createElement('li'); // create <li>
+
     function init() {
         // Drag and Drop
         var dropbox = document.getElementById("file-browser");
@@ -15,10 +19,6 @@
         var chFilesBtn = document.getElementById("toolbar-btn-add");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
-        // DestroyDB button
-        var dstUserDB = document.getElementById("destroyUserDB");
-        dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
-        
         databaseRead(); // add data from DB to app
     }
 
@@ -32,6 +32,8 @@
         doNothing(event);
     }
 
+    // Function drop
+    // get files attributes and create files or folders on file browser window
     function drop(event) {
         doNothing(event);
 
@@ -44,32 +46,61 @@
         var fileCount = fileList.length;
 
         if (fileCount > 0) {
-            var list = document.getElementById("list");
-            var file,
-                fileDiv;
+            var list = document.getElementById("browser-window");
+            var fileName,
+                fileType,
+                filePath,
+                fileModified;
 
             for (var i = 0; i < fileCount; i++) {
-                file = event.dataTransfer.files[i].name + "\n"; // get fileName
+                fileName = fileList[i].name + "\n"; // get fileName
+                fileType = fileList[i].type; // show mime-type 
+                filePath = event.dataTransfer.items[i].fullPath; // show path
+                fileModified = fileList[i].lastModifiedDate.toLocaleDateString();
 
-                fileDiv = document.createElement('div'); // create Div on each element
-                fileDiv.id = "fileN" + i;
+                div.id = "fileN" + i;
 
-                fileDiv.innerHTML = file;
+                div.innerHTML = fileName;
 
-                list.appendChild(fileDiv);
+                list.appendChild(div);
 
-                console.log("file: " + file);
+                var messageDialog = new Windows.UI.Popups.MessageDialog("File name: " + fileName + 
+                    " file type: " + fileType + 
+                    " path: " + filePath +
+                    " file last modified: " + fileModified);
+
+                messageDialog.showAsync();
             }
-
-            console.log("Item count: " + fileCount);
         }
 
-        updateSize(event);
+        updateSize(event); // show size of current file
     }
 
     function doNothing(event) {
         event.stopPropagation();
         event.preventDefault();
+    }
+
+    // Progress bar shows current progress of events in animation line
+    function progressBar() {
+        var pBar = document.getElementById("progressBar");
+
+        pBar.style = "display: block;";
+    }
+
+    // Function createFilesOrFolders 
+    // Create file or folder by extension type inside broser-window
+    // Create <div> inside <li> for grid display
+    function createFilesOrFolders() {
+        var browserWindow = document.getElementById("browser-window");
+        
+        if (file) {
+            browserWindow.appendChild(fileType);
+        } else if (folder) {
+            browserWindow.appendChild(folderType);
+        } else {
+            browserWindow.appendChild(unknownType);
+        }
     }
 
     // Button for non-work situation drag n' drop
@@ -92,24 +123,26 @@
             path;
 
         openPicker.pickMultipleFilesAsync().then(function (files) {
+
+
             if (files.size > 0) {
                 // Application now has read/write access to the picked file(s)
-                var outputString,
-                    fileDiv;
+                var outputString;
 
                 for (var i = 0; i < files.size; i++) {
                     // Send array of choosen files to global 
                     storageFileArr.push(files[i]);
 
+                    console.log("wich format? : " + files[i]);
+
                     outputString = files[i].name; // get name of the selected files
                     path = files[i].path; // get path of the selected files
 
-                    fileDiv = document.createElement('div'); // create Div on each element
-                    fileDiv.id = "fileNum_" + i; // <div id="fileNum_1..." />
-                    fileDiv.className = "file";
+                    div.id = "fileNum_" + i; // <div id="fileNum_1..." />
+                    div.className = "file";
 
-                    fileDiv.innerHTML = outputString; // Name of added files
-                    list.appendChild(fileDiv); // create div to selected file/folder
+                    div.innerHTML = outputString; // Name of added files
+                    list.appendChild(div); // create div to selected file/folder
 
                     databaseWrite(outputString, path); // Send to db
                 }
@@ -142,15 +175,13 @@
         Databases.userDB().query(function (doc, emit) {
             emit(doc.name);
         }).then(function (result) {
-            var list = document.getElementById("list");
-            var file,
-                fileDiv;
+            var list = document.getElementById("browser-window");
+            var file;
 
             for (let i = 0; i < result.rows.length; i++) {
-                fileDiv = document.createElement('div'); // create Div on each element
-                fileDiv.innerHTML = result.rows[i].id; // get id from all db (very slow)
+                div.innerHTML = result.rows[i].id; // get id from all db (very slow)
 
-                list.appendChild(fileDiv);
+                list.appendChild(div);
             }
         }).catch(function (err) {
             messageDialog = new Windows.UI.Popups.MessageDialog("Error read data" + err);
@@ -179,7 +210,7 @@
     
     console.log("Out:" + storageFileArr);
 
-    WinJS.Namespace.define("FileSystem", {
+    WinJS.Namespace.define("FileBrowser", {
         init: init,
         storageFileArr: storageFileArr
     });

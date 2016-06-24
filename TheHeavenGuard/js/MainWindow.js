@@ -21,8 +21,12 @@
                 var authBtn = document.getElementById("google-drive-btn");
                 authBtn.addEventListener("click", googleDriveAuth, false);
 
+                // DestroyDB button
+                var dstUserDB = document.getElementById("destroyUserDB");
+                dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
+
                 // Init Additional files
-                FileSystem.init();
+                FileBrowser.init();
             }));
         }
     };

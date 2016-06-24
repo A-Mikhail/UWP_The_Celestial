@@ -9,76 +9,11 @@
     var li  = document.createElement('li'); // create <li>
 
     function init() {
-        // Drag and Drop
-        var dropbox = document.getElementById("file-browser");
-        dropbox.addEventListener("dragenter", dragenter, false);
-        dropbox.addEventListener("dragover", dragover, false);
-        dropbox.addEventListener("drop", drop, false);
-
         // File choose button
         var chFilesBtn = document.getElementById("toolbar-btn-add");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
         databaseRead(); // add data from DB to app
-    }
-
-    function dragenter(event) {
-        event.dataTransfer.setData('text', event.target.textContent);
-
-        doNothing(event);
-    }
-
-    function dragover(event) {
-        doNothing(event);
-    }
-
-    // Function drop
-    // get files attributes and create files or folders on file browser window
-    function drop(event) {
-        doNothing(event);
-
-        var fileList = event.dataTransfer.files;
-
-        if (!fileList) {
-            return;
-        }
-
-        var fileCount = fileList.length;
-
-        if (fileCount > 0) {
-            var list = document.getElementById("browser-window");
-            var fileName,
-                fileType,
-                filePath,
-                fileModified;
-
-            for (var i = 0; i < fileCount; i++) {
-                fileName = fileList[i].name + "\n"; // get fileName
-                fileType = fileList[i].type; // show mime-type 
-                filePath = event.dataTransfer.items[i].fullPath; // show path
-                fileModified = fileList[i].lastModifiedDate.toLocaleDateString();
-
-                div.id = "fileN" + i;
-
-                div.innerHTML = fileName;
-
-                list.appendChild(div);
-
-                var messageDialog = new Windows.UI.Popups.MessageDialog("File name: " + fileName + 
-                    " file type: " + fileType + 
-                    " path: " + filePath +
-                    " file last modified: " + fileModified);
-
-                messageDialog.showAsync();
-            }
-        }
-
-        updateSize(event); // show size of current file
-    }
-
-    function doNothing(event) {
-        event.stopPropagation();
-        event.preventDefault();
     }
 
     // Progress bar shows current progress of events in animation line
@@ -103,7 +38,7 @@
         }
     }
 
-    // Button for non-work situation drag n' drop
+    // Main function to choose files
     function chooseFiles(event) {
         // Verify that we are currently not snapped, or that we can unsnap to open the picker
         var currentState = Windows.UI.ViewManagement.ApplicationView.value;

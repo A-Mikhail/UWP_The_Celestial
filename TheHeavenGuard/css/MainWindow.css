@@ -182,6 +182,7 @@ li {
 }
 
 /* End File Browser */
+
 .clouds-authorization-panel {
     -ms-grid-row: 1;
     -ms-grid-column: 2;
@@ -210,11 +211,6 @@ li {
     border-radius: 50%;
 }
 
-.drag-n-drop-msg {
-    color: #000;
-    font-size: 24px;
-    opacity: 0.4;
-}
 
 /* Categories */
 .categories {

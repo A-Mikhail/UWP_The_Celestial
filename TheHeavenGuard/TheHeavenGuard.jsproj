@@ -87,6 +87,7 @@
     <Content Include="img\Google-Drive-Icon.png" />
     <Content Include="img\LeftHeaderLogo-68x48.png" />
     <Content Include="img\THG-avatar-48x48.png" />
+    <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />
     <Content Include="js\Databases.js" />

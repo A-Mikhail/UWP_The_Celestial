@@ -1,16 +1,16 @@
 ﻿(function () {
     "use strict";
 
-    // Global Variables
-    var messageDialog;
-    var storageFileArr = [];
+    // Global letiables
+    let messageDialog;
+    let storageFileArr = []; // Array of File choosen by user to send in xhr
 
-    var div = document.createElement('div'); // create <div> container
-    var li  = document.createElement('li'); // create <li>
+    let div = document.createElement('div'); // create <div> container
+    let li  = document.createElement('li'); // create <li>
 
     function init() {
         // File choose button
-        var chFilesBtn = document.getElementById("toolbar-btn-add");
+        let chFilesBtn = document.getElementById("toolbar-btn-add");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
         databaseRead(); // add data from DB to app
@@ -18,7 +18,7 @@
 
     // Progress bar shows current progress of events in animation line
     function progressBar() {
-        var pBar = document.getElementById("progressBar");
+        let pBar = document.getElementById("progressBar");
 
         pBar.style = "display: block;";
     }
@@ -27,7 +27,7 @@
     // Create file or folder by extension type inside broser-window
     // Create <div> inside <li> for grid display
     function createFilesOrFolders() {
-        var browserWindow = document.getElementById("browser-window");
+        let browserWindow = document.getElementById("browser-window");
         
         if (file) {
             browserWindow.appendChild(fileType);
@@ -41,34 +41,30 @@
     // Main function to choose files
     function chooseFiles(event) {
         // Verify that we are currently not snapped, or that we can unsnap to open the picker
-        var currentState = Windows.UI.ViewManagement.ApplicationView.value;
+        let currentState = Windows.UI.ViewManagement.ApplicationView.value;
         if (currentState === Windows.UI.ViewManagement.ApplicationViewState.snapped &&
             !Windows.UI.ViewManagement.ApplicationView.tryUnsnap()) {
             // Fail silently if we can't unsnap
             return;
         }
 
-        var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
+        let openPicker = new Windows.Storage.Pickers.FileOpenPicker();
         openPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.list;
         openPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.documentsLibrary;
-        openPicker.fileTypeFilter.replaceAll(["*"]);
+        openPicker.fileTypeFilter.replaceAll(["*"]); // Open all format files 
 
-        var value,
+        let value,
             attributes,
             path;
 
         openPicker.pickMultipleFilesAsync().then(function (files) {
-
-
             if (files.size > 0) {
                 // Application now has read/write access to the picked file(s)
-                var outputString;
+                let outputString;
 
-                for (var i = 0; i < files.size; i++) {
+                for (let i = 0; i < files.size; i++) {
                     // Send array of choosen files to global 
                     storageFileArr.push(files[i]);
-
-                    console.log("wich format? : " + files[i]);
 
                     outputString = files[i].name; // get name of the selected files
                     path = files[i].path; // get path of the selected files
@@ -89,7 +85,7 @@
     }
 
     function databaseWrite(id, path) {
-        // Put data from var's to database - "user"
+        // Put data from let's to database - "user"
         // _id = File name
         // path = Absoulte file path
         // if file success added create div in app
@@ -110,8 +106,8 @@
         Databases.userDB().query(function (doc, emit) {
             emit(doc.name);
         }).then(function (result) {
-            var list = document.getElementById("browser-window");
-            var file;
+            let list = document.getElementById("browser-window");
+            let file;
 
             for (let i = 0; i < result.rows.length; i++) {
                 div.innerHTML = result.rows[i].id; // get id from all db (very slow)
@@ -125,25 +121,23 @@
     }
 
     function updateSize(event) {
-        var nBytes = 0,
+        let nBytes = 0,
             oFiles = event.dataTransfer.files,
             nFiles = oFiles.length;
 
-        for (var nFileId = 0; nFileId < nFiles; nFileId++) {
+        for (let nFileId = 0; nFileId < nFiles; nFileId++) {
             nBytes += oFiles[nFileId].size;
         }
 
-        var sOutput = nBytes + " bytes";
+        let sOutput = nBytes + " bytes";
 
-        for (var aMultiples = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], nMultiple = 0, nApprox = nBytes / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
+        for (let aMultiples = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"], nMultiple = 0, nApprox = nBytes / 1024; nApprox > 1; nApprox /= 1024, nMultiple++) {
             sOutput = nApprox.toFixed(3) + " " + aMultiples[nMultiple] + " (" + nBytes + " bytes)";
         }
 
-        console.log("Drag and Drop: " + " size: " + sOutput);
-        console.log("Drag and Drop: " + " count: " + nFiles);
+        console.log("size: " + sOutput);
+        console.log("count: " + nFiles);
     }
-    
-    console.log("Out:" + storageFileArr);
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,

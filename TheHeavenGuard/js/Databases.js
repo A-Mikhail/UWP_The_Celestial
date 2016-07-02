@@ -3,14 +3,14 @@
 
     // create db for user files
     function userDB() {
-        var userFilesDB;
+        let userFilesDB;
 
         return userFilesDB = new PouchDB("user");
     }
 
     // create db for google files
     function googleDB() {
-        var googleFilesDB;
+        let googleFilesDB;
 
         return googleFilesDB = new PouchDB("google");
     }

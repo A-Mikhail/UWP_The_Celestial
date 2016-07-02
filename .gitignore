@@ -243,3 +243,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/WebEssentials2015-Settings.json
+/WE-Palette.css
+/Helper.js

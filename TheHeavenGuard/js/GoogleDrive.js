@@ -1,8 +1,8 @@
 ﻿(function () {
     "use strict";
 
-    var PasswordVault = Windows.Security.Credentials.PasswordVault;
-    var PasswordCredential = Windows.Security.Credentials.PasswordCredential;
+    let PasswordVault = Windows.Security.Credentials.PasswordVault;
+    let PasswordCredential = Windows.Security.Credentials.PasswordCredential;
     
     WinJS.Namespace.define("GoogleDrive", {
         oauth: WinJS.Class.define(function() {
@@ -11,15 +11,15 @@
         {
             connect: function () {
                 return new Promise(function (done, error) {
-                    var retrieveToken = GoogleDrive.oauth();
+                    let retrieveToken = GoogleDrive.oauth();
 
                     if (!retrieveToken) {
                         authenticate().then(function (token) {
                             return grant(token).then(function (accessToken) {
-                                var cred = new PasswordCredential("OauthToken", "CurrentUser", accessToken.refresh_token);
+                                let cred = new PasswordCredential("OauthToken", "CurrentUser", accessToken.refresh_token);
                                 retrieveToken = accessToken.refresh_token;
 
-                                var passwordVault = new PasswordVault();
+                                let passwordVault = new PasswordVault();
                                 passwordVault.add(cred);
 
                                 done(accessToken);
@@ -43,13 +43,13 @@
         oauthUrl        = googleConfig.oauthUrl;
 
     function authenticate() {
-        var startURL = auth + "client_id=" +
+        let startURL = auth + "client_id=" +
                        clientId + "&redirect_uri=" +
                        redirectURI + "&response_type=code&access_type=offline&scope=" +
                        scopes + "&immediate=false";
 
-        var startURI = new Windows.Foundation.Uri(startURL);
-        var endURI = new Windows.Foundation.Uri(redirectURI);
+        let startURI = new Windows.Foundation.Uri(startURL);
+        let endURI = new Windows.Foundation.Uri(redirectURI);
 
         return new Promise(function (complete, error) {
             Windows.Security.Authentication.Web.WebAuthenticationBroker.authenticateAsync(
@@ -61,7 +61,7 @@
                     }
 
                 }, function (err) {
-                    var messageDialog = new Windows.UI.Popups.MessageDialog("Error returned by WebAuth broker: " + err);
+                    let messageDialog = new Windows.UI.Popups.MessageDialog("Error returned by WebAuth broker: " + err);
                     messageDialog.showAsync();
                 });
         });
@@ -104,11 +104,11 @@
     }
 
     function retreiveTokenFromVault() {
-        var passwordVault = new PasswordVault()
-        var storedToken;
+        let passwordVault = new PasswordVault()
+        let storedToken;
 
         try {
-            var credential = passwordVault.retrieve("OauthToken", "CurrentUser");
+            let credential = passwordVault.retrieve("OauthToken", "CurrentUser");
             storedToken = credential.password;
 
             // passwordVault.remove(credential); // Uncomment to delete authorization token from password vault

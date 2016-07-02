@@ -1,8 +1,8 @@
 ﻿(function () {
     "use strict";
 
-    var app = WinJS.Application;
-    var activation = Windows.ApplicationModel.Activation;
+    let app = WinJS.Application;
+    let activation = Windows.ApplicationModel.Activation;
 
     app.onactivated = function (args) {
         if (args.detail.kind === activation.ActivationKind.launch) {
@@ -14,11 +14,11 @@
             }
 
             args.setPromise(WinJS.UI.processAll().then(function completed() {
-                var syncBtn = document.getElementById("start-sync-btn");
+                let syncBtn = document.getElementById("start-sync-btn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
 
                 // DestroyDB button
-                var dstUserDB = document.getElementById("destroyUserDB");
+                let dstUserDB = document.getElementById("destroyUserDB");
                 dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
 
                 // Init Additional files

@@ -1,6 +1,6 @@
 ﻿/*!
   Copyright (c) Microsoft Corporation.  All Rights Reserved. Licensed under the MIT License. See License.txt in the project root for license information.
-  Build: 4.4.0.winjs.2016.5.19
+  Build: 4.4.0.winjs.2015.10.2
   Version: WinJS.4.4
 */
 

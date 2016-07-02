@@ -2,15 +2,15 @@
 (function () {
     "use strict";
 
-    // Global var
-    var baseUrl = googleConfig.baseUrl;
+    // Global let
+    let baseUrl = googleConfig.baseUrl;
 
     function getFiles(token) {
-        var headers = {
+        let headers = {
             Authorization: `Bearer ${token}`
         };
 
-        var url = baseUrl + "/files";
+        let url = baseUrl + "/files";
 
         return WinJS.xhr({
             url: url,
@@ -19,11 +19,11 @@
     }
 
     function getAbout(token) {
-        var headers = {
+        let headers = {
             Authorization: `Bearer ${token}`
         };
 
-        var url = baseUrl + "/about?fields=user, storageQuota";
+        let url = baseUrl + "/about?fields=user, storageQuota";
 
         return WinJS.xhr({
             url: url,

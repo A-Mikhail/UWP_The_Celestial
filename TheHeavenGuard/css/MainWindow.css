@@ -42,6 +42,12 @@ html, body {
     background-color: #fff;
 }
 
+/* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* -ms-grid */
 .main-page {
     display: -ms-grid;
@@ -53,6 +59,7 @@ html, body {
     font-family: "Segoe UI", sans-serif;
     font-weight: 200;
 }
+
 
 .toolbar {
     position: relative;
@@ -114,12 +121,25 @@ html, body {
 /* Standart .win-button */
 .win-button {
     border: none;
+    min-width: 0px;
 }
 
-/* Right panel */
-.win-splitview-pane {
-    background-color: #0288d1;
+/* Main panel */
+.panel-head {
+    width: 100%;
+    height: 48px;
+    background-color: rgba(0, 0, 0, 0.4);
 }
+
+#hamburger-btn{
+    border: 0;
+    background-color: rgba(0, 0, 0, 0);
+    color: #fff;
+    font-size: 18px;
+    width: 48px;
+    height: 48px;
+}
+
 
 /* 
  * Pivot style
@@ -220,9 +240,9 @@ li {
     padding: 14px;
 }
 
-.google-drive-auth img, .onedrive-auth img {
+.cloud-avatar{
     width: 48px;
-    height: 48px;
+    height: auto;
     background-color: rgba(0, 0, 0, 0.3);
 }
 

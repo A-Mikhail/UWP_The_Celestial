@@ -31,11 +31,6 @@
     color: #D82429;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-}
-
 html, body {
     width: 100%;
     height: 100%;
@@ -49,7 +44,7 @@ img {
 }
 
 /* -ms-grid */
-.main-page {
+.main-page, .minimized-panel {
     display: -ms-grid;
     -ms-grid-columns: 1fr 4fr;
     -ms-grid-rows: 48px calc(100% - 48px);
@@ -60,6 +55,13 @@ img {
     font-weight: 200;
 }
 
+.minimized-panel {
+    -ms-grid-columns: 48px 4fr;
+}
+
+    .minimized-panel .auth-btn-text {
+        display: none;
+    }
 
 .toolbar {
     position: relative;
@@ -78,29 +80,14 @@ img {
     background-color: #16162e;
 }
 
-#file-browser {
+#fileBrowser {
     position: relative;
     -ms-grid-row: 2;
     -ms-grid-column: 2;
 }
 
-/* Item aligns */
-.horizontal-center {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
-}
-
-.vertical-center {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
-
 /* Top menu */
-#logo-img {
+#headLogoImg {
     padding-left: 12px;
 }
 
@@ -115,13 +102,13 @@ img {
 
 .win-pivot .win-pivot-navbutton {
     height: 48px;
-    top: 0px;
+    top: 0;
 }
 
 /* Standart .win-button */
 .win-button {
     border: none;
-    min-width: 0px;
+    min-width: 0;
 }
 
 /* Main panel */
@@ -131,7 +118,7 @@ img {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
-#hamburger-btn{
+#hamburgerBtn {
     border: 0;
     background-color: rgba(0, 0, 0, 0);
     color: #fff;
@@ -140,15 +127,25 @@ img {
     height: 48px;
 }
 
-
 /* 
  * Pivot style
  *
  * Remove Scroll from Pivotitem-content 
  *
 */
+.win-pivot .win-pivot-surface {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
 .win-pivot-item {
-    width: 33.4%;
+    position: relative;
+    top: 0px;
+    bottom: 0px;
+    height: 100%;
+    width: 100%;
+    left: 0 !important;
 }
 
     .win-pivot-item .win-pivot-item-content {
@@ -188,21 +185,17 @@ img {
 
 .toolbar-btn-right {
     position: absolute;
-    right: 0px;
+    right: 0;
 }
 
 .toolbar-btn-left {
     position: absolute;
-    left: 0px;
-}
-
-button.win-splitviewpanetoggle::after {
-    font-size: 20px;
+    left: 0;
 }
 
 /* File browser */
 .loading-line {
-    top: 0px;
+    top: 0;
     width: 100%;
     height: 0.4%;
     background-color: brown;
@@ -217,8 +210,7 @@ li {
     vertical-align: top;
     margin: 5px;
     zoom: 1;
-    *display: inline;
-    _height: 250px;
+    height: 250px;
 }
 
 /* End File Browser */
@@ -226,29 +218,35 @@ li {
 /* Auth Panel */
 .auth-panel-btn {
     width: 100%;
-    height: 20%;
-    line-height: 2;
+    height: 14%;
     background-color: rgba(0, 0, 0, 0);
 }
+
 
     .auth-panel-btn:hover {
         background-color: rgba(0, 0, 0, 0.4);
         border: none;
     }
 
-.auth-panel-title {
-    padding: 14px;
-}
-
-.cloud-avatar{
+.cloud-avatar {
     width: 48px;
     height: auto;
     background-color: rgba(0, 0, 0, 0.3);
+    float: left;
 }
 
 .img-circle {
     border-radius: 50%;
 }
+
+.auth-btn-text {
+    color: #fff;
+}
+
+.auth-btn-text-hidden {
+    display: none;
+}
+/*End Panel*/
 
 /* Settings Page */
 .settings-page {
@@ -258,11 +256,16 @@ li {
 .delete-db-panel {
     position: absolute;
     width: 100%;
-    bottom: 0px;
+    bottom: 0;
     padding: 24px;
     background-color: #fdc214;
     color: #fff;
     text-align: center;
 }
 
-/* Google Drive Page */
+/* Start @media for small screen */
+@media only screen and (max-width: 500px) {
+    .auth-btn-text {
+        display: none;
+    }
+}

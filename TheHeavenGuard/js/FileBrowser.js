@@ -10,7 +10,7 @@
 
     function init() {
         // File choose button
-        let chFilesBtn = document.getElementById("toolbar-btn-add");
+        let chFilesBtn = document.getElementById("toolbarAddBtn");
         chFilesBtn.addEventListener("click", chooseFiles, false);
 
         databaseRead(); // add data from DB to app
@@ -27,7 +27,7 @@
     // Create file or folder by extension type inside broser-window
     // Create <div> inside <li> for grid display
     function createFilesOrFolders() {
-        let browserWindow = document.getElementById("browser-window");
+        let browserWindow = document.getElementById("browserWindow");
         
         if (file) {
             browserWindow.appendChild(fileType);
@@ -106,7 +106,7 @@
         Databases.userDB().query(function (doc, emit) {
             emit(doc.name);
         }).then(function (result) {
-            let list = document.getElementById("browser-window");
+            let list = document.getElementById("browserWindow");
             let file;
 
             for (let i = 0; i < result.rows.length; i++) {

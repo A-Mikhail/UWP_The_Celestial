@@ -23,9 +23,10 @@
         Configurator as cloud uri for xhr
     -->
     <script src="/js/MainWindow.js"></script>
+    <script src="/js/SettingsPage.js"></script>
 
     <script src="/js/Databases.js"></script> <!-- Configure databases -->
-    <script src="/js/AuthPanel.js"></script> <!-- Left panel functions --> 
+    <script src="/js/AuthPanel.js"></script> <!-- Left panel functions -->
     <script src="/js/FileBrowser.js"></script> <!-- Client side files to synchronize -->
     <script src="/js/GoogleDrive.js"></script> <!-- Google Drive cloud -->
     <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->
@@ -34,80 +35,44 @@
 
 <body>
 
-    <img id="logo-img" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" />
+    <img id="headLogoImg" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" /> <!-- static -->
 
     <!-- Content area -->
-    <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#logo-img') }">
+    <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
             <div class="main-page" id="mainPage">
                 <div class="toolbar">
-                    <a id="start-sync-btn" class="toolbar-btn toolbar-btn-left">
+                    <a id="startSyncBtn" class="toolbar-btn toolbar-btn-left">
                         <i class="fa fa-refresh fa-fw"></i>&nbsp; Start sync
                     </a>
 
-                    <a id="toolbar-btn-add" class="toolbar-btn toolbar-btn-right">
+                    <a id="toolbarAddBtn" class="toolbar-btn toolbar-btn-right">
                         <i class="fa fa-plus"></i>&nbsp; Add Files
                     </a>
                 </div>
 
-                <div id="file-browser">
+                <div id="fileBrowser">
                     <div class="progress-bar" id="progressBar"></div>
 
                     <!-- List of current user files -->
-                    <div id="browser-window"></div>
+                    <div id="browserWindow"></div>
                 </div>
 
                 <div class="clouds-authorization-panel" id="authPanel">
                     <div class="panel-head">
-                        <button id="hamburger-btn"><i class="fa fa-bars"></i></button>
+                        <button id="hamburgerBtn"><i class="fa fa-bars"></i></button>
                     </div>
-                    
+
                     <!-- !Important - change static id to generic for future expansion -->
-                    <button id="google-drive-btn" class="google-drive-auth auth-panel-btn win-button">
-                        <img id="google-drive-avatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
-                        <p id="google-drive-btn-text"> Google Drive </p>
+                    <button id="googleDriveBtn" class="google-drive-auth auth-panel-btn win-button">
+                        <img id="googleDriveAvatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
+                        <p id="googleDriveTextBtn" class="auth-btn-text"> Google Drive </p>
                     </button>
 
-                    <button id="onedrive-btn" class="onedrive-auth auth-panel-btn win-button">
-                        <img id="one-drive-avatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
-                        <p id="onedrive-btn-text"> OneDrive </p>
+                    <button id="oneDriveBtn" class="onedrive-auth auth-panel-btn win-button">
+                        <img id="oneDriveAvatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
+                        <p id="oneDriveTextBtn" class="auth-btn-text"> OneDrive </p>
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Page  -->
-        <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Settings'}">
-            <div class="settings-page">
-                <div class="information-panel">
-                    <div>
-                        Memory Allowed:
-                        <p id="storageQuota"></p>
-                    </div>
-
-                    <div>
-                        Usage memory in all places:
-                        <p id="usage"></p>
-                    </div>
-
-                    <div id="cloudService-webview">
-                        <img id="icon" src="" />
-                        <pre id="output"></pre>
-                    </div>
-                </div>
-
-                <div class="delete-db-panel horizontal-center">
-                    <h1> Delete Databases </h1>
-
-                    <input type="checkbox" value="delete-all-db" /> Delete All DB
-                    <input type="checkbox" value="delete-user-db" /> Delete User DB
-                    <input type="checkbox" value="delete-google-db" /> Detele Google DB
-
-                    <br />
-
-                    <button type="submit" id="destroyUserDB" class="win-button showButton delete-db-btn">Delete</button>
-
-                    <h4> Information! After deleting database all your files keep in safe, deleting database affects only clear items </h4>
                 </div>
             </div>
         </div>

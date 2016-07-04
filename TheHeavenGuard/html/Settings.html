@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Settings</title>
+</head>
+<body>
+    <div class="settings-page">
+        <div class="information-panel">
+            <div>
+                Memory Allowed:
+                <p id="storageQuota"></p>
+            </div>
+
+            <div>
+                Usage memory in all places:
+                <p id="usage"></p>
+            </div>
+
+            <div id="cloudService-webview">
+                <img id="icon" src="" />
+                <pre id="output"></pre>
+            </div>
+        </div>
+
+        <div class="delete-db-panel horizontal-center">
+            <h1> Delete Databases </h1>
+
+            <input type="checkbox" value="delete-all-db" /> Delete All DB
+            <input type="checkbox" value="delete-user-db" /> Delete User DB
+            <input type="checkbox" value="delete-google-db" /> Detele Google DB
+
+            <br />
+
+            <button type="submit" id="destroyUserDB" class="win-button show-button delete-db-btn">Delete</button>
+
+            <h4> Information! After deleting database all your files keep in safe, deleting database affects only clear items </h4>
+        </div>
+    </div>
+</body>
+</html>

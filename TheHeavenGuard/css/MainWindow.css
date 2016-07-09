@@ -127,6 +127,51 @@ img {
     height: 48px;
 }
 
+/* ListView */
+#listView
+{
+    width: 100%;
+}
+
+/* Template for the items in the ListViews in this sample */       
+.smallListIconTextItem
+{
+    width: 242px;
+    height: 70px;
+    padding: 5px;
+    overflow: hidden;
+    display: flex;
+}
+
+    .smallListIconTextItem img.smallListIconTextItem-Image 
+    {
+        width: 60px;
+        height: 60px;
+        margin: 5px;
+        margin-right:20px;
+    }
+
+    .smallListIconTextItem .smallListIconTextItem-Detail
+    {
+        color: #000;
+        margin: 5px;
+    }
+
+   .listLayoutTopHeaderTemplateRoot {
+        font-size: larger;
+        margin-left: 16px;
+    }
+    
+
+/* Override the background color for even/odd win-containers */
+#listView.stripes .win-container.win-container-odd {
+    background-color: #777;
+}
+
+#listView.stripes .win-container.win-container-even {
+    background-color: #444;
+}
+
 /* 
  * Pivot style
  *
@@ -247,6 +292,11 @@ li {
     display: none;
 }
 /*End Panel*/
+
+#browserWindow {
+    width: 100%;
+    height: 100%;
+}
 
 /* Settings Page */
 .settings-page {

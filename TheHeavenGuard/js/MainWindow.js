@@ -14,7 +14,7 @@
             }
 
             args.setPromise(WinJS.UI.processAll().then(function completed() {
-                let syncBtn = document.getElementById("startSyncBtn");
+                let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
 
                 // Init Additional files
@@ -22,9 +22,6 @@
                 AuthPanel.init();
                 FileBrowser.init();
 
-                //// DestroyDB button
-                //let dstUserDB = document.getElementById("destroyUserDB");
-                //dstUserDB.addEventListener("click", Databases.destroyUserDB, false);
             }));
         }
     };
@@ -39,18 +36,22 @@
 
     // Function renderPivotItems create dynamically PivotItems in Pivot Menu
     // pivotName - set displayed menu name
-    // pagePth - set pth of html page 
+    // pagePath - set path of html page 
     function renderPivotItems(pivotName, pagePath) {
-        let pivot = document.getElementById("pivot").winControl;
-        let pivotItem = new WinJS.UI.PivotItem(document.createElement("div"), { isHeaderStatic: true, header: pivotName });
-        let pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
+        return new Promise(function (resolve, reject) {
+            let pivot = document.getElementById("pivot").winControl;
+            let pivotItem = new WinJS.UI.PivotItem(document.createElement("div"), { isHeaderStatic: true, header: pivotName });
+            let pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
 
-        WinJS.UI.Pages.render(pagePath, pivotItemContent);
-
-        return pivot.items.push(pivotItem);
+            WinJS.UI.Pages.render(pagePath, pivotItemContent).then(function () {
+                resolve(pivot.items.push(pivotItem));
+            }, function (err) {
+                reject(err);
+            });
+        });
     }
 
     WinJS.Namespace.define("MainWindow", {
-            renderPivotItems: renderPivotItems
-    }); // define parent
+        renderPivotItems: renderPivotItems
+    });
 })();

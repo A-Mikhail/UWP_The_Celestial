@@ -5,15 +5,23 @@
     let messageDialog;
     let storageFileArr = []; // Array of File choosen by user to send in xhr
 
-    let div = document.createElement('div'); // create <div> container
-    let li  = document.createElement('li'); // create <li>
+    let items = [],
+        itemArray = []
+
+    // File information
+    let file,
+        dateCreated,
+        name,
+        fileType,
+        folderRelativeId,
+        path;
 
     function init() {
         // File choose button
-        let chFilesBtn = document.getElementById("toolbarAddBtn");
-        chFilesBtn.addEventListener("click", chooseFiles, false);
+        let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
+        chFilesBtn.addEventListener("click", pickFiles, false);
 
-        databaseRead(); // add data from DB to app
+        generateItems();
     }
 
     // Progress bar shows current progress of events in animation line
@@ -28,7 +36,7 @@
     // Create <div> inside <li> for grid display
     function createFilesOrFolders() {
         let browserWindow = document.getElementById("browserWindow");
-        
+
         if (file) {
             browserWindow.appendChild(fileType);
         } else if (folder) {
@@ -39,7 +47,7 @@
     }
 
     // Main function to choose files
-    function chooseFiles(event) {
+    function pickFiles(event) {
         // Verify that we are currently not snapped, or that we can unsnap to open the picker
         let currentState = Windows.UI.ViewManagement.ApplicationView.value;
         if (currentState === Windows.UI.ViewManagement.ApplicationViewState.snapped &&
@@ -49,75 +57,86 @@
         }
 
         let openPicker = new Windows.Storage.Pickers.FileOpenPicker();
-        openPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.list;
+        openPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
         openPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.documentsLibrary;
         openPicker.fileTypeFilter.replaceAll(["*"]); // Open all format files 
 
-        let value,
-            attributes,
-            path;
-
         openPicker.pickMultipleFilesAsync().then(function (files) {
             if (files.size > 0) {
-                // Application now has read/write access to the picked file(s)
-                let outputString;
-
                 for (let i = 0; i < files.size; i++) {
-                    // Send array of choosen files to global 
+                    dateCreated = files[i].dateCreated;
+                    name = files[i].name;
+                    fileType = files[i].fileType;
+                    folderRelativeId = files[i].folderRelativeId;
+                    path = files[i].path;
+
+                    // Send choosen files to global array for xhr
                     storageFileArr.push(files[i]);
 
-                    outputString = files[i].name; // get name of the selected files
-                    path = files[i].path; // get path of the selected files
-
-                    div.id = "fileNum_" + i; // <div id="fileNum_1..." />
-                    div.className = "file";
-
-                    div.innerHTML = outputString; // Name of added files
-                    list.appendChild(div); // create div to selected file/folder
-
-                    databaseWrite(outputString, path); // Send to db
+                    // send to user database
+                    Databases.userDatabaseWrite(dateCreated, name, fileType, folderRelativeId, path);
                 }
             } else {
                 // The picker was dismissed with no selected file
-                console.log("Operation cancelled.");
+                return;
             }
         });
     }
 
-    function databaseWrite(id, path) {
-        // Put data from let's to database - "user"
-        // _id = File name
-        // path = Absoulte file path
-        // if file success added create div in app
-        Databases.userDB().put({
-            _id: `${id}`,
-            path: `${path}`
-        }).then(function (response) {
-            console.log("response_id: " + response.id);
+    // Test function :}
+    function changedItemsArray() {
+        return new Promise(function (resolve, reject) {
+            resolve(
+                itemArray.forEach(function (item) {
+                    FileBrowser.data.push(item);
+                })
+            );
         }, function (err) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Cannot add data to DB 'user'" +
-            "; Status: " + err.name + "; Message: " + err.message, "Error: " + err.status);
-
-            messageDialog.showAsync();
+            reject(err);
         });
     }
 
-    function databaseRead() {
-        Databases.userDB().query(function (doc, emit) {
-            emit(doc.name);
-        }).then(function (result) {
-            let list = document.getElementById("browserWindow");
-            let file;
+    // Function generateItems() read from database information and write it to objects
+    // Databases.userDB().changes - watch for change in database and add new file/files
+    // Databases.userDB().allDocs - get all items from database and push it to FileBrowser.data when MainWindow function get information about it
+    function generateItems() {
+        Databases.userDB().changes({
+            since: 'now',
+            live: true,
+            include_docs: true
+        }).on("change", function (change) {
+            console.log("change has happened!");
 
-            for (let i = 0; i < result.rows.length; i++) {
-                div.innerHTML = result.rows[i].id; // get id from all db (very slow)
+            itemArray.push({ title: change.doc.name, text: change.doc.dateCreated });
 
-                list.appendChild(div);
-            }
-        }).catch(function (err) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Error read data" + err);
+            changedItemsArray().then(function () {
+                itemArray.length = 0; // remove data from array after it's added
+            });
+        }).on("error", function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog("Fail to listen changes in database 'user'" +
+                "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
+
             messageDialog.showAsync();
         });
+
+        Databases.userDB().allDocs({
+            include_docs: true,
+            attachments: false
+        }).then(function (result) {
+            for (let i = 0; i < result.total_rows; i++) {
+                itemArray.push({ title: result.rows[i].doc.name, text: result.rows[i].doc.dateCreated });
+            }
+
+            itemArray.forEach(function (item) {
+                FileBrowser.data.push(item);
+            });
+        }).then(function () {
+            itemArray.length = 0;
+        }).catch(function (err) {
+            console.log(err);
+        });
+
+        return items;
     }
 
     function updateSize(event) {
@@ -141,6 +160,8 @@
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,
-        storageFileArr: storageFileArr
+        storageFileArr: storageFileArr,
+        data: new WinJS.Binding.List(items),
+        generateItems: generateItems
     });
 })();

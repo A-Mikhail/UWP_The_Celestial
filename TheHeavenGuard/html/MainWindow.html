@@ -6,10 +6,10 @@
     <title>The Heaven Guard</title>
 
     <!-- WinJS references -->
-    <link href="/WinJS/css/ui-dark.min.css" rel="stylesheet" />
+    <link href="/Microsoft.WinJS.4.4/css/ui-dark.css" rel="stylesheet" />
 
-    <script src="/WinJS/js/base.min.js"></script>
-    <script src="/WinJS/js/ui.min.js"></script>
+    <script src="/Microsoft.WinJS.4.4/js/base.js"></script>
+    <script src="/Microsoft.WinJS.4.4/js/ui.js"></script>
 
     <!-- TheHeavenGuard references -->
     <link href="/css/MainWindow.css" rel="stylesheet" />
@@ -36,17 +36,16 @@
 <body>
 
     <img id="headLogoImg" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" /> <!-- static -->
-
     <!-- Content area -->
     <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
             <div class="main-page" id="mainPage">
                 <div class="toolbar">
-                    <a id="startSyncBtn" class="toolbar-btn toolbar-btn-left">
+                    <a id="startSyncFilesBtn" class="toolbar-btn toolbar-btn-left">
                         <i class="fa fa-refresh fa-fw"></i>&nbsp; Start sync
                     </a>
 
-                    <a id="toolbarAddBtn" class="toolbar-btn toolbar-btn-right">
+                    <a id="toolbarAddFilesBtn" class="toolbar-btn toolbar-btn-right">
                         <i class="fa fa-plus"></i>&nbsp; Add Files
                     </a>
                 </div>
@@ -55,7 +54,29 @@
                     <div class="progress-bar" id="progressBar"></div>
 
                     <!-- List of current user files -->
-                    <div id="browserWindow"></div>
+                    <div id="browserWindow">
+                        <!-- Simple template for the ListView instantiation  -->
+                        <div class="smallListIconTextTemplate" data-win-control="WinJS.Binding.Template" style="display: none">
+                            <div class="smallListIconTextItem">
+                                <img src="#" class="smallListIconTextItem-Image" data-win-bind="src: picture" />
+                                <div class="smallListIconTextItem-Detail">
+                                    <h4 class="win-h4" data-win-bind="textContent: title"></h4>
+                                    <h6 class="win-h6" data-win-bind="textContent: text"></h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="listView" class="listView win-selectionstylefilled"
+                             data-win-control="WinJS.UI.ListView"
+                             data-win-options="{
+                                itemDataSource: FileBrowser.data.dataSource,
+                                itemTemplate: select('.smallListIconTextTemplate'),
+                                selectionMode: 'none',
+                                tapBehavior: 'none',
+                                layout: { type: WinJS.UI.GridLayout }
+                             }">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="clouds-authorization-panel" id="authPanel">

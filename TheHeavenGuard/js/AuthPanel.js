@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
 
-    // Get all cloud's in array, 
+    // Function init() - main function which contains eventListeners and function calls
     function init() {
         let authGoogleBtn = document.getElementById("googleDriveBtn");
         authGoogleBtn.addEventListener("click", googleDriveAuth, false);
@@ -36,8 +36,8 @@
         });
     }
 
-    // Function minimizedPanel - minimize left panel by click
-    // need to remember this value to resume
+    // Function minimizedPanel() - minimize left panel by click
+    // need to remember this value for resume event
     function minimizedPanel() {
         let mainPageMinimized = document.getElementById("mainPage");
 

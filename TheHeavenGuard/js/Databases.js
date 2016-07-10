@@ -1,6 +1,7 @@
 ﻿(function () {
     "use strict";
 
+    // Global variables
     let messageDialog;
 
     // create db for user files
@@ -24,7 +25,7 @@
         let itemData = listView.itemDataSource.list;
 
         userDB().destroy().then(function (response) {
-            itemData.splice(0, itemData.length);
+            itemData.splice(0, itemData.length); // clear listView without destroing Binding.List
 
             FileBrowser.generateItems();
 

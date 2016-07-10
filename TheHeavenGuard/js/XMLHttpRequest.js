@@ -1,8 +1,7 @@
-﻿// TODO: Add all XHR from project to this file
-(function () {
+﻿(function () {
     "use strict";
 
-    // Global let
+    // Global variables
     let baseUrl = googleConfig.baseUrl;
 
     function getFiles(token) {

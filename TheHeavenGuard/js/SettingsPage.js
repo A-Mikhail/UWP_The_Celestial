@@ -1,6 +1,7 @@
 ﻿(function () {
     "use strict";
 
+    // Function init() - main function which contains eventListeners and function calls
     function init() {
         MainWindow.renderPivotItems("Settings", "/html/Settings.html").then(function (response) { // !Error throw on this moment
             let dstUserDbBtn = document.getElementById("destroyUserDB");

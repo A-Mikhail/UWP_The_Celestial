@@ -1,6 +1,12 @@
 ﻿(function () {
     "use strict";
 
+    // Global array used to persist operations.
+    let uploadOperations = [];
+
+    let maxUploadFileSize = 100 * 1024 * 1024; // TODO: Change 100 MB file limit to cload's file limit
+
+    // Function init() - main function which contains eventListeners and function calls
     function init() {
         Windows.Networking.BackgroundTransfer.BackgroundUploader.getCurrentUploadsAsync().then(function (uploads) {
             let upload = new UploadOperation();
@@ -22,11 +28,6 @@
         });
     }
 
-    // Global array used to persist operations.
-    let uploadOperations = [];
-
-    let maxUploadFileSize = 100 * 1024 * 1024; // TODO: Change 100 MB file limit to cload's file limit
-
     // Class associated with each upload.
     function UploadOperation() {
         console.log("Start Upload Operation");
@@ -37,7 +38,7 @@
         this.startMultipart = function (url) {
             let uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
             let uploadURI = new Windows.Foundation.Uri(url);
-            
+
             let storageFile = FileBrowser.storageFileArr; // Get storageFile for send
 
             let oauth = new GoogleDrive.oauth();
@@ -45,18 +46,18 @@
             // Boundary
             let str = storageFile[0].displayName;
             let boundary = str.replace(/[^\da-zA-Z0-9]/g, ''); // start|middle boundary
-            
+
             console.log(boundary);
 
             let contentParts = [];
-            
+
             storageFile.forEach(function (file, index) {
                 let partHeader = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart();
                 let part = new Windows.Networking.BackgroundTransfer.BackgroundTransferContentPart("File" + index, file.name);
 
                 partHeader.setHeader("Content-Type", "application/json; charset=UTF-8");
                 partHeader.setText('{' + '\r "name" ' + ' : ' + `"${file.displayName}" \r` + '}');
-                
+
                 part.setHeader("Content-Type", file.contentType);
                 part.setFile(file);
 

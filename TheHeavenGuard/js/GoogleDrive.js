@@ -1,6 +1,7 @@
 ﻿(function () {
     "use strict";
 
+    // Globar variables
     let PasswordVault = Windows.Security.Credentials.PasswordVault;
     let PasswordCredential = Windows.Security.Credentials.PasswordCredential;
     

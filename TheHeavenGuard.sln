@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A22A03E9-1CF2-488D-825D-D102566A37C9}"
 	ProjectSection(SolutionItems) = preProject
 		Helper.js = Helper.js
+		mini-todo.txt = mini-todo.txt
 	EndProjectSection
 EndProject
 Global

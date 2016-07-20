@@ -35,7 +35,7 @@
 
 <body>
 
-    <img id="headLogoImg" src="../img/LeftHeaderLogo-68x48.png" width="68" height="48" /> <!-- static -->
+    <img id="headLogoImg" src="/img/testLogo.png" width="68" height="48" /> <!-- static -->
     <!-- Content area -->
     <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
@@ -83,17 +83,6 @@
                     <div class="panel-head">
                         <button id="hamburgerBtn"><i class="fa fa-bars"></i></button>
                     </div>
-
-                    <!-- !Important - change static id to generic for future expansion -->
-                    <button id="googleDriveBtn" class="google-drive-auth auth-panel-btn win-button">
-                        <img id="googleDriveAvatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
-                        <p id="googleDriveTextBtn" class="auth-btn-text"> Google Drive </p>
-                    </button>
-
-                    <button id="oneDriveBtn" class="onedrive-auth auth-panel-btn win-button">
-                        <img id="oneDriveAvatar" class="cloud-avatar img-circle" src="../img/THG-avatar-48x48.png" />
-                        <p id="oneDriveTextBtn" class="auth-btn-text"> OneDrive </p>
-                    </button>
                 </div>
             </div>
         </div>

@@ -3,13 +3,14 @@
 
     // Global variables
     let baseUrl = googleConfig.baseUrl;
+    let url;
 
     function getFiles(token) {
         let headers = {
             Authorization: `Bearer ${token}`
         };
 
-        let url = baseUrl + "/files";
+        url = baseUrl + "/files";
 
         return WinJS.xhr({
             url: url,
@@ -22,7 +23,7 @@
             Authorization: `Bearer ${token}`
         };
 
-        let url = baseUrl + "/about?fields=user, storageQuota";
+        url = baseUrl + "/about?fields=user, storageQuota";
 
         return WinJS.xhr({
             url: url,
@@ -30,15 +31,15 @@
         }).then(function (x) { return JSON.parse(x.response); });
     }
 
-   WinJS.Namespace.define("GoogleDrive", {
+    WinJS.Namespace.define("GoogleDrive", {
         toUrl: WinJS.Binding.converter(function (url) {
             return `url('${url}')`;
         })
     });
-    
+
 
     // Define XHR as global file
-    WinJS.Namespace.define("Xhr", {
+    WinJS.Namespace.define("XHR", {
         getAbout: getAbout,
         getFiles: getFiles
     });

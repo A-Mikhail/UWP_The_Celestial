@@ -3,6 +3,7 @@
 
     let app = WinJS.Application;
     let activation = Windows.ApplicationModel.Activation;
+    let background = Windows.ApplicationModel.Background;
 
     app.onactivated = function (args) {
         if (args.detail.kind === activation.ActivationKind.launch) {
@@ -21,7 +22,6 @@
                 SettingsPage.init();
                 AuthPanel.init();
                 FileBrowser.init();
-
             }));
         }
     };

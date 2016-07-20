@@ -4,9 +4,9 @@
     // Globar variables
     let PasswordVault = Windows.Security.Credentials.PasswordVault;
     let PasswordCredential = Windows.Security.Credentials.PasswordCredential;
-    
+
     WinJS.Namespace.define("GoogleDrive", {
-        oauth: WinJS.Class.define(function() {
+        oauth: WinJS.Class.define(function () {
             return this.refreshToken = retreiveTokenFromVault();
         },
         {
@@ -17,7 +17,7 @@
                     if (!retrieveToken) {
                         authenticate().then(function (token) {
                             return grant(token).then(function (accessToken) {
-                                let cred = new PasswordCredential("OauthToken", "CurrentUser", accessToken.refresh_token);
+                                let cred = new PasswordCredential("OauthToken", "GoogleUser", accessToken.refresh_token);
                                 retrieveToken = accessToken.refresh_token;
 
                                 let passwordVault = new PasswordVault();
@@ -33,15 +33,17 @@
                     }
                 });
             }
-        })
+        }),
+
+        authenticate: authenticate
     });
 
-    let auth            = googleConfig.auth,
-        clientId        = googleConfig.clientId,
-        clientSecret    = googleConfig.clientSecret,
-        redirectURI     = googleConfig.redirectURI,
-        scopes          = googleConfig.scopes,
-        oauthUrl        = googleConfig.oauthUrl;
+    let auth = googleConfig.auth,
+        clientId = googleConfig.clientId,
+        clientSecret = googleConfig.clientSecret,
+        redirectURI = googleConfig.redirectURI,
+        scopes = googleConfig.scopes,
+        oauthUrl = googleConfig.oauthUrl;
 
     function authenticate() {
         let startURL = auth + "client_id=" +
@@ -58,7 +60,7 @@
                     if (result.responseStatus == 0) {
                         complete(result.responseData.replace('https://localhost/oauth2callback?code=', ''));
                     } else {
-                        error(result);
+                        return error(result); // Windows has closed or other error
                     }
 
                 }, function (err) {
@@ -105,16 +107,15 @@
     }
 
     function retreiveTokenFromVault() {
-        let passwordVault = new PasswordVault()
+        let passwordVault = new PasswordVault();
         let storedToken;
 
         try {
-            let credential = passwordVault.retrieve("OauthToken", "CurrentUser");
+            let credential = passwordVault.retrieve("OauthToken", "GoogleUser");
             storedToken = credential.password;
-
-            // passwordVault.remove(credential); // Uncomment to delete authorization token from password vault
-        } catch (e) {
-            // no stored credentials
+            // passwordVault.remove(credential);
+        } catch (error) {
+            // retrive has not found user
         }
 
         return storedToken;

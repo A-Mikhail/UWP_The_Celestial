@@ -44,6 +44,14 @@ html, body {
     background-color: ghostwhite;
 }
 
+[draggable] {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -webkit-user-drag: element;
+}
+
 /* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
 img {
     max-width: 100%;
@@ -65,7 +73,7 @@ img {
 .minimized-panel {
     -ms-grid-columns: 48px 4fr;
 }
-
+    /* Remove Text when authorization panel is hidden */
     .minimized-panel .auth-btn-text {
         display: none;
     }
@@ -131,7 +139,7 @@ img {
 #hamburgerBtn {
     border: 0;
     background-color: rgba(0, 0, 0, 0);
-    color: #19469d;
+    color: #000;
     font-size: 18px;
     width: 48px;
     height: 48px;
@@ -260,34 +268,40 @@ img {
 /* End File Browser */
 
 /* Auth Panel */
-.auth-panel-btn {
+.auth-panel-btn, .auth-panel-btn:hover {
     width: 100%;
     height: 12%;
     background-color: rgba(0, 0, 0, 0);
-    border-left: 2px solid #ED4337;
+    border: none;
     margin: 0 0 4px;
 }
 
     .auth-panel-btn:hover {
-        border-color: none;
+        background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
     }
 
 .cloud-avatar {
     width: 48px;
     height: auto;
     float: left;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .img-circle {
     border-radius: 50%;
 }
 
-.auth-btn-text {
-    color: #fff5ee;
+.online, .offline {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
 }
-
-.auth-btn-text-hidden {
-    display: none;
+.online {
+    border-left: 2px solid #128B44;
+}
+.offline {
+    border-left: 2px solid #D82429; 
 }
 /*End Panel*/
 

@@ -13,9 +13,10 @@
 
     <!-- TheHeavenGuard references -->
     <link href="/css/MainWindow.css" rel="stylesheet" />
-    <link href="/css/font-awesome.css" rel="stylesheet" />
 
-    <script src="/js/pouchdb-5.4.4.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
+    <script src="/js/libs/pouchdb-5.4.4.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
+    <script src="/js/libs/oboe-browser.min.js"></script> <!-- library for loading JSON using streaming http://oboejs.com/-->
+
     <script src="/js/Configurations.js"></script> <!-- cloud's uri for xhr -->
     <!--
         MainWindow.js use
@@ -26,28 +27,30 @@
     <script src="/js/SettingsPage.js"></script>
 
     <script src="/js/Databases.js"></script> <!-- Configure databases -->
-    <script src="/js/AuthPanel.js"></script> <!-- Left panel functions -->
     <script src="/js/FileBrowser.js"></script> <!-- Client side files to synchronize -->
-    <script src="/js/GoogleDrive.js"></script> <!-- Google Drive cloud -->
+    <script src="/js/AuthenticationBroker.js"></script> <!-- Authenticate in cloud services -->
+    <script src="/js/AuthPanel.js"></script> <!-- Left panel functions -->
     <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->
     <script src="/js/XMLHttpRequest.js"></script> <!-- XHR over all -->
 </head>
 
 <body>
-
     <img id="headLogoImg" src="/img/testLogo.png" width="68" height="48" /> <!-- static -->
     <!-- Content area -->
     <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{header : 'Main Page'}">
             <div class="main-page" id="mainPage">
                 <div class="toolbar">
-                    <a id="startSyncFilesBtn" class="toolbar-btn toolbar-btn-left">
-                        <i class="fa fa-refresh fa-fw"></i>&nbsp; Start sync
-                    </a>
+                    <div id="startSyncFilesBtn" class="toolbar-btn toolbar-btn-left" data-win-control="WinJS.UI.NavBarCommand"
+                         data-win-options="{
+                            icon: 'sync',
+                            label: 'Start Sync'}"></div>
 
-                    <a id="toolbarAddFilesBtn" class="toolbar-btn toolbar-btn-right">
-                        <i class="fa fa-plus"></i>&nbsp; Add Files
-                    </a>
+                    <div id="toolbarAddFilesBtn" class="toolbar-btn toolbar-btn-right" data-win-control="WinJS.UI.NavBarCommand"
+                         data-win-options="{
+                            icon: 'add',
+                            label: 'Add Files'}">
+                    </div>
                 </div>
 
                 <div id="fileBrowser">
@@ -81,7 +84,19 @@
 
                 <div class="clouds-authorization-panel" id="authPanel">
                     <div class="panel-head">
-                        <button id="hamburgerBtn"><i class="fa fa-bars"></i></button>
+                        <div id="hamburgerBtn" class="toolbar-btn toolbar-btn-left" data-win-control="WinJS.UI.NavBarCommand"
+                             data-win-options="{ icon: 'hamburger' }">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="undo-changes" id="undoChangeLine">
+                    <div id="undoChangeBtn" class="undo-change-btn win-button" data-win-control="WinJS.UI.NavBarCommand"
+                         data-win-options="{ icon: 'undo', label: 'Undo Change' }">
+                    </div>
+
+                    <div id="closeUndoPanelBtn" class="close-undo-line-btn win-button" data-win-control="WinJS.UI.NavBarCommand"
+                         data-win-options="{ icon: 'clear' }">
                     </div>
                 </div>
             </div>

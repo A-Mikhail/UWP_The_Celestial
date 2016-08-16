@@ -17,7 +17,7 @@
             args.setPromise(WinJS.UI.processAll().then(function completed() {
                 let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
-
+                
                 // Init Additional files
                 SettingsPage.init();
                 AuthPanel.init();

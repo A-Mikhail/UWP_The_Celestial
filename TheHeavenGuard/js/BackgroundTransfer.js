@@ -41,7 +41,7 @@
 
             let storageFile = FileBrowser.storageFileArr; // Get storageFile for send
 
-            let oauth = new GoogleDrive.oauth();
+            let oauth = new Authentication.oauth();
 
             // Boundary
             let str = storageFile[0].displayName;

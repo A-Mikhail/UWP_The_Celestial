@@ -21,35 +21,10 @@
         BackgroundLightGrey - #f5f5ff
     Every space and dimension should be a multiply of 4
 */
-
-.color-green {
-    color: #128B44;
-}
-
-.color-blue {
-    color: #2C71B9;
-}
-
-.color-yellow {
-    color: #FDC214;
-}
-
-.color-red {
-    color: #D82429;
-}
-
 html, body {
     width: 100%;
     height: 100%;
     background-color: ghostwhite;
-}
-
-[draggable] {
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-  /* Required to make elements draggable in old WebKit */
-  -webkit-user-drag: element;
 }
 
 /* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
@@ -83,9 +58,7 @@ img {
     -ms-grid-row: 1;
     -ms-grid-column: 2;
     -ms-grid-column-span: 2;
-    background-color: #fff;
-    color: #000;
-    border-bottom: 1px solid #e5e5ee;
+    background-color: #0086b3;
     height: 48px;
 }
 
@@ -94,8 +67,7 @@ img {
     -ms-grid-row: 1;
     -ms-grid-column: 1;
     -ms-grid-row-span: 2;
-    background-color: #112233;
-    border-right: 1px solid #e5e5ee;
+    background-color: #30404f;
 }
 
 #fileBrowser {
@@ -110,8 +82,7 @@ img {
 }
 
 .win-pivot-header-area {
-    background-color: #30404f;
-    height: 48px;
+    background-color: #112233;
 }
 
 .win-pivot-header-items {
@@ -128,22 +99,62 @@ img {
     min-width: 0px;
 }
 
-/* Main panel */
+/* Authorization Panel */
 .panel-head {
     width: 100%;
     height: 48px;
-    background-color: #fff;
-    border-bottom: 1px solid #e5e5ee;
+    background-color: #0086b3;
 }
 
-#hamburgerBtn {
-    border: 0;
-    background-color: rgba(0, 0, 0, 0);
-    color: #000;
-    font-size: 18px;
-    width: 48px;
-    height: 48px;
+/* remove background and padding from right in hamburger button on auth panel */
+#hamburgerBtn .win-navbarcommand-button-content {
+    padding-right: 0;
+    position: absolute;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
 }
+
+.auth-panel-btn, .auth-panel-btn:hover {
+    background-color: transparent;
+    border: none;
+    height: 12%;
+    width: 100%;
+}
+
+    .auth-panel-btn:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+.cloud-avatar {
+    width: 48px;
+    height: auto;
+    float: left;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.img-circle {
+    border-radius: 50%;
+}
+
+.online, .offline {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+}
+
+.online {
+    border-left: 2px solid #128B44;
+}
+
+.offline {
+    border-left: 2px solid #D82429;
+}
+/*End Panel*/
 
 /* ListView */
 #listView {
@@ -235,12 +246,11 @@ img {
     border: 0;
 }
 
-
+/* Main Page*/
 /* Toolbar */
 .toolbar-btn {
-    padding: 12px;
+    position: absolute;
     cursor: pointer;
-    opacity: 0.6;
 }
 
     .toolbar-btn:hover {
@@ -248,16 +258,44 @@ img {
     }
 
 .toolbar-btn-right {
-    position: absolute;
     right: 0;
 }
 
 .toolbar-btn-left {
-    position: absolute;
     left: 0;
 }
 
+.undo-changes {
+    position: absolute;
+    width: 100%;
+    height: 48px;
+    background-color: #FDC214;
+    color: #000;
+    bottom: 0;
+    display: none;
+}
+
+.close-undo-line-btn {
+    position: absolute;
+    right: 0px;
+    height: 48px;
+    width: 48px;
+    color: #112233;
+}
+
+.undo-change-btn {
+    width: 144px;
+    height: 48px;
+    margin-left: 1em;
+    color: #112233;
+}
+
 /* File browser */
+#browserWindow {
+    width: 100%;
+    height: 100%;
+}
+
 .loading-line {
     top: 0;
     width: 100%;
@@ -267,48 +305,6 @@ img {
 }
 /* End File Browser */
 
-/* Auth Panel */
-.auth-panel-btn, .auth-panel-btn:hover {
-    width: 100%;
-    height: 12%;
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
-    margin: 0 0 4px;
-}
-
-    .auth-panel-btn:hover {
-        background-color: rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-    }
-
-.cloud-avatar {
-    width: 48px;
-    height: auto;
-    float: left;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.img-circle {
-    border-radius: 50%;
-}
-
-.online, .offline {
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
-}
-.online {
-    border-left: 2px solid #128B44;
-}
-.offline {
-    border-left: 2px solid #D82429; 
-}
-/*End Panel*/
-
-#browserWindow {
-    width: 100%;
-    height: 100%;
-}
 
 /* Settings Page */
 .settings-page {

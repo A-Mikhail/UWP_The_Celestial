@@ -1,40 +1,56 @@
 ﻿(function () {
     "use strict";
 
+    // Globar variable
+    let messageDialog;
+
+    // Varibale for class
+    let defaultEventTimer,
+        panel,
+        pickedButton,
+        buttons,
+        undoPanel;
+
     // Function init() - main function which contains eventListeners and function calls
     function init() {
-        //let authGoogleBtn = document.getElementById("googleDriveBtn");
-        //authGoogleBtn.addEventListener("click", googleDriveAuth, false);
-
         let panelBtn = document.getElementById("hamburgerBtn");
         panelBtn.addEventListener("click", minimizedPanel, false);
 
-        // Create Buttons for panel
-        createButton();
+        // Create Buttons for panel and set eventListener on it
+        createButton().then(function () {
+            buttons = document.querySelectorAll(".auth-panel-btn");
 
-        // Initialize popup menu on all button from auth panel
-        let buttons = document.querySelectorAll(".auth-panel-btn");
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].addEventListener("contextmenu", buttonMenu, false);
-        }
+            // Initialize popup menu on all button from auth panel
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener("contextmenu", buttonMenu, false);
+                buttons[i].addEventListener("click", authInService, false);
+            }
+        }, function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog("Occurs error while creating button, pls do somthing! " + error);
+            messageDialog.showAsync();
+        });
+
     }
 
+    // Class Button - have constructor with title and status arguments
+    // Function create() - create button inside authorization panel 
+    // Function remove(button) - remove picked button via popup menu; button argument gets from buttonMenu function
+    // Function undo(button) - undo change exactly restore "deleted" button; button arguments gets from remove function
     class Button {
-        constructor(title, order, status) {
+        constructor(title, status) {
             this.title = title;
-            this.order = order;
             this.status = status;
         }
 
         create() {
-            let panel = document.getElementById("authPanel");
+            panel = document.getElementById("authPanel");
 
-            if (this.status === true && this.oder !== Number.isInteger) {
+            if (this.status === true) {
                 let elementButton = document.createElement("button");
                 let elementImg = document.createElement("img");
                 let elementP = document.createElement("p");
 
-                elementButton.className = "auth-panel-btn win-button";
+                elementButton.className = "auth-panel-btn win-button"
                 elementButton.id = `btn-${this.title}`;
 
                 elementImg.src = "../img/THG-avatar.png";
@@ -46,36 +62,119 @@
                 panel.appendChild(elementButton);
                 elementButton.appendChild(elementImg);
                 elementButton.appendChild(elementP);
-
-            } else if (this.status === false && this.order !== Number.isInteger) {
-                return panel.removeChild(elementButton); // Wirte correct remove function
-            } else {
-                let messageDialog = new Windows.UI.Popups.MessageDialog("Error while create button");
-                messageDialog.showAsync();
             }
+        }
+
+        // Remove choosen button from authPanel
+        // Add message to restore to default
+        remove(button) {
+            panel = document.getElementById("authPanel");
+            pickedButton = document.getElementById(button);
+            buttons = document.querySelectorAll(".auth-panel-btn");
+
+            undoPanel = document.getElementById("undoChangeLine");
+
+            let closeUndoPanelBtn = document.getElementById("closeUndoPanelBtn");
+
+            let collapseAnimation = WinJS.UI.Animation.createCollapseAnimation(pickedButton, buttons);
+
+            // Hide button before deleting; that user can restore it
+            pickedButton.style.position = "absolute";
+            pickedButton.style.opacity = "0";
+
+            collapseAnimation.execute().done(
+              function () {
+                  pickedButton.style.display = "none";
+
+                  // Show undo line to interact with them
+                  undoPanel.style.display = "block";
+              });
+
+            // Close line before timer is finished
+            closeUndoPanelBtn.addEventListener("click", function () {
+                // remove default event
+                clearTimeout(defaultEventTimer);
+
+                undoPanel.style.display = "none";
+
+                panel.removeChild(pickedButton); // Crashed here!!!!!
+            }, false);
+
+            // Event by default remove button and close undo line after 10 seconds
+            defaultEventTimer = setTimeout(
+                function () {
+                    undoPanel.style.display = "none";
+                    panel.removeChild(pickedButton);
+                }, 10000); // wait 10 seconds before delete button
+
+            // Send picked button to undo function
+            this.undo(pickedButton);
+        }
+
+        // Function undo() - undo change from remove function
+        undo(button) {
+            pickedButton = button;
+            panel = document.getElementById("authPanel");
+            buttons = document.querySelectorAll(".auth-panel-btn");
+
+            undoPanel = document.getElementById("undoChangeLine");
+            let undoBtn = document.getElementById("undoChangeBtn");
+
+            let expandAnimation = WinJS.UI.Animation.createExpandAnimation(pickedButton, buttons);
+
+            // Undo delete button
+            undoBtn.addEventListener("click", function () {
+                undoPanel.style.display = "none";
+
+                clearTimeout(defaultEventTimer); // remove default event
+
+                pickedButton.style.position = "inherit";
+                pickedButton.style.display = "block"; // show button 
+                pickedButton.style.opacity = "1";
+
+                expandAnimation.execute();
+            }, false);
         }
     }
 
+    // Function createButton() - contain objects with button arguments in array to create all the button in one call
+    // Creating 3 buttons - Google Drive, Dropbox, OneDrive
     function createButton() {
-        return new Promise(function (done, error) {
-            let createButton = [
-                new Button("Google Drive", 0, true),
-                new Button("Dropbox", 1, true),
-                new Button("OneDrive", 2, true)
+        return new Promise(function (done) {
+            let createButtonArr = [
+                new Button("Google Drive", true),
+                new Button("Dropbox", true),
+                new Button("OneDrive", true)
             ];
 
-            for (let i = 0; i < createButton.length; i++) {
-                done(createButton[i].create());
+            for (let i = 0; i < createButtonArr.length; i++) {
+                done(createButtonArr[i].create());
             }
         });
     }
 
-    // Function connectionStatus() - display on the button if current status online or offline update status each 15 minutes 
-    function connectionStatus(status) { // send or get status from xhr with response answer
-        // Get buttons
-        let googleDriveBtn = document.getElementById("googleDriveBtn");
-        let oneDriveBtn = document.getElementById("oneDriveBtn");
+    // Temporary function
+    function authInService() {
+        switch (this.id) {
+            case "btn-Google Drive":
+                // Src of image inside button and text inside p - tag 
+                googleDriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
+                break;
+            case "btn-Dropbox":
+                // Src of image inside button and text inside p - tag 
+                dropboxAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
+                break;
+            case "btn-OneDrive":
+                messageDialog = new Windows.UI.Popups.MessageDialog("Click on = " + this.id);
+                messageDialog.showAsync();
+                break;
+            default:
+                new Windows.UI.Popups.MessageDialog("Error by definition button, please try again!");
+        }
+    }
 
+    // Function connectionStatus() - display on the button if current status online or offline; update status each 15 minutes 
+    function connectionStatus(status) { // send or get status from xhr with response answer
         if (status != 0) {
             console.log("status is not 0 = " + status[0]);
         } else {
@@ -83,86 +182,100 @@
         }
     }
 
-    function googleDriveAuth(event) {
-        let oauth = new GoogleDrive.oauth();
-        let googleIdArray = [];
-        let googleDriveTextBtn = document.getElementById("googleDriveTextBtn");
-        let googleDriveAvatar = document.getElementById("googleDriveAvatar");
-        let output = document.getElementById("output");
+    function dropboxAuth(elementImage, elementText, event) {
+        let auth = dropboxConfig.auth,
+            oauthUrl = dropboxConfig.oauthUrl,
+            clientId = dropboxConfig.appKey,
+            clientSecret = dropboxConfig.appSecret;
 
-        if (GoogleDrive.authenticate != 0) {
-            oauth.connect().then(function (token) {
-                MainWindow.renderPivotItems("Google Drive", "/html/GoogleDrive.html"); // render PivotItem before get any results
+        let oauth = new AuthenticationBroker.Authentication("Dropbox", auth, oauthUrl, clientId, clientSecret).connect().then(function (token) {
+            // Create page for dropbox files and folders
+            MainWindow.renderPivotItems("Dropbox", "/html/Dropbox.html");
 
-                XHR.getFiles(token.access_token).then(function (result) {
-                    for (let i = 0; i < result.files.length; i++) {
-                        output.innerHTML += result.files[i].name + "\r"; // Get All files
-                    }
-                });
+            // ---------------------------------------
+            // Block of xhr response for getting files 
+            // ---------------------------------------
 
-                XHR.getAbout(token.access_token).then(function (result) {
-                    console.log("The Result = " + result);
-
-                    googleDriveTextBtn.innerText = result.user.displayName; // Get User Name
-                    googleDriveAvatar.src = result.user.photoLink; // Get User Photo
-
-                    // Information from get response receive in Kib format
-                    document.getElementById("storageQuota").innerHTML = result.storageQuota.limit / 1024 / 1024 + " GB"; // Google Drive limit
-                    document.getElementById("usage").innerHTML = result.storageQuota.usage / 1024 / 1024 + " GB"; // Usage memory now in all places (Gmail, Image, Gdrive)
-                });
-
-            },
-            function (reject) {
-                console.log("Auth was dissmised" + reject);
-
+            XHR.getUser(token.access_token).then(function (result) {
+                elementImage[0].src = result.profile_photo_url;
+                elementText[0].innerText = result.name.display_name;
             });
-        } else {
-            this.removeEventListener("click", googleDriveAuth, false); // remove click event listener
+        });
+    }
 
-            console.log("second time");
-        }
+    function googleDriveAuth(elementImage, elementText, event) {
+        let output = document.getElementById("output");
+ 
+        let auth = googleConfig.auth,
+            oauthUrl = googleConfig.oauthUrl,
+            clientId = googleConfig.clientId,
+            clientSecret = googleConfig.clientSecret,
+            scopes = googleConfig.scopes;
+
+        let oauth = new AuthenticationBroker.Authentication("GoogleDrive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
+            // Create page for google drive files and folders
+            MainWindow.renderPivotItems("Google Drive", "/html/GoogleDrive.html");
+
+            // ---------------------------------------
+            // Block of xhr response for getting files 
+            // ---------------------------------------
+
+            XHR.getFiles(token.access_token).then(function (result) {
+                for (let i = 0; i < result.files.length; i++) {
+                    output.innerText += result.files[i].name + "\r"; // Get All files
+                }
+            });
+
+            XHR.getAbout(token.access_token).then(function (result) {
+                // Apply received user name to the button text
+                elementText[0].innerText = result.user.displayName;
+
+                // Apply received user avatar to the button img
+                elementImage[0].src = result.user.photoLink;
+
+                // Information from get response receive in Kib format
+                // result.storageQuota.limit; // Google Drive limit
+                // result.storageQuota.usage; // Usage memory in all places (Gmail, Image, Gdrive)
+            });
+        });
+    }
+
+    // Converts from page to WinRT coordinates, which take scale factor into consideration. 
+    function pageToWinRT(pageX, pageY) {
+        var zoomFactor = document.documentElement.msContentZoomFactor;
+        return {
+            x: (pageX - window.pageXOffset) * zoomFactor,
+            y: (pageY - window.pageYOffset) * zoomFactor
+        };
     }
 
     // Function buttonMenu() - add popups window called on the right click which include additional options
     // onRemove - remove button from authPanel
-    // onRename - rename button name
-    // onLogOut - logout from current account (i.event. delete data from password vault)
+    // onLogOut - logout from current account (i.e. delete data from password vault)
     function buttonMenu(event) {
         let menu = new Windows.UI.Popups.PopupMenu();
 
-        menu.commands.append(new Windows.UI.Popups.UICommand("Up", onUp));
-        menu.commands.append(new Windows.UI.Popups.UICommand("Down", onDown));
-        menu.commands.append(new Windows.UI.Popups.UICommandSeparator);
-        menu.commands.append(new Windows.UI.Popups.UICommand("Remove", onRemove));
-        menu.commands.append(new Windows.UI.Popups.UICommand("Log out", onLogOut));
+        let button = this;
 
-        menu.showAsync({ x: event.clientX, y: event.clientY })
-            .done(function (invokeCommand) {
-                if (invokeCommand === null) {
+        menu.commands.append(new Windows.UI.Popups.UICommand("Remove", function () { onRemove(button) }));
+        menu.commands.append(new Windows.UI.Popups.UICommand("Log out", function () { onLogOut(button) }));
 
-                }
-            });
-    }
-
-    function onUp() {
+        menu.showAsync(pageToWinRT(event.pageX, event.pageY)).done(function (invokedCommand) {
+            if (invokedCommand === null) {
+                // The command is null if no command was invoked.
+                WinJS.log && WinJS.log("Context menu dismissed", "sample", "status");
+            }
+        });
 
     }
 
-    function onDown() {
-
+    // Function onRemove() - command button from Popup menu 
+    // Send picked button id to Button class
+    function onRemove(button) {
+        new Button().remove(button.id);
     }
 
-    function onRemove() {
-
-        console.log("remove");
-    }
-
-    function onLogOut() {
-        let textBtn = document.getElementsByClassName("auth-btn-text")
-
-        textBtn.innerText = "Google Drive";
-
-        console.log("log out");
+    function onLogOut(button) {
     }
 
     // Function minimizedPanel() - minimize left panel by click
@@ -174,7 +287,6 @@
     }
 
     WinJS.Namespace.define("AuthPanel", {
-        init: init,
-        connectionStatus: connectionStatus
+        init: init
     });
 })();

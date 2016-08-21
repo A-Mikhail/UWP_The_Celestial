@@ -4,6 +4,7 @@
     let app = WinJS.Application;
     let activation = Windows.ApplicationModel.Activation;
     let background = Windows.ApplicationModel.Background;
+    let itemsSet = new Map();
 
     app.onactivated = function (args) {
         if (args.detail.kind === activation.ActivationKind.launch) {
@@ -17,7 +18,7 @@
             args.setPromise(WinJS.UI.processAll().then(function completed() {
                 let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
-                
+
                 // Init Additional files
                 SettingsPage.init();
                 AuthPanel.init();
@@ -34,13 +35,33 @@
 
     app.start();
 
+    function pushItems() {
+        let pivotItems = document.getElementById("pivot").winControl.items;
+        let keyItems, headerItems;
+
+        for (let i = 0; i <= pivotItems.length; i++) {
+            try {
+                keyItems = pivotItems._keyMap[i].key;
+                headerItems = pivotItems._keyMap[i].data._header;
+
+                itemsSet.set(keyItems, headerItems);
+            } catch (error) {
+
+            }
+        }
+    }
+
     // Function renderPivotItems create dynamically PivotItems in Pivot Menu
     // pivotName - set displayed menu name
     // pagePath - set path of html page 
     function renderPivotItems(pivotName, pagePath) {
         return new Promise(function (resolve, reject) {
             let pivot = document.getElementById("pivot").winControl;
-            let pivotItem = new WinJS.UI.PivotItem(document.createElement("div"), { isHeaderStatic: true, header: pivotName });
+
+            let createDiv = document.createElement("div");
+            createDiv.id = pivotName;
+
+            let pivotItem = new WinJS.UI.PivotItem(createDiv, { isHeaderStatic: true, header: pivotName });
             let pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
 
             WinJS.UI.Pages.render(pagePath, pivotItemContent).then(function () {
@@ -51,7 +72,26 @@
         });
     }
 
+    function removePivotItems(pivotName) {
+        return new Promise(function (done, error) {
+            let pivotItems = document.getElementById("pivot").winControl.items;
+
+            pushItems();
+
+            for (let key of itemsSet.entries()) {
+                if (key[1] == pivotName) {
+                    done(pivotItems.dataSource.remove(`${key[0]}`));
+                    itemsSet.delete(key[0]);
+
+                    pivotItems._currentKey = pivotItems._lastNotifyLength; // "normalize" _currentKey of items after deleting 
+                }
+            }
+        });
+    }
+
+
     WinJS.Namespace.define("MainWindow", {
-        renderPivotItems: renderPivotItems
+        renderPivotItems: renderPivotItems,
+        removePivotItems: removePivotItems
     });
 })();

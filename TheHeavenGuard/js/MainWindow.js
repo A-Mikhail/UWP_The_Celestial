@@ -4,6 +4,7 @@
     let app = WinJS.Application;
     let activation = Windows.ApplicationModel.Activation;
     let background = Windows.ApplicationModel.Background;
+
     let itemsSet = new Map();
 
     app.onactivated = function (args) {
@@ -15,14 +16,13 @@
                 // To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
             }
 
-            args.setPromise(WinJS.UI.processAll().then(function completed() {
+            args.setPromise(WinJS.UI.processAll().then(function () {
                 let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
-
                 // Init Additional files
-                SettingsPage.init();
-                AuthPanel.init();
                 FileBrowser.init();
+                AuthPanel.init();
+                SettingsPage.init();
             }));
         }
     };
@@ -35,6 +35,8 @@
 
     app.start();
 
+    // Function pushItem() - set to the Map data key of Item and it's name - headerItems
+    // try..catch need for skip error that occur when loop called number 1 which doesn't exist in PivotItems array
     function pushItems() {
         let pivotItems = document.getElementById("pivot").winControl.items;
         let keyItems, headerItems;
@@ -72,6 +74,7 @@
         });
     }
 
+    // Function removePivotItems get name of pivot and remove it from DOM and from pivot items array
     function removePivotItems(pivotName) {
         return new Promise(function (done, error) {
             let pivotItems = document.getElementById("pivot").winControl.items;

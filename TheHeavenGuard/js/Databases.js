@@ -21,7 +21,7 @@
     // destroy db: user
     function destroyUserDB() {
       
-        let listView = document.getElementById("listView").winControl;
+        let listView = document.getElementById("zoomedInDiv").winControl;
         let itemData = listView.itemDataSource.list;
 
         userDB().destroy().then(function (response) {

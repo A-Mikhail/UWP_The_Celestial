@@ -3,6 +3,7 @@
 
     // Globar variable
     let messageDialog;
+    let PasswordVault = Windows.Security.Credentials.PasswordVault;
 
     // Varibale for class
     let defaultEventTimer,
@@ -26,10 +27,9 @@
                 buttons[i].addEventListener("click", authInService, false);
             }
         }, function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Occurs error while creating button, pls do somthing! " + error);
+            messageDialog = new Windows.UI.Popups.MessageDialog("Occurs error while creating button, pls do something! " + error);
             messageDialog.showAsync();
         });
-
     }
 
     // Class Button - have constructor with title and status arguments
@@ -37,32 +37,29 @@
     // Function remove(button) - remove picked button via popup menu; button argument gets from buttonMenu function
     // Function undo(button) - undo change exactly restore "deleted" button; button arguments gets from remove function
     class Button {
-        constructor(title, status) {
+        constructor(title) {
             this.title = title;
-            this.status = status;
         }
 
         create() {
             panel = document.getElementById("authPanel");
 
-            if (this.status === true) {
-                let elementButton = document.createElement("button");
-                let elementImg = document.createElement("img");
-                let elementP = document.createElement("p");
+            let elementButton = document.createElement("button");
+            let elementImg = document.createElement("img");
+            let elementP = document.createElement("p");
 
-                elementButton.className = "auth-panel-btn win-button"
-                elementButton.id = `btn-${this.title}`;
+            elementButton.className = "auth-panel-btn win-button"
+            elementButton.id = `btn-${this.title}`;
 
-                elementImg.src = "../img/THG-avatar.png";
-                elementImg.className = "cloud-avatar img-circle";
+            elementImg.src = "/img/Avatar-48x48.png";
+            elementImg.className = "cloud-avatar img-circle";
 
-                elementP.className = "auth-btn-text";
-                elementP.innerText = this.title;
+            elementP.className = "auth-btn-text";
+            elementP.innerText = this.title;
 
-                panel.appendChild(elementButton);
-                elementButton.appendChild(elementImg);
-                elementButton.appendChild(elementP);
-            }
+            panel.appendChild(elementButton);
+            elementButton.appendChild(elementImg);
+            elementButton.appendChild(elementP);
         }
 
         // Remove choosen button from authPanel
@@ -75,7 +72,6 @@
             undoPanel = document.getElementById("undoChangeLine");
 
             let closeUndoPanelBtn = document.getElementById("closeUndoPanelBtn");
-
             let collapseAnimation = WinJS.UI.Animation.createCollapseAnimation(pickedButton, buttons);
 
             // Hide button before deleting; that user can restore it
@@ -142,9 +138,11 @@
     function createButton() {
         return new Promise(function (done) {
             let createButtonArr = [
-                new Button("Google Drive", true),
-                new Button("Dropbox", true),
-                new Button("OneDrive", true)
+                new Button("Google Drive"),
+                new Button("Dropbox"),
+                new Button("OneDrive"),
+                new Button("Test"),
+                new Button("ButtonTest")
             ];
 
             for (let i = 0; i < createButtonArr.length; i++) {
@@ -158,31 +156,35 @@
         switch (this.id) {
             case "btn-Google Drive":
                 // Src of image inside button and text inside p - tag 
-                googleDriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
+                googledriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
                 break;
             case "btn-Dropbox":
                 // Src of image inside button and text inside p - tag 
                 dropboxAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
                 break;
             case "btn-OneDrive":
-                messageDialog = new Windows.UI.Popups.MessageDialog("Click on = " + this.id);
-                messageDialog.showAsync();
+                onedriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
+                break;
+            case "btn-Test":
+                Test();
+                break;
+            case "btn-ButtonTest":
+                ButtonTest();
                 break;
             default:
                 new Windows.UI.Popups.MessageDialog("Error by definition button, please try again!");
         }
     }
 
-    // Function connectionStatus() - display on the button if current status online or offline; update status each 15 minutes 
-    function connectionStatus(status) { // send or get status from xhr with response answer
-        if (status != 0) {
-            console.log("status is not 0 = " + status[0]);
-        } else {
-            console.log("status is 0");
-        }
+    function ButtonTest () {
+        MainWindow.renderPivotItems("ButtonTest", "/html/Dropbox.html");
     }
 
-    function dropboxAuth(elementImage, elementText, event) {
+    function Test() {
+        MainWindow.renderPivotItems("Test", "/html/Dropbox.html");
+    }
+
+    function dropboxAuth(elementImage, elementText) {
         let auth = dropboxConfig.auth,
             oauthUrl = dropboxConfig.oauthUrl,
             clientId = dropboxConfig.appKey,
@@ -193,7 +195,7 @@
             MainWindow.renderPivotItems("Dropbox", "/html/Dropbox.html");
 
             // ---------------------------------------
-            // Block of xhr response for getting files 
+            // Block of xhr requests
             // ---------------------------------------
 
             XHR.getUser(token.access_token).then(function (result) {
@@ -203,21 +205,38 @@
         });
     }
 
-    function googleDriveAuth(elementImage, elementText, event) {
+    function onedriveAuth(elementImage, elementText) {
+        let auth = onedriveConfig.auth,
+            oauthUrl = onedriveConfig.oauthUrl,
+            clientId = onedriveConfig.appId,
+            clientSecret = onedriveConfig.appSecret,
+            scopes = onedriveConfig.scopes;
+
+        let oauth = new AuthenticationBroker.Authentication("OneDrive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
+            // Create page for oneDrive files and folders
+            MainWindow.renderPivotItems("OneDrive", "/html/OneDrive.html");
+
+            // ---------------------------------------
+            // Block of xhr requests
+            // ---------------------------------------
+        });
+    }
+
+    function googledriveAuth(elementImage, elementText) {
         let output = document.getElementById("output");
- 
+
         let auth = googleConfig.auth,
             oauthUrl = googleConfig.oauthUrl,
             clientId = googleConfig.clientId,
             clientSecret = googleConfig.clientSecret,
             scopes = googleConfig.scopes;
 
-        let oauth = new AuthenticationBroker.Authentication("GoogleDrive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
+        let oauth = new AuthenticationBroker.Authentication("Google Drive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
             // Create page for google drive files and folders
             MainWindow.renderPivotItems("Google Drive", "/html/GoogleDrive.html");
 
             // ---------------------------------------
-            // Block of xhr response for getting files 
+            // Block of xhr requests
             // ---------------------------------------
 
             XHR.getFiles(token.access_token).then(function (result) {
@@ -269,13 +288,35 @@
 
     }
 
-    // Function onRemove() - command button from Popup menu 
+    // Function onRemove() - command button from popup menu 
     // Send picked button id to Button class
     function onRemove(button) {
         new Button().remove(button.id);
     }
 
+    // Function onLogOut() - command button from popup menu
+    // delete password from PasswordVault
     function onLogOut(button) {
+        let passwordVault = new PasswordVault();
+        let buttonId = button.id;
+        let removePrefix = buttonId.replace(/\bbtn\S/ig, "");
+
+        // Return text and image to default
+        // childNodes[0] - img
+        // childNodes[1] - p
+        document.getElementById(buttonId).childNodes[0].src = "/img/Avatar-48x48.png";
+        document.getElementById(buttonId).childNodes[1].innerText = removePrefix;
+
+        MainWindow.removePivotItems(removePrefix);
+
+        try {
+            // reg expression removed 'btn-' from id 
+            let credential = passwordVault.retrieve("OauthToken", removePrefix);
+
+            passwordVault.remove(credential);
+        } catch (err) {
+            // retrive has not found user
+        }
     }
 
     // Function minimizedPanel() - minimize left panel by click

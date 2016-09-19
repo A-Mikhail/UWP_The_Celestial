@@ -60,8 +60,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="css\MainWindow.css" />
+    <Content Include="html\Dropbox.html" />
     <Content Include="html\GoogleDrive.html" />
     <Content Include="html\MainWindow.html" />
+    <Content Include="html\OneDrive.html" />
     <Content Include="html\Settings.html" />
     <Content Include="images\splashscreen.scale-200.png" />
     <Content Include="images\splashscreen.scale-400.png" />
@@ -83,10 +85,10 @@
     <Content Include="images\Wide310x150Logo.scale-100.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="img\Main-logo68x48.png" />
+    <Content Include="img\Avatar-48x48.png" />
     <Content Include="img\Google-Drive-Icon.png" />
     <Content Include="img\testListViewPicture.png" />
-    <Content Include="img\testLogo.png" />
-    <Content Include="img\THG-avatar.png" />
     <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />

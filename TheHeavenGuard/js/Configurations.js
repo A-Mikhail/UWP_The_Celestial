@@ -18,3 +18,12 @@ window.dropboxConfig = {
     appSecret: "ap0blor8jkek2bu",
     oauthUrl: "https://api.dropboxapi.com/2/auth/token/revoke"
 }
+
+// OneDrive documentation - https://dev.onedrive.com/auth/msa_oauth.htm#code-flow
+window.onedriveConfig = {
+    auth: "https://login.live.com/oauth20_authorize.srf",
+    appId: "000000004C17EF61",
+    appSecret: "IRXjAtRUOlIsSyfm4ZLf2APHD4I/3dE9",
+    oauthUrl: "https://login.live.com/oauth20_token.srf",
+    scopes: "onedrive.readwrite onedrive.appfolder offline_access"
+}

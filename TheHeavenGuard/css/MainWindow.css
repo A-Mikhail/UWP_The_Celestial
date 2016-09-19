@@ -1,25 +1,81 @@
 ﻿/*
     Info color:
-        Positive: done, completed
-        Green - #128B44;
-        
-        Neutral: help, notification
-        Blue - #2C71B9;
+        Green - #128B44; Positive: done, completed
+        Blue - #2C71B9; Neutral: help, notification
+        Yellow - #FDC214; Cautionary: alert, attention, warning            
+        Red - #D82429; Negative: error, disconnected
 
-        Cautionary: alert, attention, warning
-        Yellow - #FDC214;
-        
-        Negative: error, disconnected
-        Red - #D82429;
-        
-        Title - #112233
-        Text - #30404f
-        White - ghostwhite
-        BlueText - #0086b3
-        OtherBlueText - #19469D
-        Border - #e5e5ee
-        BackgroundLightGrey - #f5f5ff
     Every space and dimension should be a multiply of 4
+
+Position of elements:
+
+N. Global elements; 
+   Rewrites standard elements
+    ---- html body
+    ---- img 
+
+    ---- win-pivot
+    ---- win-button
+    ---- win-toolbar
+    ---- win-navbarcommand-button-content
+    ---- win-listview 
+
+I. Main Page; Pivot
+        ---- #pivot
+            ---- #headLogoImg
+            ---- .main-page #mainPage
+
+II. Toolbar block
+                ---- .toolbar
+                    ---- #startSyncFilesBtn .toolbar-btn .toolbar-btn-left
+                    ---- #toolbarAddFilesBtn .tooblar-btn .toolbar-btn-right
+                
+III. File browser block
+                ---- #fileBrowser
+                    ---- .left-header-template-root
+                    
+                    ---- .listview-template-item
+                    ---- .listview-template-item-icon
+                    ---- .listview-template-item-detail
+                    ---- .listview-template-item-title
+                    ---- .listview-template-item-date
+
+                    ---- #semanticZoom
+                        ---- .semanticZoomItem
+                
+IV. Panel block
+                ---- .clouds-authorization-panel #authPanel
+                    ---- .panel-head
+                        ---- #hamburgerBtn
+                        ---- .auth-panel-btn .auth-panel-btn:hover
+                        ---- .cloud-avatar
+                        ---- .img-circle
+                        ---- .online .offilne
+                
+                ---- .undo-changes #undoChangeLine
+                    ---- #undoChangeBtn .undo-change-btn
+                    ---- #closeUndoPanelBtn .close-undo-line-btn
+
+V. Settings Page
+    ---- .settings-page
+        ---- .information-panel
+            ---- #storageQuota
+            ---- #usage
+            
+            ---- #cloudService-webview
+                ---- #icon
+                ---- #output
+
+        ---- .delete-db-panel .horizontal-center
+            ---- #destroyUserDB .delete-db-btn
+
+@. Media
+    ---- @media only screen and (max-width: 500px)
+*/
+
+/*
+*   N. Global elements;
+*      Rewrites standard elements
 */
 html, body {
     width: 100%;
@@ -33,56 +89,13 @@ img {
     height: auto;
 }
 
-/* -ms-grid */
-.main-page, .minimized-panel {
-    display: -ms-grid;
-    -ms-grid-columns: 1fr 4fr;
-    -ms-grid-rows: 48px calc(100% - 48px);
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: "Segoe UI", sans-serif;
-    font-weight: 200;
-}
-
-.minimized-panel {
-    -ms-grid-columns: 48px 4fr;
-}
-    /* Remove Text when authorization panel is hidden */
-    .minimized-panel .auth-btn-text {
-        display: none;
-    }
-
-.toolbar {
-    position: relative;
-    -ms-grid-row: 1;
-    -ms-grid-column: 2;
-    -ms-grid-column-span: 2;
-    background-color: #0086b3;
-    height: 48px;
-}
-
-.clouds-authorization-panel {
-    position: relative;
-    -ms-grid-row: 1;
-    -ms-grid-column: 1;
-    -ms-grid-row-span: 2;
-    background-color: #30404f;
-}
-
-#fileBrowser {
-    position: relative;
-    -ms-grid-row: 2;
-    -ms-grid-column: 2;
-}
-
-/* Top menu */
-#headLogoImg {
-    padding-left: 12px;
+.add-btn, .start-sync-btn {
+    color: #000;
 }
 
 .win-pivot-header-area {
-    background-color: #112233;
+    background-color: #212b35;
+    height: 48px; /* previous value is 52px */
 }
 
 .win-pivot-header-items {
@@ -94,120 +107,7 @@ img {
     top: 0;
 }
 
-/* Standart .win-button */
-.win-button {
-    min-width: 0px;
-}
-
-/* Authorization Panel */
-.panel-head {
-    width: 100%;
-    height: 48px;
-    background-color: #0086b3;
-}
-
-/* remove background and padding from right in hamburger button on auth panel */
-#hamburgerBtn .win-navbarcommand-button-content {
-    padding-right: 0;
-    position: absolute;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    outline: none;
-}
-
-.auth-panel-btn, .auth-panel-btn:hover {
-    background-color: transparent;
-    border: none;
-    height: 12%;
-    width: 100%;
-}
-
-    .auth-panel-btn:hover {
-        background-color: rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-    }
-
-.cloud-avatar {
-    width: 48px;
-    height: auto;
-    float: left;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.img-circle {
-    border-radius: 50%;
-}
-
-.online, .offline {
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
-}
-
-.online {
-    border-left: 2px solid #128B44;
-}
-
-.offline {
-    border-left: 2px solid #D82429;
-}
-/*End Panel*/
-
-/* ListView */
-#listView {
-    width: 100%;
-}
-
-.win-listview {
-    overflow: hidden;
-    height: 100%;
-}
-
-/* Template for the items in the ListViews in this sample */
-.smallListIconTextItem {
-    width: 242px;
-    height: 70px;
-    padding: 5px;
-    overflow: hidden;
-    display: flex;
-}
-
-    .smallListIconTextItem img.smallListIconTextItem-Image {
-        width: 60px;
-        height: 60px;
-        margin: 5px;
-        margin-right: 20px;
-    }
-
-    .smallListIconTextItem .smallListIconTextItem-Detail {
-        color: #000;
-        margin: 5px;
-    }
-
-.listLayoutTopHeaderTemplateRoot {
-    font-size: larger;
-    margin-left: 16px;
-}
-
-
-/* Override the background color for even/odd win-containers */
-#listView.stripes .win-container.win-container-odd {
-    background-color: #777;
-}
-
-#listView.stripes .win-container.win-container-even {
-    background-color: #444;
-}
-
-/* 
- * Pivot style
- *
- * Remove Scroll from Pivotitem-content 
- *
-*/
+/* Remove Scroll from Pivotitem-content */
 .win-pivot .win-pivot-surface {
     width: 100%;
     height: 100%;
@@ -228,29 +128,68 @@ img {
         padding: 0;
     }
 
-.win-pivot-item, .win-pivot-viewport {
-    overflow-y: scroll;
-}
-
 /* Remove margin-top: 13px from left header item */
 .win-pivot-header-area > .win-pivot-header-leftcustom {
     margin: 0;
 }
 
-.win-toolbar .win-toolbar-actionarea {
-    background: transparent;
+/* Make button resizable */
+.win-button {
+    min-width: 0px;
 }
 
-.win-toolbar .win-toolbar-overflowarea {
-    background-color: rgb(74, 61, 78);
-    border: 0;
+/* remove background and padding from right in hamburger button on auth panel */
+#hamburgerBtn .win-navbarcommand-button-content {
+    padding-right: 0;
+    position: absolute;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
 }
 
-/* Main Page*/
-/* Toolbar */
+/*
+*   I. Main Page; Pivot
+*/
+#headLogoImg {
+    padding-left: 12px;
+}
+
+.main-page, .minimized-panel {
+    display: -ms-grid;
+    -ms-grid-columns: 320px 1fr;
+    -ms-grid-rows: 48px 1fr;
+    width: 100%;
+    height: 100%;
+}
+
+.minimized-panel {
+    -ms-grid-columns: 48px 1fr;
+}
+    /* Remove Text when authorization panel is hidden */
+    .minimized-panel .auth-btn-text {
+        display: none;
+    }
+
+/*
+*   II. Toolbar block
+*/
+.toolbar {
+    background-color: #0b4669;
+    position: relative;
+    -ms-grid-row: 1;
+    -ms-grid-column: 2;
+    -ms-grid-column-span: 2;
+    height: 48px;
+}
+
 .toolbar-btn {
+    font-family: 'Segoe UI', sans-serif;
     position: absolute;
     cursor: pointer;
+    color: #000;
 }
 
     .toolbar-btn:hover {
@@ -265,6 +204,102 @@ img {
     left: 0;
 }
 
+/*
+*   III. File browser block
+*/
+#fileBrowser {
+    position: relative;
+    -ms-grid-row: 2;
+    -ms-grid-column: 2;
+    width: 100%;
+    height: 100%;
+}
+
+/* Template for the items in the ListViews */
+.win-listview .win-container {
+    color: #000;
+}
+
+#semanticZoom {
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+/* Template for items in the zoomed out ListView */
+.semanticZoomItem {
+    color: white;
+    width: 140px;
+    height: 52px;
+    overflow: hidden;
+    padding: 9px 15px;
+    white-space: nowrap;
+    display: -ms-flexbox;
+    -ms-flex-pack: end;
+    -ms-flex-direction: column;
+    background-color: rgb(70,23,180);
+}
+
+.listview-template-item {
+    position: relative;
+    width: 18em;
+    height: 4em;
+    line-height: 4em;
+    display: -ms-grid;
+    background-color: #cecece;
+}
+
+    .listview-template-item .listview-template-item-icon {
+        font-family: "Segoe MDL2 Assets","Symbols";
+        font-size: xx-large;
+        -ms-grid-column: 1;
+    }
+
+    .listview-template-item .listview-template-item-detail {
+        margin: 5px;
+        line-height: 2em;
+        -ms-grid-column: 2;
+    }
+
+.listview-template-item-title {
+    font-weight: 600;
+}
+
+.listview-template-item-date {
+    font-size: small;
+    margin: 0;
+    line-height: 1em;
+}
+
+.left-header-template-root {
+    color: #000;
+    width: 50px;
+    height: 50px;
+    padding: 8px;
+}
+
+/*
+*   IV. Panel block
+*/
+.clouds-authorization-panel {
+    position: relative;
+    -ms-grid-row: 1;
+    -ms-grid-column: 1;
+    -ms-grid-row-span: 2;
+    background-color: #375a72;
+}
+
+.panel-head {
+    width: 100%;
+    height: 48px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.hamburger-btn {
+    color: #fff;
+}
+
 .undo-changes {
     position: absolute;
     width: 100%;
@@ -275,6 +310,13 @@ img {
     display: none;
 }
 
+.undo-change-btn {
+    width: 144px;
+    height: 48px;
+    margin-left: 1em;
+    color: #112233;
+}
+
 .close-undo-line-btn {
     position: absolute;
     right: 0px;
@@ -283,30 +325,47 @@ img {
     color: #112233;
 }
 
-.undo-change-btn {
-    width: 144px;
-    height: 48px;
-    margin-left: 1em;
-    color: #112233;
-}
-
-/* File browser */
-#browserWindow {
+.auth-panel-btn, .auth-panel-btn:hover {
+    background-color: transparent;
+    border: none;
+    height: 12%;
     width: 100%;
-    height: 100%;
+    color: #fff;
 }
 
-.loading-line {
-    top: 0;
-    width: 100%;
-    height: 0.4%;
-    background-color: brown;
-    display: none;
+    .auth-panel-btn:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+.cloud-avatar {
+    width: 48px;
+    height: auto;
+    float: left;
+    background-color: rgba(0, 0, 0, 0.3);
 }
-/* End File Browser */
 
+.img-circle {
+    border-radius: 50%;
+}
 
-/* Settings Page */
+.online, .offline {
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
+}
+
+.online {
+    border-left: 2px solid #128B44;
+}
+
+.offline {
+    border-left: 2px solid #D82429;
+}
+
+/*
+*   V. Settings Page
+*/
 .settings-page {
     color: #000;
 }
@@ -321,7 +380,7 @@ img {
     text-align: center;
 }
 
-/* Start @media for small screen */
+/* @Media */
 @media only screen and (max-width: 500px) {
     .auth-btn-text {
         display: none;

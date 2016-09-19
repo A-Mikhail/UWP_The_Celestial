@@ -44,8 +44,6 @@
                         authenticateURI = request + "&scope=" + auth.scopes;
                     }
 
-                    console.log("authURI = " + authenticateURI);
-
                     // Send request to authenticate in cloud service
                     let authenticate = new Authorization().authenticate(authenticateURI, redirectURI);
 
@@ -55,8 +53,6 @@
                                             + "&client_id=" + encodeURIComponent(auth.clientId)
                                             + "&client_secret=" + encodeURIComponent(auth.clientSecret)
                                             + "&grant_type=authorization_code";
-
-                        console.log("grantTokenURI = " + grantTokenURI);
 
                         // Send request to grant token
                         let grant = new Authorization(auth.oauthUrl, "POST", header, grantTokenURI, false, true).sendRequest();
@@ -77,8 +73,6 @@
                                         + "&client_id=" + encodeURIComponent(auth.clientId)
                                         + "&client_secret=" + encodeURIComponent(auth.clientSecret)
                                         + "&grant_type=refresh_token";
-
-                    console.log("refreshTokenURI = " + refreshTokenURI);
 
                     // Send request to refresh token
                     let refresh = new Authorization(auth.oauthUrl, "POST", header, refreshTokenURI, false, true).sendRequest();
@@ -107,8 +101,6 @@
 
             let startURI = new Windows.Foundation.Uri(this.startURL);
             let endURI = new Windows.Foundation.Uri(this.endURL);
-
-            console.log("startURI = " + startURI);
 
             return new Promise(function (complete, error) {
                 Windows.Security.Authentication.Web.WebAuthenticationBroker.authenticateAsync(
@@ -156,9 +148,6 @@
         try {
             let credential = passwordVault.retrieve(psswdCredentialResource, cloudName);
             storedToken = credential.password;
-
-            // passwordVault.remove(credential);
-
         } catch (err) {
             // retrive has not found user
         }

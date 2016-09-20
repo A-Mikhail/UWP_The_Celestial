@@ -11,21 +11,15 @@
         return userFilesDB = new PouchDB("user");
     }
 
-    // create db for google files
-    function googleDB() {
-        let googleFilesDB;
-
-        return googleFilesDB = new PouchDB("google");
-    }
-
     // destroy db: user
     function destroyUserDB() {
       
-        let listView = document.getElementById("zoomedInDiv").winControl;
+        let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
         userDB().destroy().then(function (response) {
-            itemData.splice(0, itemData.length); // clear listView without destroing Binding.List
+            // Clear listView without destroing Binding.List
+            itemData.splice(0, itemData.length);
 
             FileBrowser.generateItems();
 
@@ -41,11 +35,13 @@
         // path = Absoulte file path
         // if file success added create div in app
         Databases.userDB().put({
-            _id: folderRelativeId,
+            _id: name,
+            folderRelativeId: folderRelativeId,
             dateCreated: dateCreated,
             name: name,
             fileType: fileType,
             path: path
+
         }).then(function (response) {
             console.log("response_id: " + response.id);
         }, function (err) {
@@ -58,7 +54,6 @@
 
     WinJS.Namespace.define("Databases", {
         userDB: userDB,
-        googleDB: googleDB,
         destroyUserDB: destroyUserDB,
         userDatabaseWrite: userDatabaseWrite
     });

@@ -48,6 +48,13 @@
                             label: 'Start Sync' }">
                     </div>
 
+                    <div id="removeItemsBtn" class="toolbar-btn toolbar-btn-center"
+                         data-win-control="WinJS.UI.NavBarCommand"
+                         data-win-options="{
+                            icon: 'delete',
+                            label: 'Remove'}">
+                    </div>
+
                     <div id="toolbarAddFilesBtn" class="toolbar-btn toolbar-btn-right"
                          data-win-control="WinJS.UI.NavBarCommand"
                          data-win-options="{
@@ -89,7 +96,7 @@
                     <!-- Custom controlls of the Semantic zoom -->
                     <div id="semanticZoom" data-win-control="WinJS.UI.SemanticZoom">
                         <!-- Zoomed in display mode -->
-                        <div id="zoomedInDiv"
+                        <div id="zoomedInListView" class="win-selectionstylefilled"
                              data-win-control="WinJS.UI.ListView"
                              data-win-options="{
                                 itemDataSource: FileBrowser.data.dataSource,
@@ -98,17 +105,16 @@
                                 groupHeaderTemplate: select('#leftHeaderTemplate'),
                                 selectionMode: 'multi',
                                 tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
-                                itemsReorderable: true,
                                 layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
                              }">
                         </div>
 
                         <!-- Zoomed out display mode -->
-                        <div id="zoomedOutDiv"
+                        <div id="zoomedOutListView"
                              data-win-control="WinJS.UI.ListView"
                              data-win-options="{
                                 itemDataSource: FileBrowser.data.groups.dataSource,
-                                itemTemplate: select('#semanticZoomTemplate'),
+                                itemTemplate: FileBrowser.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke'
                              }">

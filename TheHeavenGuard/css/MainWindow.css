@@ -189,6 +189,7 @@ img {
     font-family: 'Segoe UI', sans-serif;
     position: absolute;
     cursor: pointer;
+    background-color: transparent;
     color: #000;
 }
 
@@ -202,6 +203,11 @@ img {
 
 .toolbar-btn-left {
     left: 0;
+}
+
+.toolbar-btn-center {
+    left: 50%;
+    right: 50%;
 }
 
 /*
@@ -347,6 +353,11 @@ img {
 
 .img-circle {
     border-radius: 50%;
+}
+
+.auth-btn-text {
+    text-align: left;
+    text-indent: 5em;
 }
 
 .online, .offline {

@@ -21,7 +21,11 @@
         // File choose button
         let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
         chFilesBtn.addEventListener("click", pickFiles, false);
+        
+        let removeItemsBtn = document.getElementById("removeItemsBtn");
+        removeItemsBtn.addEventListener("click", removeSelected, false);
 
+        // Start generate Items for listViews
         generateItems();
     }
 
@@ -156,7 +160,54 @@
             messageDialog.showAsync();
         });
     }
+    
+    // Function removeFromDatabase() - functionality for removing documents from database
+    function removeFromDatabase(item) {
+        Databases.userDB().get(item).then(function (doc) {
+            console.log(doc);
+            return Databases.userDB().remove(doc);
+        }).then(function (result) {
+            console.log(result);
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }
 
+    // Function removeSelected() - removed selected items form listView and from database
+    function removeSelected() {
+        let listView = document.getElementById("zoomedInListView").winControl;
+        let itemsTitle;
+        let itemsKey;
+
+        if (listView.selection.count() > 0) {
+            // Wait while selection items is correct returning it's value    
+            listView.selection.getItems().done(function (items) {
+                // Sort the selection to ensure its in index order
+                items.sort(function CompareForSrt(item1, item2) {
+                    let first = item1.index, second = item2.index;
+
+                    if (first === second) {
+                        return 0;
+                    } else if (first < second) {
+                        return -1;
+                    } else {
+                        return 1;
+                    }
+                });
+
+                for (let i = items.length - 1; i >= 0; i--) {
+                    // Get title of selected items
+                    itemsTitle = listView.selection.getItems()._value[i].data.title;
+
+                    removeFromDatabase(itemsTitle);
+
+                    // Delete items from listView
+                    FileBrowser.data.splice(items[i].index, 1);
+                }
+            });
+        }
+    }
+    
     // Function used to sort the groups by first letter
     function compareGroups(left, right) {
         return left.toUpperCase().charCodeAt(0) - right.toUpperCase().charCodeAt(0);
@@ -175,9 +226,9 @@
     // Function forceUpdate - fix the issue with display "none" 
     // https://msdn.microsoft.com/en-us/library/windows/apps/hh758352.aspx
     function forceUpdate() {
-        let listView = document.getElementById("zoomedInDiv").winControl;
+        let listView = document.querySelector("#zoomedInListView").winControl;
 
-        console.log("forceLayout was happened");
+        console.log("forceUpdate");
 
         return listView.forceLayout();
     }
@@ -217,7 +268,6 @@
                 return item.isOnScreen();
             }).then(function (onscreen) {
                 if (!onscreen) {
-                    forceUpdate();
                     icon.style.opacity = 1;
                 } else {
                     WinJS.UI.Animation.fadeIn(icon);
@@ -235,13 +285,31 @@
         };
     }
 
+    // function placeholder renderer - create placeholder for zoomOut items
+    function placeholderRenderer(itemPromise) {
+        // create a basic template for the item which doesn't depend on the data
+        let element = document.createElement("div");
+        element.className = "semanticZoomItem";
+        element.innerHTML = "<h2 class='semanticZoomItem-Text'>...</h2>";
+
+        return {
+            element: element,
+
+            renderComplete: itemPromise.then(function (item) {
+                element.querySelector(".semanticZoomItem-Text").innerText = item.data.title;
+            })
+        };
+    }
+
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);
+    WinJS.Utilities.markSupportedForProcessing(placeholderRenderer);
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,
         storageFileArr: storageFileArr,
         generateItems: generateItems,
         multistageRenderer: multistageRenderer,
+        placeholderRenderer: placeholderRenderer,
         data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups)
     });
 })();

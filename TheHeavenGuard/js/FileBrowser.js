@@ -16,17 +16,21 @@
         folderRelativeId,
         path;
 
-    // Function init() - main function which contains eventListeners and function calls
     function init() {
         // File choose button
         let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
         chFilesBtn.addEventListener("click", pickFiles, false);
-        
+
         let removeItemsBtn = document.getElementById("removeItemsBtn");
         removeItemsBtn.addEventListener("click", removeSelected, false);
 
         // Start generate Items for listViews
         generateItems();
+
+        //let listView = document.querySelector("#zoomedInListView").winControl;
+        //if (listView.loadingState == "complete") {
+        //    scrollToItem();
+        //}
     }
 
     // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
@@ -160,7 +164,7 @@
             messageDialog.showAsync();
         });
     }
-    
+
     // Function removeFromDatabase() - functionality for removing documents from database
     function removeFromDatabase(item) {
         Databases.userDB().get(item).then(function (doc) {
@@ -207,7 +211,7 @@
             });
         }
     }
-    
+
     // Function used to sort the groups by first letter
     function compareGroups(left, right) {
         return left.toUpperCase().charCodeAt(0) - right.toUpperCase().charCodeAt(0);
@@ -277,13 +281,16 @@
                     return WinJS.Promise.wrapError(err);
                 }
 
-                forceUpdate();
                 icon.innerHTML = "&#xe155;"; // icon by default for placeholder
                 icon.style.opacity = 1;
+
                 return;
             })
         };
     }
+
+    // Magic number, set for counting if placeholderRenderer loaded all it's elements or not
+    let n = 1;
 
     // function placeholder renderer - create placeholder for zoomOut items
     function placeholderRenderer(itemPromise) {
@@ -297,8 +304,36 @@
 
             renderComplete: itemPromise.then(function (item) {
                 element.querySelector(".semanticZoomItem-Text").innerText = item.data.title;
+            }).then(function () {
+                return new Promise(function (complete, error) {
+                    if (n++ == FileBrowser.data.groups.dataSource.list._groupKeys.length) {
+                        complete(scrollToItem());
+                    }
+                });
             })
         };
+    }
+
+    function scrollToItem() {
+        //KLetterSecondListView.addEventListener("click", document.getElementById('element__57').scrollIntoView(), false);
+        let headerTemplate = document.querySelectorAll(".left-header-template-root");
+        let listView = document.getElementById("zoomedInListView").winControl;
+
+        let headerTemplateLength = FileBrowser.data.groups.dataSource.list._groupKeys.length;
+
+        let availableKey = FileBrowser.data.groups.dataSource._list._groupKeys;
+
+        let itemOffset;
+
+        for (let i = 0; i < headerTemplateLength; i++) {
+            itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[availableKey[i]].firstItemIndexHint);
+
+            console.log("Width: " + itemOffset._value.width + " Left: " + itemOffset._value.left);
+        }
+
+        // Need get all, id for all title and allow it to the second listview button 
+        // set class to all header item -> queryAll -> check if they equal -> apply to the object/array (FirstLetterOfTitle: their_id) -> apply it to the second
+        // listView in onclick event -> set correct coordinates for resized cases
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);

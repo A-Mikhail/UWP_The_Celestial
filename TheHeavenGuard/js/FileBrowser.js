@@ -26,11 +26,6 @@
 
         // Start generate Items for listViews
         generateItems();
-
-        //let listView = document.querySelector("#zoomedInListView").winControl;
-        //if (listView.loadingState == "complete") {
-        //    scrollToItem();
-        //}
     }
 
     // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
@@ -243,8 +238,12 @@
 
         element = document.createElement("div");
         element.className = "listview-template-item";
-        // create temporary DOM 
-        element.innerHTML = "<div class='listview-template-item-icon' style='opacity: 0;'></div> <div class='listview-template-item-detail'> <div class='listview-template-item-title'></div> <div class='listview-template-item-date'></div> </div>";
+
+        // create temporary DOM - copy from original in MainWindow.html
+        element.innerHTML = "<div class='listview-template-item-icon' style='opacity: 0;'>" +
+            "</div> <div class='listview-template-item-detail'>" +
+            "<div class='listview-template-item-title'></div>" +
+            "<div class='listview-template-item-date'></div> </div>";
 
         icon = element.querySelector(".listview-template-item-icon");
 
@@ -289,51 +288,32 @@
         };
     }
 
-    // Magic number, set for counting if placeholderRenderer loaded all it's elements or not
-    let n = 1;
-
     // function placeholder renderer - create placeholder for zoomOut items
     function placeholderRenderer(itemPromise) {
         // create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
-        element.className = "semanticZoomItem";
-        element.innerHTML = "<h2 class='semanticZoomItem-Text'>...</h2>";
+        element.className = "zoomed-out-item";
+        element.innerHTML = "<h2 class='zoomed-out-item-title'>...</h2>";
 
         return {
             element: element,
 
             renderComplete: itemPromise.then(function (item) {
-                element.querySelector(".semanticZoomItem-Text").innerText = item.data.title;
-            }).then(function () {
-                return new Promise(function (complete, error) {
-                    if (n++ == FileBrowser.data.groups.dataSource.list._groupKeys.length) {
-                        complete(scrollToItem());
-                    }
-                });
+                element.querySelector(".zoomed-out-item-title").innerText = item.data.title;
+                element.querySelector(".zoomed-out-item-title").addEventListener("click", (function () { scrollToItem(item.data.title) }), false);
             })
         };
     }
 
-    function scrollToItem() {
-        //KLetterSecondListView.addEventListener("click", document.getElementById('element__57').scrollIntoView(), false);
-        let headerTemplate = document.querySelectorAll(".left-header-template-root");
+    function scrollToItem(title) {
         let listView = document.getElementById("zoomedInListView").winControl;
-
-        let headerTemplateLength = FileBrowser.data.groups.dataSource.list._groupKeys.length;
-
-        let availableKey = FileBrowser.data.groups.dataSource._list._groupKeys;
-
         let itemOffset;
 
-        for (let i = 0; i < headerTemplateLength; i++) {
-            itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[availableKey[i]].firstItemIndexHint);
+        // Get characteristics of item
+        itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
 
-            console.log("Width: " + itemOffset._value.width + " Left: " + itemOffset._value.left);
-        }
-
-        // Need get all, id for all title and allow it to the second listview button 
-        // set class to all header item -> queryAll -> check if they equal -> apply to the object/array (FirstLetterOfTitle: their_id) -> apply it to the second
-        // listView in onclick event -> set correct coordinates for resized cases
+        // Scroll to choosen item
+        return listView.scrollPosition = itemOffset._value.left;
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);

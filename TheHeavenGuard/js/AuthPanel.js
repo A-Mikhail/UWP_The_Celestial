@@ -42,7 +42,7 @@
         }
 
         create() {
-            panel = document.getElementById("authPanel");
+            panel = document.getElementById("panelBody");
 
             let elementButton = document.createElement("button");
             let elementImg = document.createElement("img");
@@ -96,8 +96,14 @@
                 panel.removeChild(pickedButton); // Crashed here!!!!!
             }, false);
 
+
+            ///
+            /// Important! 
+            /// Clear timer if next button was deleted before end of previous button timer
+            ///
+
             // Event by default remove button and close undo line after 10 seconds
-            defaultEventTimer = setTimeout(
+            defaultEventTimer = setTimeout( 
                 function () {
                     undoPanel.style.display = "none";
                     panel.removeChild(pickedButton);
@@ -279,6 +285,7 @@
         menu.commands.append(new Windows.UI.Popups.UICommand("Remove", function () { onRemove(button) }));
         menu.commands.append(new Windows.UI.Popups.UICommand("Log out", function () { onLogOut(button) }));
 
+        // Crashed here too! :c
         menu.showAsync(pageToWinRT(event.pageX, event.pageY)).done(function (invokedCommand) {
             if (invokedCommand === null) {
                 // The command is null if no command was invoked.

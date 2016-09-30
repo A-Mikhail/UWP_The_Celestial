@@ -19,7 +19,8 @@
             args.setPromise(WinJS.UI.processAll().then(function () {
                 let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
-                // Init Additional files
+
+                // Wait until main page is loaded and then init additional files
                 FileBrowser.init();
                 AuthPanel.init();
                 SettingsPage.init();
@@ -91,7 +92,6 @@
             }
         });
     }
-
 
     WinJS.Namespace.define("MainWindow", {
         renderPivotItems: renderPivotItems,

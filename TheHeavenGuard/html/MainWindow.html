@@ -36,6 +36,7 @@
 
 <body>
     <img id="headLogoImg" src="/img/Main-logo68x48.png" width="68" height="48" /> <!-- static logo -->
+
     <!-- Content area -->
     <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
         <div data-win-control="WinJS.UI.PivotItem" data-win-options="{ header : 'Main Page' }">
@@ -86,19 +87,11 @@
                         </div>
                     </div>
 
-                    <!-- ListView items in the zoomed out of the SemanticZoom template -->
-                    <div id="semanticZoomTemplate" data-win-control="WinJS.Binding.Template">
-                        <div class="semanticZoomItem">
-                            <h2 class="semanticZoomItem-Text" data-win-bind="innerText: title"></h2>
-                        </div>
-                    </div>
-
                     <!-- Custom controlls of the Semantic zoom -->
-                    <div id="semanticZoom" data-win-control="WinJS.UI.SemanticZoom">
-                        <!-- Zoomed in display mode -->
-                        <div id="zoomedInListView" class="win-selectionstylefilled"
-                             data-win-control="WinJS.UI.ListView"
-                             data-win-options="{
+                    <!-- Zoomed in display mode -->
+                    <div id="zoomedInListView" class="win-selectionstylefilled"
+                         data-win-control="WinJS.UI.ListView"
+                         data-win-options="{
                                 itemDataSource: FileBrowser.data.dataSource,
                                 itemTemplate: FileBrowser.multistageRenderer,
                                 groupDataSource: FileBrowser.data.groups.dataSource,
@@ -107,8 +100,24 @@
                                 tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
                                 layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
                              }">
-                        </div>
+                    </div>
+                </div>
 
+
+                <!-- Authorization panel -->
+                <div class="clouds-authorization-panel">
+                    <div class="panel-head">
+                        <div id="hamburgerBtn" class="toolbar-btn toolbar-btn-left"
+                             data-win-control="WinJS.UI.NavBarCommand"
+                             data-win-options="{ icon: 'hamburger' }">
+                        </div>
+                    </div>
+
+                    <!-- Button replacement -->
+                    <div id="panelBody" class="panel-body"></div>
+
+                    <!-- Shows listView items in zoomed out mode -->
+                    <div class="panel-footer">
                         <!-- Zoomed out display mode -->
                         <div id="zoomedOutListView"
                              data-win-control="WinJS.UI.ListView"
@@ -116,19 +125,16 @@
                                 itemDataSource: FileBrowser.data.groups.dataSource,
                                 itemTemplate: FileBrowser.placeholderRenderer,
                                 selectionMode: 'none',
-                                tapBehavior: 'invoke'
+                                tapBehavior: 'invoke',
+                                layout: { type: WinJS.UI.GridLayout }
                              }">
                         </div>
-                    </div>
-                </div>
 
-
-                <!-- Authorization panel -->
-                <div class="clouds-authorization-panel" id="authPanel">
-                    <div class="panel-head">
-                        <div id="hamburgerBtn" class="toolbar-btn toolbar-btn-left"
-                             data-win-control="WinJS.UI.NavBarCommand"
-                             data-win-options="{ icon: 'hamburger' }">
+                        <!-- ListView items in the zoomed out of the SemanticZoom template -->
+                        <div id="zoomedOutTemplate" data-win-control="WinJS.Binding.Template">
+                            <div class="zoomed-out-item" data-win-bind="onclick: message" onclick="">
+                                <h2 class="zoomed-out-item-title" data-win-bind="innerText: title"></h2>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -18,11 +18,11 @@
 
     function init() {
         // File choose button
-        let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
-        chFilesBtn.addEventListener("click", pickFiles, false);
+        //let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
+        //chFilesBtn.addEventListener("click", pickFiles, false);
 
-        let removeItemsBtn = document.getElementById("removeItemsBtn");
-        removeItemsBtn.addEventListener("click", removeSelected, false);
+        //let removeItemsBtn = document.getElementById("removeItemsBtn");
+        //removeItemsBtn.addEventListener("click", removeSelected, false);
 
         // Start generate Items for listViews
         generateItems();

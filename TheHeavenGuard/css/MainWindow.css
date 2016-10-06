@@ -81,6 +81,7 @@ html, body {
     width: 100%;
     height: 100%;
     background-color: ghostwhite;
+    margin: 0;
 }
 
 /* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
@@ -89,17 +90,11 @@ img {
     height: auto;
 }
 
-.add-btn, .start-sync-btn {
-    color: #000;
-}
-
 .win-pivot-header-area {
-    background-color: #212b35;
-    height: 48px; /* previous value is 52px */
-}
-
-.win-pivot-header-items {
-    height: 48px;
+    background-color: #fff;
+    border-bottom: 1px solid #cecece;
+    height: 48px; /* value by default is 52px */
+    color: #000;
 }
 
 .win-pivot .win-pivot-navbutton {
@@ -148,7 +143,24 @@ img {
     cursor: pointer;
     overflow: hidden;
     outline: none;
+    color: #000;
 }
+
+/* Remove backgrounds from list view items and navbar buttons */
+.win-listview .win-itembox, .win-itemcontainer .win-itembox {
+    background-color: transparent;
+}
+
+.win-navbarcommand-button, .win-navbarcommand-splitbutton {
+    background-color: transparent;
+}
+
+.win-autosuggestbox .win-autosuggestbox-input {
+    -ms-ime-align: after;
+    margin: 8px;
+    width: 100%;
+}
+
 
 /*
 *   I. Main Page; Pivot
@@ -160,9 +172,16 @@ img {
 .main-page, .minimized-panel {
     display: -ms-grid;
     -ms-grid-columns: 320px 1fr;
-    -ms-grid-rows: 48px 1fr;
+    -ms-grid-rows: 48px 1fr 48px;
     width: 100%;
     height: 100%;
+}
+
+#pivot {
+    position: relative;
+    -ms-grid-row: 1;
+    -ms-grid-column: 2;
+    -ms-grid-row-span: 2;
 }
 
 .minimized-panel {
@@ -173,24 +192,44 @@ img {
         display: none;
     }
 
+    /* Remove scroll and fixed height in minimized panel */
+    .minimized-panel .panel-body {
+        width: 100%;
+        height: auto;
+        overflow: auto;
+        background-color: transparent;
+    }
+
+    .minimized-panel .panel-footer {
+        display: none;
+    }
+
+    .minimized-panel .zoomed-out-btn {
+        display: block;
+    }
+
 /*
 *   II. Toolbar block
 */
-.toolbar {
-    background-color: #0b4669;
-    position: relative;
-    -ms-grid-row: 1;
+
+.app-bar {
+    -ms-grid-row: 3;
     -ms-grid-column: 2;
-    -ms-grid-column-span: 2;
-    height: 48px;
+    position: relative;
+    width: 100%;
+    transform: translateZ(0px);
+    z-index: 1003; /* remove stacking content from appBar */
+}
+
+.customAppBar {
+    position: fixed;
 }
 
 .toolbar-btn {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: "Segoe UI", sans-serif;
     position: absolute;
     cursor: pointer;
     background-color: transparent;
-    color: #000;
 }
 
     .toolbar-btn:hover {
@@ -213,22 +252,15 @@ img {
 /*
 *   III. File browser block
 */
-#fileBrowser {
-    position: relative;
-    -ms-grid-row: 2;
-    -ms-grid-column: 2;
-    width: 100%;
-    height: 100%;
-}
 
 /* Template for the items in the ListViews */
 .win-listview .win-container {
     color: #000;
 }
 
-#zoomedInListView{
+#zoomedInListView {
     position: absolute;
-    background-color: #fff;
+    background-color: #e6f1f7;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -243,7 +275,6 @@ img {
     line-height: 8pt;
     white-space: nowrap;
     font-size: 12pt;
-    background-color: none;
 }
 
 .listview-template-item {
@@ -252,7 +283,6 @@ img {
     height: 4em;
     line-height: 4em;
     display: -ms-grid;
-    background-color: #cecece;
 }
 
     .listview-template-item .listview-template-item-icon {
@@ -292,32 +322,32 @@ img {
     display: table;
     -ms-grid-row: 1;
     -ms-grid-column: 1;
-    -ms-grid-row-span: 2;
-    background-color: ghostwhite;
-}
-
-.hamburger-btn {
-    color: #fff;
+    -ms-grid-row-span: 4;
+    height: 100%;
+    border-right: 1px solid #cecece;
 }
 
 .panel-head {
     display: table-header-group;
     width: 100%;
     height: 48px;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .panel-body {
     width: 100%;
     height: 162px;
     overflow-y: scroll;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .panel-footer {
     display: table-footer-group;
     width: 100%;
     height: 384px; /* 8 elements in column; each element has 48px height */
+}
+
+.zoomed-out-btn {
+    display: none;
 }
 
 .undo-changes {
@@ -346,12 +376,11 @@ img {
 }
 
 .auth-panel-btn, .auth-panel-btn:hover {
-    background-color: transparent;
     border: none;
     height: 72px;
-    margin: 3px 0;
+    margin: 4px 0;
     width: 100%;
-    color: #fff;
+    color: #000;
 }
 
     .auth-panel-btn:hover {

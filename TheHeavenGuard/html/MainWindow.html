@@ -35,109 +35,87 @@
 </head>
 
 <body>
-    <img id="headLogoImg" src="/img/Main-logo68x48.png" width="68" height="48" /> <!-- static logo -->
-
-    <!-- Content area -->
-    <div id="pivot" data-win-control="WinJS.UI.Pivot" data-win-options="{ customLeftHeader: select('#headLogoImg') }">
-        <div data-win-control="WinJS.UI.PivotItem" data-win-options="{ header : 'Main Page' }">
-            <div class="main-page" id="mainPage">
-                <div class="toolbar">
-                    <div id="startSyncFilesBtn" class="toolbar-btn toolbar-btn-left"
-                         data-win-control="WinJS.UI.NavBarCommand"
-                         data-win-options="{
-                            icon: 'sync',
-                            label: 'Start Sync' }">
-                    </div>
-
-                    <div id="removeItemsBtn" class="toolbar-btn toolbar-btn-center"
-                         data-win-control="WinJS.UI.NavBarCommand"
-                         data-win-options="{
-                            icon: 'delete',
-                            label: 'Remove'}">
-                    </div>
-
-                    <div id="toolbarAddFilesBtn" class="toolbar-btn toolbar-btn-right"
-                         data-win-control="WinJS.UI.NavBarCommand"
-                         data-win-options="{
-                            icon: 'add',
-                            label: 'Add Files'}">
-                    </div>
+    <div class="main-page" id="mainPage">
+        <!-- Authorization panel -->
+        <div class="clouds-authorization-panel">
+            <div class="panel-head">
+                <div id="hamburgerBtn" class="toolbar-btn toolbar-btn-left"
+                     data-win-control="WinJS.UI.NavBarCommand"
+                     data-win-options="{ icon: 'hamburger' }">
                 </div>
+            </div>
 
-                <div id="fileBrowser">
-                    <!-- ListView Header template -->
-                    <div id="leftHeaderTemplate" class="left-header-template"
-                         data-win-control="WinJS.Binding.Template">
-                        <div class="left-header-template-root">
-                            <div data-win-bind="innerText: title"></div>
-                        </div>
-                    </div>
+            <!-- Button replacement -->
+            <div id="panelBody" class="panel-body"></div>
 
-                    <!-- ListView Template  -->
-                    <div class="listview-template" id="listViewTemplate"
-                         data-win-control="WinJS.Binding.Template">
-                        <div class="listview-template-item">
-                            <div class="listview-template-item-icon" id="lisViewTemplateItemIcon"
-                                 data-win-bind="innerHTML: icon"></div>
-
-                            <div class="listview-template-item-detail">
-                                <div class="listview-template-item-title" data-win-bind="textContent: title"></div>
-                                <div class="listview-template-item-date" data-win-bind="textContent: text"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Custom controlls of the Semantic zoom -->
-                    <!-- Zoomed in display mode -->
-                    <div id="zoomedInListView" class="win-selectionstylefilled"
-                         data-win-control="WinJS.UI.ListView"
-                         data-win-options="{
-                                itemDataSource: FileBrowser.data.dataSource,
-                                itemTemplate: FileBrowser.multistageRenderer,
-                                groupDataSource: FileBrowser.data.groups.dataSource,
-                                groupHeaderTemplate: select('#leftHeaderTemplate'),
-                                selectionMode: 'multi',
-                                tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
-                                layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
-                             }">
-                    </div>
-                </div>
-
-
-                <!-- Authorization panel -->
-                <div class="clouds-authorization-panel">
-                    <div class="panel-head">
-                        <div id="hamburgerBtn" class="toolbar-btn toolbar-btn-left"
-                             data-win-control="WinJS.UI.NavBarCommand"
-                             data-win-options="{ icon: 'hamburger' }">
-                        </div>
-                    </div>
-
-                    <!-- Button replacement -->
-                    <div id="panelBody" class="panel-body"></div>
-
-                    <!-- Shows listView items in zoomed out mode -->
-                    <div class="panel-footer">
-                        <!-- Zoomed out display mode -->
-                        <div id="zoomedOutListView"
-                             data-win-control="WinJS.UI.ListView"
-                             data-win-options="{
+            <!-- Shows listView items in zoomed out mode -->
+            <div class="panel-footer">
+                <!-- Zoomed out display mode -->
+                <div id="zoomedOutListView"
+                     data-win-control="WinJS.UI.ListView"
+                     data-win-options="{
                                 itemDataSource: FileBrowser.data.groups.dataSource,
                                 itemTemplate: FileBrowser.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke',
                                 layout: { type: WinJS.UI.GridLayout }
                              }">
-                        </div>
+                </div>
 
-                        <!-- ListView items in the zoomed out of the SemanticZoom template -->
-                        <div id="zoomedOutTemplate" data-win-control="WinJS.Binding.Template">
-                            <div class="zoomed-out-item" data-win-bind="onclick: message" onclick="">
-                                <h2 class="zoomed-out-item-title" data-win-bind="innerText: title"></h2>
-                            </div>
+                <!-- ListView items in the zoomed out of the SemanticZoom template -->
+                <div id="zoomedOutTemplate" data-win-control="WinJS.Binding.Template">
+                    <div class="zoomed-out-item" data-win-bind="onclick: message" onclick="">
+                        <h2 class="zoomed-out-item-title" data-win-bind="innerText: title"></h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Button for calling the zoomedOutListView in minimized-panel mode -->
+            <button class="auth-panel-btn win-button zoomed-out-btn">
+                <p> &#xe12B; </p>
+            </button>
+        </div>
+
+        <!-- Content area -->
+        <div id="pivot" data-win-control="WinJS.UI.Pivot">
+            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{ header : 'Main Page' }">
+                <!-- ListView Header template -->
+                <div id="leftHeaderTemplate" class="left-header-template"
+                     data-win-control="WinJS.Binding.Template">
+                    <div class="left-header-template-root">
+                        <div data-win-bind="innerText: title"></div>
+                    </div>
+                </div>
+
+                <!-- ListView Template  -->
+                <div class="listview-template" id="listViewTemplate"
+                     data-win-control="WinJS.Binding.Template">
+                    <div class="listview-template-item">
+                        <div class="listview-template-item-icon" id="lisViewTemplateItemIcon"
+                             data-win-bind="innerHTML: icon"></div>
+
+                        <div class="listview-template-item-detail">
+                            <div class="listview-template-item-title" data-win-bind="textContent: title"></div>
+                            <div class="listview-template-item-date" data-win-bind="textContent: text"></div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Custom controlls of the Semantic zoom -->
+                <!-- Zoomed in display mode -->
+                <div id="zoomedInListView" class="win-selectionstylefilled"
+                     data-win-control="WinJS.UI.ListView"
+                     data-win-options="{
+                    itemDataSource: FileBrowser.data.dataSource,
+                    itemTemplate: FileBrowser.multistageRenderer,
+                    groupDataSource: FileBrowser.data.groups.dataSource,
+                    groupHeaderTemplate: select('#leftHeaderTemplate'),
+                    selectionMode: 'multi',
+                    tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
+                    layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                    }">
+                </div>
+
 
                 <!-- Undo change Popup dialog -->
                 <div class="undo-changes" id="undoChangeLine">
@@ -151,6 +129,56 @@
                          data-win-options="{ icon: 'clear' }">
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- AppBar -->
+        <div class="app-bar">
+            <div class="customAppBar" data-win-control="WinJS.UI.AppBar" data-win-options="{ placement: 'bottom' }">
+                <button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'startSyncFilesBtn',
+                                    label: 'Synchronize',
+                                    icon: 'sync'
+                                }"></button>
+
+                <hr data-win-control="WinJS.UI.AppBarCommand" data-win-options="{ type: 'separator' }" />
+
+                <div data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'search',
+                                    type: 'content'
+                                }">
+                    <div class="win-interactive" data-win-control="WinJS.UI.AutoSuggestBox"
+                         data-win-options="{ placeholderText: 'Search file' }"></div>
+                </div>
+
+                <hr data-win-control="WinJS.UI.AppBarCommand" data-win-options="{ type: 'separator' }" />
+
+                <button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'removeItemsBtn',
+                                    label: 'Remove Selected',
+                                    icon: 'delete'
+                                }"></button>
+
+                <button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'selectAllItemsBtn',
+                                    label: 'Select All Items',
+                                    icon: 'selectall'
+                                }"></button>
+
+                <button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'clearSelectionBtn',
+                                    label: 'Clear Selection',
+                                    icon: 'clearselection'
+                                }"></button>
+
+                <hr data-win-control="WinJS.UI.AppBarCommand" data-win-options="{ type: 'separator' }" />
+
+                <button data-win-control="WinJS.UI.AppBarCommand" data-win-options="{
+                                    id: 'toolbarAddFilesBtn',
+                                    label: 'Add Files',
+                                    icon: 'add'
+                                }"></button>
+
             </div>
         </div>
     </div>

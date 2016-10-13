@@ -21,15 +21,10 @@ N. Global elements;
     ---- win-listview 
 
 I. Main Page; Pivot
-        ---- #pivot
-            ---- #headLogoImg
-            ---- .main-page #mainPage
+    ---- .main-page
 
-II. Toolbar block
-                ---- .toolbar
-                    ---- #startSyncFilesBtn .toolbar-btn .toolbar-btn-left
-                    ---- #toolbarAddFilesBtn .tooblar-btn .toolbar-btn-right
-                
+II. Appbar block
+
 III. File browser block
                 ---- #fileBrowser
                     ---- .left-header-template-root
@@ -40,8 +35,7 @@ III. File browser block
                     ---- .listview-template-item-title
                     ---- .listview-template-item-date
 
-                    ---- #semanticZoom
-                        ---- .zoomed-out-item
+                    ---- .zoomed-out-item
                 
 IV. Panel block
                 ---- .clouds-authorization-panel #authPanel
@@ -50,7 +44,6 @@ IV. Panel block
                         ---- .auth-panel-btn .auth-panel-btn:hover
                         ---- .cloud-avatar
                         ---- .img-circle
-                        ---- .online .offilne
                 
                 ---- .undo-changes #undoChangeLine
                     ---- #undoChangeBtn .undo-change-btn
@@ -94,7 +87,6 @@ img {
     background-color: #fff;
     border-bottom: 1px solid #cecece;
     height: 48px; /* value by default is 52px */
-    color: #000;
 }
 
 .win-pivot .win-pivot-navbutton {
@@ -123,17 +115,7 @@ img {
         padding: 0;
     }
 
-/* Remove margin-top: 13px from left header item */
-.win-pivot-header-area > .win-pivot-header-leftcustom {
-    margin: 0;
-}
-
-/* Make button resizable */
-.win-button {
-    min-width: 0px;
-}
-
-/* remove background and padding from right in hamburger button on auth panel */
+/* Remove background and padding-right in hamburger button on AuthPanel */
 #hamburgerBtn .win-navbarcommand-button-content {
     padding-right: 0;
     position: absolute;
@@ -147,31 +129,29 @@ img {
 }
 
 /* Remove backgrounds from list view items and navbar buttons */
-.win-listview .win-itembox, .win-itemcontainer .win-itembox {
-    background-color: transparent;
-}
-
+.win-listview .win-itembox, .win-itemcontainer .win-itembox,
 .win-navbarcommand-button, .win-navbarcommand-splitbutton {
     background-color: transparent;
 }
 
-.win-autosuggestbox .win-autosuggestbox-input {
-    -ms-ime-align: after;
-    margin: 8px;
-    width: 100%;
+/* Make WinJS.UI.AutoSuggestBox flyout is visible */
+.win-commandingsurface .win-commandingsurface-actionareacontainer,
+.win-commandingsurface .win-commandingsurface-actionarea {
+    overflow: visible;
 }
 
+/* Add margin 8px to top and bottom of search box (by default it's ignored from original styles)*/
+.win-autosuggestbox .win-autosuggestbox-input {
+    margin: 8px 0;
+    width: 100%;
+}
 
 /*
 *   I. Main Page; Pivot
 */
-#headLogoImg {
-    padding-left: 12px;
-}
-
 .main-page, .minimized-panel {
     display: -ms-grid;
-    -ms-grid-columns: 320px 1fr;
+    -ms-grid-columns: 256px 1fr;
     -ms-grid-rows: 48px 1fr 48px;
     width: 100%;
     height: 100%;
@@ -209,9 +189,8 @@ img {
     }
 
 /*
-*   II. Toolbar block
+*   II. Appbar block
 */
-
 .app-bar {
     -ms-grid-row: 3;
     -ms-grid-column: 2;
@@ -221,52 +200,20 @@ img {
     z-index: 1003; /* remove stacking content from appBar */
 }
 
-.customAppBar {
-    position: fixed;
-}
-
-.toolbar-btn {
-    font-family: "Segoe UI", sans-serif;
-    position: absolute;
-    cursor: pointer;
-    background-color: transparent;
-}
-
-    .toolbar-btn:hover {
-        opacity: 1;
-    }
-
-.toolbar-btn-right {
-    right: 0;
-}
-
-.toolbar-btn-left {
-    left: 0;
-}
-
-.toolbar-btn-center {
-    left: 50%;
-    right: 50%;
-}
-
 /*
 *   III. File browser block
 */
-
-/* Template for the items in the ListViews */
 .win-listview .win-container {
     color: #000;
 }
 
 #zoomedInListView {
-    position: absolute;
     background-color: #e6f1f7;
     width: 100%;
     height: 100%;
     overflow: hidden;
 }
 
-/* Template for items in the zoomed out ListView */
 .zoomed-out-item {
     color: #000;
     width: 48px;
@@ -343,11 +290,53 @@ img {
 .panel-footer {
     display: table-footer-group;
     width: 100%;
-    height: 384px; /* 8 elements in column; each element has 48px height */
 }
 
 .zoomed-out-btn {
     display: none;
+}
+
+.auth-panel-btn, .auth-panel-btn:hover {
+    border: none;
+    height: 48px;
+    width: 100%;
+    color: #000;
+}
+
+    .auth-panel-btn:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+.cloud-avatar {
+    width: 24px;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    font-size: 16px;
+    margin: 0;
+    line-height: 24px;
+    background-position: 0 0;
+    background-origin: border-box;
+    height: 24px;
+    float: left;
+    margin-left: 0px;
+}
+
+.img-circle {
+    border-radius: 50%;
+}
+
+.auth-btn-text {
+    text-align: left;
+    text-indent: 1.2em;
+    margin: 0;
+    width: 100%;
+}
+
+.setting-btn {
+    border-top: 1px solid #cecece;
+    bottom: 0px;
+    position: fixed;
 }
 
 .undo-changes {
@@ -373,49 +362,6 @@ img {
     height: 48px;
     width: 48px;
     color: #112233;
-}
-
-.auth-panel-btn, .auth-panel-btn:hover {
-    border: none;
-    height: 72px;
-    margin: 4px 0;
-    width: 100%;
-    color: #000;
-}
-
-    .auth-panel-btn:hover {
-        background-color: rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-    }
-
-.cloud-avatar {
-    width: 48px;
-    height: auto;
-    float: left;
-    background-color: rgba(0, 0, 0, 0.3);
-}
-
-.img-circle {
-    border-radius: 50%;
-}
-
-.auth-btn-text {
-    text-align: left;
-    text-indent: 5em;
-}
-
-.online, .offline {
-    border-top: none;
-    border-bottom: none;
-    border-right: none;
-}
-
-.online {
-    border-left: 2px solid #128B44;
-}
-
-.offline {
-    border-left: 2px solid #D82429;
 }
 
 /*

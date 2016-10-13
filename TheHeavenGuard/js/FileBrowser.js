@@ -18,11 +18,12 @@
 
     function init() {
         // File choose button
-        //let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
-        //chFilesBtn.addEventListener("click", pickFiles, false);
+        let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
+        chFilesBtn.addEventListener("click", pickFiles, false);
 
-        //let removeItemsBtn = document.getElementById("removeItemsBtn");
-        //removeItemsBtn.addEventListener("click", removeSelected, false);
+        // Remove selected item from List View and database
+        let removeItemsBtn = document.getElementById("removeItemsBtn");
+        removeItemsBtn.addEventListener("click", removeSelected, false);
 
         // Start generate Items for listViews
         generateItems();
@@ -222,14 +223,23 @@
         return { title: dataItem.title.toUpperCase().charAt(0) };
     }
 
-    // Function forceUpdate - fix the issue with display "none" 
-    // https://msdn.microsoft.com/en-us/library/windows/apps/hh758352.aspx
-    function forceUpdate() {
-        let listView = document.querySelector("#zoomedInListView").winControl;
+    function suggestionsRequestedHandler(eventObject) {
+        let queryText = eventObject.detail.queryText,
+            query = queryText.toLowerCase(),
+            suggestionCollection = eventObject.detail.searchSuggestionCollection,
+            suggestionList = FileBrowser.data._groupedItems;
 
-        console.log("forceUpdate");
+        if (queryText.length > 0) {
+            for (let i = 1, len = FileBrowser.data.length; i < len; i++) {
+                if (suggestionList[i].data.title.substr(0, query.length).toLowerCase() === query) {
+                    suggestionCollection.appendQuerySuggestion(suggestionList[i].data.title);
+                }
+            }
+        }
+    }
 
-        return listView.forceLayout();
+    function querySubmittedHandler(eventObject) {
+        var queryText = eventObject.detail.queryText;
     }
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
@@ -325,6 +335,10 @@
         generateItems: generateItems,
         multistageRenderer: multistageRenderer,
         placeholderRenderer: placeholderRenderer,
-        data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups)
+        data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups),
+        suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),
+        querySubmittedHandler: WinJS.UI.eventHandler(querySubmittedHandler)
     });
+
+    WinJS.UI.processAll();
 })();

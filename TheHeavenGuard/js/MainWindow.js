@@ -20,10 +20,12 @@
                 let syncBtn = document.getElementById("startSyncFilesBtn");
                 syncBtn.addEventListener("click", BackgroundTransfer.init, false); // start sync files
 
+                let settingsBtn = document.getElementById("settingsBtn");
+                settingsBtn.addEventListener("click", SettingsPanel.init, false)
+
                 // Wait until main page is loaded and then init additional files
                 FileBrowser.init();
                 AuthPanel.init();
-                SettingsPage.init();
             }));
         }
     };

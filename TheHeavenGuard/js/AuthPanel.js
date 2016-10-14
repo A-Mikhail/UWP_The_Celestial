@@ -17,11 +17,6 @@
         let panelBtn = document.getElementById("hamburgerBtn");
         panelBtn.addEventListener("click", minimizedPanel, false);
 
-        let settingsBtn = document.getElementById("settingsBtn");
-        settingsBtn.addEventListener("click", (function () {
-            WinJS.UI.Pages.render("/html/Settings.html");
-        }), false)
-
         // Create Buttons for panel and set eventListener on it
         createButton().then(function () {
             buttons = document.querySelectorAll(".auth-panel-btn");

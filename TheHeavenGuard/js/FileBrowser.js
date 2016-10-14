@@ -25,6 +25,20 @@
         let removeItemsBtn = document.getElementById("removeItemsBtn");
         removeItemsBtn.addEventListener("click", removeSelected, false);
 
+        let selectAllItemsBtn = document.getElementById("selectAllItemsBtn");
+        selectAllItemsBtn.addEventListener("click", (function () {
+            let listView = document.getElementById("zoomedInListView").winControl;
+
+            listView.selection.selectAll();
+        }), false);
+
+        let clearSelectionBtn = document.getElementById("clearSelectionBtn");
+        clearSelectionBtn.addEventListener("click", (function () {
+            let listView = document.getElementById("zoomedInListView").winControl;
+
+            listView.selection.clear();
+        }), false);
+
         // Start generate Items for listViews
         generateItems();
     }

@@ -24,6 +24,7 @@ I. Main Page; Pivot
     ---- .main-page
 
 II. Appbar block
+    ---- .app-bar 
 
 III. File browser block
                 ---- #fileBrowser
@@ -48,19 +49,6 @@ IV. Panel block
                 ---- .undo-changes #undoChangeLine
                     ---- #undoChangeBtn .undo-change-btn
                     ---- #closeUndoPanelBtn .close-undo-line-btn
-
-V. Settings Page
-    ---- .settings-page
-        ---- .information-panel
-            ---- #storageQuota
-            ---- #usage
-            
-            ---- #cloudService-webview
-                ---- #icon
-                ---- #output
-
-        ---- .delete-db-panel .horizontal-center
-            ---- #destroyUserDB .delete-db-btn
 
 @. Media
     ---- @media only screen and (max-width: 500px)
@@ -364,21 +352,21 @@ img {
     color: #112233;
 }
 
-/*
-*   V. Settings Page
-*/
-.settings-page {
-    color: #000;
+/* Settings Split View */
+.title {
+    font-size: 25px;
+    left: 50px;
+    margin-top: 6px;
+    vertical-align: middle;
+    display: inline-block;
 }
 
-.delete-db-panel {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    padding: 24px;
-    background-color: #fdc214;
-    color: #fff;
-    text-align: center;
+.nav-commands {
+    margin-top: 20px;
+}
+
+.win-splitviewcommand-button {
+    background-color: transparent;
 }
 
 /* @Media */

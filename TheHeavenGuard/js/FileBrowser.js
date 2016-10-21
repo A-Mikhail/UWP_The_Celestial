@@ -353,6 +353,4 @@
         suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),
         querySubmittedHandler: WinJS.UI.eventHandler(querySubmittedHandler)
     });
-
-    WinJS.UI.processAll();
 })();

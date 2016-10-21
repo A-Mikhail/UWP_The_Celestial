@@ -12,10 +12,53 @@
         buttons,
         undoPanel;
 
+    WinJS.UI.Pages.define("/html/SVSettings.html", {
+        ready: function (element, options) {
+            let splitView = document.getElementById("splitView");
+
+            // Open settings panel
+            let settingsBtn = document.getElementById("settingsBtn");
+            settingsBtn.addEventListener("click", (function () {
+                splitView.winControl.paneOpened = true;
+            }), false)
+
+            let SVHelpCommand = document.getElementById("helpSVCommand");
+            SVHelpCommand.addEventListener("click", (function () { console.log("help") }), false);
+
+            let SVAboutCommand = document.getElementById("aboutSVCommand");
+            SVAboutCommand.addEventListener("click", function () {
+                WinJS.Navigation.navigate("/SVFragments/about.html");
+            }, false);
+        }
+    });
+
+    WinJS.Navigation.addEventListener("navigated", function (e) {
+        let SVBody = document.getElementById("splitViewBody");
+
+        WinJS.UI.Animation.exitPage(SVBody.children).then(function () {
+            SVBody.winControl && SVBody.winControl.unload && SVBody.winControl.unload();
+
+            WinJS.Utilities.empty(SVBody);
+            WinJS.UI.Pages.render(e.detail.location, SVBody)
+                .then(function () {
+                    return WinJS.UI.Animation.enterPage(SVBody.children);
+                });
+        });
+    });
+
     // Function init() - main function which contains eventListeners and function calls
     function init() {
+        // Minimize authPanel by clicking on hamburger button 
         let panelBtn = document.getElementById("hamburgerBtn");
-        panelBtn.addEventListener("click", minimizedPanel, false);
+        panelBtn.addEventListener("click", (function () {
+            let mainPage = document.getElementById("mainPage");
+
+            mainPage.className = (mainPage.className == "minimized-panel") ? "main-page" : "minimized-panel";
+        }), false);
+
+        // Synchronize files; functional of it placed in BackgroundTransfer.js
+        let syncBtn = document.getElementById("startSyncFilesBtn");
+        syncBtn.addEventListener("click", BackgroundTransfer.init, false);
 
         // Create Buttons for panel and set eventListener on it
         createButton().then(function () {
@@ -103,7 +146,7 @@
             ///
 
             // Event by default remove button and close undo line after 10 seconds
-            defaultEventTimer = setTimeout( 
+            defaultEventTimer = setTimeout(
                 function () {
                     undoPanel.style.display = "none";
                     panel.removeChild(pickedButton);
@@ -182,7 +225,7 @@
         }
     }
 
-    function ButtonTest () {
+    function ButtonTest() {
         MainWindow.renderPivotItems("ButtonTest", "/html/Dropbox.html");
     }
 
@@ -324,14 +367,6 @@
         } catch (err) {
             // retrive has not found user
         }
-    }
-
-    // Function minimizedPanel() - minimize left panel by click
-    // need to remember this value for resume event
-    function minimizedPanel() {
-        let mainPageMinimized = document.getElementById("mainPage");
-
-        mainPageMinimized.className = (mainPageMinimized.className == "minimized-panel") ? "main-page" : "minimized-panel"; // minimize pannel
     }
 
     WinJS.Namespace.define("AuthPanel", {

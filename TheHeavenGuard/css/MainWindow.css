@@ -62,7 +62,7 @@ html, body {
     width: 100%;
     height: 100%;
     background-color: ghostwhite;
-    margin: 0;
+    font-family: 'Segoe UI';
 }
 
 /* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
@@ -358,19 +358,20 @@ img {
 
 /* Settings Split View */
 .title {
-    font-size: 25px;
-    left: 50px;
-    margin-top: 6px;
-    vertical-align: middle;
-    display: inline-block;
+    display: inline;
+    font-size: x-large;
+    left: 16px;
+    top: 10px;
+    vertical-align: top;
+    position: relative;
 }
 
 .nav-commands {
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
-.win-splitviewcommand-button {
-    background-color: transparent;
+.nav-commands-body {
+    padding: 0 15px;
 }
 
 /* @Media */

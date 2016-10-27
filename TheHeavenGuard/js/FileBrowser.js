@@ -253,7 +253,9 @@
     }
 
     function querySubmittedHandler(eventObject) {
-        var queryText = eventObject.detail.queryText;
+        let queryText = eventObject.detail.queryText;
+
+        scrollToItem(queryText.toUpperCase().charAt(0));
     }
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
@@ -272,7 +274,7 @@
         icon = element.querySelector(".listview-template-item-icon");
 
         title = element.querySelector(".listview-template-item-title");
-        title.innerHTML = "..."; // text by default
+        title.innerHTML = "..."; // title by default
 
         text = element.querySelector(".listview-template-item-date");
         text.innerHTML = "..."; // text by default
@@ -324,7 +326,9 @@
 
             renderComplete: itemPromise.then(function (item) {
                 element.querySelector(".zoomed-out-item-title").innerText = item.data.title;
-                element.querySelector(".zoomed-out-item-title").addEventListener("click", (function () { scrollToItem(item.data.title) }), false);
+                element.querySelector(".zoomed-out-item-title").addEventListener("click", (function () {
+                    scrollToItem(item.data.title);
+                }), true);
             })
         };
     }
@@ -336,8 +340,19 @@
         // Get characteristics of item
         itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
 
+        let n = 0;
+        let scrollInt;
+
         // Scroll to choosen item
-        return listView.scrollPosition = itemOffset._value.left;
+        if (listView.scrollPosition != itemOffset._value.left) {
+            scrollInt = setInterval((function() {
+                listView.scrollPosition = n++;
+                console.log("hah kek", n++);
+            }), 1);
+        } else {
+            console.log("else");
+            clearInterval(scrollInt);
+        }
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);

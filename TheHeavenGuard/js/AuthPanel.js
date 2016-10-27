@@ -18,16 +18,24 @@
 
             // Open settings panel
             let settingsBtn = document.getElementById("settingsBtn");
-            settingsBtn.addEventListener("click", (function () {
+            settingsBtn.addEventListener("click", function () {
                 splitView.winControl.paneOpened = true;
-            }), false)
+            }, false)
 
-            let SVHelpCommand = document.getElementById("helpSVCommand");
-            SVHelpCommand.addEventListener("click", (function () { console.log("help") }), false);
-
+            // Command buttons inside Setting Panel
             let SVAboutCommand = document.getElementById("aboutSVCommand");
             SVAboutCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/SVFragments/about.html");
+                WinJS.Navigation.navigate("/SVPages/about.html");
+            }, false);
+
+            let SVHelpCommand = document.getElementById("helpSVCommand");
+            SVHelpCommand.addEventListener("click", function () {
+                WinJS.Navigation.navigate("/SVPages/help.html");
+            }, false);
+
+            let SVGeneralCommand = document.getElementById("generalSVCommand");
+            SVGeneralCommand.addEventListener("click", function () {
+                WinJS.Navigation.navigate("/SVPages/general.html");
             }, false);
         }
     });
@@ -50,11 +58,11 @@
     function init() {
         // Minimize authPanel by clicking on hamburger button 
         let panelBtn = document.getElementById("hamburgerBtn");
-        panelBtn.addEventListener("click", (function () {
+        panelBtn.addEventListener("click", function () {
             let mainPage = document.getElementById("mainPage");
 
             mainPage.className = (mainPage.className == "minimized-panel") ? "main-page" : "minimized-panel";
-        }), false);
+        }, false);
 
         // Synchronize files; functional of it placed in BackgroundTransfer.js
         let syncBtn = document.getElementById("startSyncFilesBtn");

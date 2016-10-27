@@ -111,9 +111,13 @@
     <Content Include="Microsoft.WinJS.4.4\js\ui.js" />
     <Content Include="Microsoft.WinJS.4.4\js\WinJS.intellisense-setup.js" />
     <Content Include="Microsoft.WinJS.4.4\js\WinJS.intellisense.js" />
-    <Content Include="SVFragments\about.css" />
-    <Content Include="SVFragments\about.html" />
-    <Content Include="SVFragments\about.js" />
+    <Content Include="SVPages\about.html" />
+    <Content Include="SVPages\about.js" />
+    <Content Include="SVPages\general.html" />
+    <Content Include="SVPages\general.js" />
+    <Content Include="SVPages\help.html" />
+    <Content Include="SVPages\help.js" />
+    <Content Include="SVPages\SVPages.css" />
     <None Include="TheHeavenGuard_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

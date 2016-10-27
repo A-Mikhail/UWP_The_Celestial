@@ -1,7 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    WinJS.UI.Pages.define("/SVFragments/about.html", {
+    WinJS.UI.Pages.define("/SVPages/general.html", {
         ready: function () {
             let back = document.getElementById("back");
             back.addEventListener("click", function () {

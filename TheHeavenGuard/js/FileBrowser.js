@@ -326,12 +326,16 @@
 
             renderComplete: itemPromise.then(function (item) {
                 element.querySelector(".zoomed-out-item-title").innerText = item.data.title;
+                // Send clicked title to scrollToItem
                 element.querySelector(".zoomed-out-item-title").addEventListener("click", (function () {
                     scrollToItem(item.data.title);
                 }), true);
             })
         };
     }
+
+    // SetInterval for animating
+    let animateInterval;
 
     function scrollToItem(title) {
         let listView = document.getElementById("zoomedInListView").winControl;
@@ -340,19 +344,45 @@
         // Get characteristics of item
         itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
 
-        let n = 0;
-        let scrollInt;
+        // Start animation on choosen listView and with destination position
+        startAnimateScroll(listView, itemOffset._value.left);
+    }
 
-        // Scroll to choosen item
-        if (listView.scrollPosition != itemOffset._value.left) {
-            scrollInt = setInterval((function() {
-                listView.scrollPosition = n++;
-                console.log("hah kek", n++);
-            }), 1);
-        } else {
-            console.log("else");
-            clearInterval(scrollInt);
+    function stopAnimateScroll(listView, position, destinationPoint, animateInterval) {
+        let currentLocation = listView.scrollPosition;
+        //|| ((listView.innerHeight + currentLocation) > documentHeight)
+        if (position == destinationPoint || currentLocation == destinationPoint) {
+            console.log("End Animate");
+
+            clearInterval(animateInterval);
         }
+    }
+
+    // listView - List View on wich animation should applied
+    // destinationPoint - For where function should scroll in px
+    function startAnimateScroll(listView, destinationPoint) {
+        clearInterval(animateInterval);
+
+        animateInterval = setInterval(function () { loopAnimateScroll(listView, destinationPoint) }, 16);
+    }
+
+    function loopAnimateScroll(listView, destinationPoint) {
+        let speed = 80;
+        let timeLapsed = 0, pattern = 0;
+        let percentage, position;
+        let startLocation = listView.scrollPosition;
+        let distance = destinationPoint - startLocation; // distance to travel
+
+        timeLapsed += 16;
+        percentage = (timeLapsed / parseInt(speed, 10));
+        percentage = (percentage > 1) ? 1 : percentage;
+
+        pattern = percentage < 0.5 ? 2 * percentage * percentage : -1 + (4 - 2 * percentage) * percentage;
+
+        position = startLocation + (distance * pattern);
+        listView.scrollPosition = Math.floor(position); // scroll to position
+
+        stopAnimateScroll(listView, position, destinationPoint, animateInterval)
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);

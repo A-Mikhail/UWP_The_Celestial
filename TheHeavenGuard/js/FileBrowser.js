@@ -334,9 +334,6 @@
         };
     }
 
-    // SetInterval for animating
-    let animateInterval;
-
     function scrollToItem(title) {
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemOffset;
@@ -345,42 +342,48 @@
         itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
 
         // Start animation on choosen listView and with destination position
-        startAnimateScroll(listView, itemOffset._value.left);
+        startAnimateScroll(listView, itemOffset._value.left, itemOffset._value.width);
     }
+
+    // Global variables for animation functions
+    let animateInterval;
+    let speed = 500;
+    let timeLapsed = 0, pattern = 0;
+    let percentage, position;
 
     function stopAnimateScroll(listView, position, destinationPoint, animateInterval) {
         let currentLocation = listView.scrollPosition;
-        //|| ((listView.innerHeight + currentLocation) > documentHeight)
-        if (position == destinationPoint || currentLocation == destinationPoint) {
-            console.log("End Animate");
 
+        if (position == destinationPoint || currentLocation == destinationPoint) {
             clearInterval(animateInterval);
+
+            // Clear timeLapsed
+            timeLapsed = 0;
         }
     }
 
-    // listView - List View on wich animation should applied
+    // listView - List View on which animation should be applied
     // destinationPoint - For where function should scroll in px
     function startAnimateScroll(listView, destinationPoint) {
         clearInterval(animateInterval);
-
         animateInterval = setInterval(function () { loopAnimateScroll(listView, destinationPoint) }, 16);
     }
 
     function loopAnimateScroll(listView, destinationPoint) {
-        let speed = 80;
-        let timeLapsed = 0, pattern = 0;
-        let percentage, position;
         let startLocation = listView.scrollPosition;
-        let distance = destinationPoint - startLocation; // distance to travel
-
+        // distance to travel
+        let distance = parseInt(destinationPoint, 10) - startLocation;
+       
         timeLapsed += 16;
         percentage = (timeLapsed / parseInt(speed, 10));
         percentage = (percentage > 1) ? 1 : percentage;
 
-        pattern = percentage < 0.5 ? 2 * percentage * percentage : -1 + (4 - 2 * percentage) * percentage;
-
+        // easeInOutCubic 
+        pattern = percentage < 0.5 ? 4 * percentage * percentage * percentage : (percentage - 1) * (2 * percentage - 2) * (2 * percentage - 2) + 1;
         position = startLocation + (distance * pattern);
-        listView.scrollPosition = Math.floor(position); // scroll to position
+
+        // scroll to position
+        listView.scrollPosition = Math.floor(position);
 
         stopAnimateScroll(listView, position, destinationPoint, animateInterval)
     }

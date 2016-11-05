@@ -6,7 +6,7 @@ window.googleConfig = {
     clientSecret: "FhVndGtt4U1AuS7qFBmqbOr5",
     scopes: "https://www.googleapis.com/auth/drive",
     oauthUrl: "https://accounts.google.com/o/oauth2/token"
-}
+};
 
 // Dropbox documentation - https://www.dropbox.com/developers/documentation/http/documentation
 window.dropboxConfig = {
@@ -17,7 +17,7 @@ window.dropboxConfig = {
     appKey: "oyt9daobcffp5ta",
     appSecret: "ap0blor8jkek2bu",
     oauthUrl: "https://api.dropboxapi.com/2/auth/token/revoke"
-}
+};
 
 // OneDrive documentation - https://dev.onedrive.com/auth/msa_oauth.htm#code-flow
 window.onedriveConfig = {
@@ -26,4 +26,4 @@ window.onedriveConfig = {
     appSecret: "IRXjAtRUOlIsSyfm4ZLf2APHD4I/3dE9",
     oauthUrl: "https://login.live.com/oauth20_token.srf",
     scopes: "onedrive.readwrite onedrive.appfolder offline_access"
-}
+};

@@ -45,7 +45,7 @@
 
                 itemsSet.set(keyItems, headerItems);
             } catch (error) {
-
+                console.log("Error occured while creating the Item ", error);
             }
         }
     }
@@ -79,7 +79,7 @@
             pushItems();
 
             for (let key of itemsSet.entries()) {
-                if (key[1] == pivotName) {
+                if (key[1] === pivotName) {
                     done(pivotItems.dataSource.remove(`${key[0]}`));
                     itemsSet.delete(key[0]);
 

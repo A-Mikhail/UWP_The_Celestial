@@ -3,7 +3,6 @@
 
     // Global array used to persist operations.
     let uploadOperations = [];
-
     let maxUploadFileSize = 100 * 1024 * 1024; // TODO: Change 100 MB file limit to cload's file limit
 
     // Function init() - main function which contains eventListeners and function calls
@@ -13,7 +12,7 @@
 
             let url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
 
-            if (FileBrowser.storageFileArr == 0) {
+            if (FileBrowser.storageFileArr === 0) {
                 let messageDialog = new Windows.UI.Popups.MessageDialog("Add file to your sync library");
                 messageDialog.showAsync();
             } else {
@@ -214,7 +213,7 @@
     }
 
     function validateFilesAsync(files) {
-        if (files.size == 0) {
+        if (files.size === 0) {
             displayError("Error: No file selected");
             return;
         }
@@ -232,7 +231,7 @@
 
         return WinJS.Promise.join(getPropertiesPromises).then(function () {
             if (totalFileSize > maxUploadFileSize) {
-                displayError("Size of selected files exceeds max. upload file size (" + (maxUploadFileSize / (1024 * 1024)) + "MB).");
+                displayError("Size of selected files exceeds max. upload file size (" + maxUploadFileSize / (1024 * 1024) + "MB).");
 
                 return null;
             }

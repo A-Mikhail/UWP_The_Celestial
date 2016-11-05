@@ -1,4 +1,5 @@
-﻿/*
+﻿@charset "UTF-8";
+/*
     Info color:
         Green - #128B44; Positive: done, completed
         Blue - #2C71B9; Neutral: help, notification
@@ -91,8 +92,8 @@ img {
 
 .win-pivot-item {
     position: relative;
-    top: 0px;
-    bottom: 0px;
+    top: 0;
+    bottom: 0;
     height: 100%;
     width: 100%;
     left: 0 !important;
@@ -128,7 +129,8 @@ img {
     overflow: visible;
 }
 
-/* Add margin 8px to top and bottom of search box (by default it's ignored from original styles)*/
+/* Add margin 8px to the top and bottom of search box 
+    (by default it's ignored from original styles) */
 .win-autosuggestbox .win-autosuggestbox-input {
     margin: 8px 0;
     width: 100%;
@@ -143,22 +145,28 @@ img {
 *   I. Main Page; Pivot
 */
 .main-page, .minimized-panel {
+    /*ignore jslint start*/
     display: -ms-grid;
     -ms-grid-columns: 256px 1fr;
     -ms-grid-rows: 48px 1fr 48px;
+    /*ignore jslint end*/
     width: 100%;
     height: 100%;
 }
 
 #pivot {
     position: relative;
+    /*ignore jslint start*/
     -ms-grid-row: 1;
     -ms-grid-column: 2;
     -ms-grid-row-span: 2;
+    /*ignore jslint end*/
 }
 
 .minimized-panel {
+    /*ignore jslint start*/
     -ms-grid-columns: 48px 1fr;
+    /*ignore jslint end*/
 }
     /* Remove Text when authorization panel is hidden */
     .minimized-panel .auth-btn-text {
@@ -185,8 +193,10 @@ img {
 *   II. Appbar block
 */
 .app-bar {
+    /*ignore jslint start*/
     -ms-grid-row: 3;
     -ms-grid-column: 2;
+    /*ignore jslint end*/
     position: relative;
     width: 100%;
     transform: translateZ(0px);
@@ -218,23 +228,29 @@ img {
 }
 
 .listview-template-item {
+    /*ignore jslint start*/
+    display: -ms-grid;
+    /*ignore jslint end*/
     position: relative;
     width: 18em;
     height: 4em;
     line-height: 4em;
-    display: -ms-grid;
 }
 
     .listview-template-item .listview-template-item-icon {
-        font-family: "Segoe MDL2 Assets","Symbols";
+        font-family: "Segoe MDL2 Assets", "Symbols";
         font-size: xx-large;
+        /*ignore jslint start*/
         -ms-grid-column: 1;
+        /*ignore jslint end*/
     }
 
     .listview-template-item .listview-template-item-detail {
         margin: 5px;
         line-height: 2em;
+        /*ignore jslint start*/
         -ms-grid-column: 2;
+        /*ignore jslint end*/
     }
 
 .listview-template-item-title {
@@ -260,9 +276,11 @@ img {
 .clouds-authorization-panel {
     position: relative;
     display: table;
+    /*ignore jslint start*/
     -ms-grid-row: 1;
     -ms-grid-column: 1;
     -ms-grid-row-span: 4;
+    /*ignore jslint end*/
     height: 100%;
     border-right: 1px solid #cecece;
 }
@@ -302,7 +320,7 @@ img {
 
 .cloud-avatar {
     width: 24px;
-    letter-spacing: 0px;
+    letter-spacing: 0;
     vertical-align: middle;
     font-size: 16px;
     margin: 0;
@@ -311,7 +329,7 @@ img {
     background-origin: border-box;
     height: 24px;
     float: left;
-    margin-left: 0px;
+    margin-left: 0;
 }
 
 .img-circle {
@@ -327,7 +345,7 @@ img {
 
 .setting-btn {
     border-top: 1px solid #cecece;
-    bottom: 0px;
+    bottom: 0;
     position: fixed;
 }
 
@@ -350,7 +368,7 @@ img {
 
 .close-undo-line-btn {
     position: absolute;
-    right: 0px;
+    right: 0;
     height: 48px;
     width: 48px;
     color: #112233;

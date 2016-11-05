@@ -14,7 +14,7 @@
         return WinJS.xhr({
             url: url,
             headers: headers
-        }).then(function (x) { return JSON.parse(x.response); })
+        }).then(function (x) { return JSON.parse(x.response); });
     }
 
     function getFiles(token) {

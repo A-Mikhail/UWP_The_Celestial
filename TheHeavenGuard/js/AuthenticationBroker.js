@@ -31,15 +31,14 @@
 
             return new Promise(function (done, error) {
                 let retrieveToken = retreiveTokenFromVault(auth.cloudName);
-                let request = auth.authUrl
-                            + "?client_id=" + auth.clientId
-                            + "&redirect_uri=" + redirectURI
-                            + "&response_type=" + responseType;
+                let request = auth.authUrl + "?client_id="
+                    + auth.clientId + "&redirect_uri="
+                    + redirectURI + "&response_type=" + responseType;
 
                 if (!retrieveToken) {
                     // Check on optional argument
                     if (auth.scopes === undefined) {
-                        authenticateURI = request
+                        authenticateURI = request;
                     } else {
                         authenticateURI = request + "&scope=" + auth.scopes;
                     }
@@ -49,10 +48,10 @@
 
                     authenticate.then(function (token) {
                         let grantTokenURI = "code=" + encodeURIComponent(token)
-                                            + "&redirect_uri=" + encodeURIComponent(redirectURI)
-                                            + "&client_id=" + encodeURIComponent(auth.clientId)
-                                            + "&client_secret=" + encodeURIComponent(auth.clientSecret)
-                                            + "&grant_type=authorization_code";
+                            + "&redirect_uri=" + encodeURIComponent(redirectURI)
+                            + "&client_id=" + encodeURIComponent(auth.clientId)
+                            + "&client_secret=" + encodeURIComponent(auth.clientSecret)
+                            + "&grant_type=authorization_code";
 
                         // Send request to grant token
                         let grant = new Authorization(auth.oauthUrl, "POST", header, grantTokenURI, false, true).sendRequest();
@@ -69,10 +68,10 @@
                     });
                 } else {
                     let refreshTokenURI = "refresh_token=" + encodeURIComponent(retrieveToken)
-                                        + "&redirect_uri=" + encodeURIComponent(redirectURI)
-                                        + "&client_id=" + encodeURIComponent(auth.clientId)
-                                        + "&client_secret=" + encodeURIComponent(auth.clientSecret)
-                                        + "&grant_type=refresh_token";
+                        + "&redirect_uri=" + encodeURIComponent(redirectURI)
+                        + "&client_id=" + encodeURIComponent(auth.clientId)
+                        + "&client_secret=" + encodeURIComponent(auth.clientSecret)
+                        + "&grant_type=refresh_token";
 
                     // Send request to refresh token
                     let refresh = new Authorization(auth.oauthUrl, "POST", header, refreshTokenURI, false, true).sendRequest();
@@ -105,7 +104,7 @@
             return new Promise(function (complete, error) {
                 Windows.Security.Authentication.Web.WebAuthenticationBroker.authenticateAsync(
                     Windows.Security.Authentication.Web.WebAuthenticationOptions.none, startURI, endURI).done(function (result) {
-                        if (result.responseStatus == 0) {
+                        if (result.responseStatus === 0) {
                             // Get recieved code without redirect uri
                             complete(result.responseData.replace('https://localhost/oauth2callback?code=', '')); 
                         } else {

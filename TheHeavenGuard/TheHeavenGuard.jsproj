@@ -57,6 +57,7 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
+    <JSLintSkip>|\Microsoft.WinJS.4.4\|\js\libs\</JSLintSkip>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="css\MainWindow.css" />
@@ -109,7 +110,6 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <Content Include="img\Main-logo68x48.png" />
     <Content Include="img\Avatar-48x48.png" />
     <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
@@ -150,6 +150,11 @@
     </AppxManifest>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below then uncomment
        that target and the DisableFastUpToDateCheck PropertyGroup. 
        Other similar extension points exist, see Microsoft.Common.targets.

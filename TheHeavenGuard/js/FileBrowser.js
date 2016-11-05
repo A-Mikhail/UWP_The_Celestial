@@ -26,18 +26,18 @@
         removeItemsBtn.addEventListener("click", removeSelected, false);
 
         let selectAllItemsBtn = document.getElementById("selectAllItemsBtn");
-        selectAllItemsBtn.addEventListener("click", (function () {
+        selectAllItemsBtn.addEventListener("click", function () {
             let listView = document.getElementById("zoomedInListView").winControl;
 
             listView.selection.selectAll();
-        }), false);
+        }, false);
 
         let clearSelectionBtn = document.getElementById("clearSelectionBtn");
-        clearSelectionBtn.addEventListener("click", (function () {
+        clearSelectionBtn.addEventListener("click", function () {
             let listView = document.getElementById("zoomedInListView").winControl;
 
             listView.selection.clear();
-        }), false);
+        }, false);
 
         // Start generate Items for listViews
         generateItems();
@@ -105,9 +105,9 @@
         ];
 
         for (let i = 0; i < imgArr.length; i++) {
-            if (fileType == imgArr[i]) {
+            if (fileType === imgArr[i]) {
                 return "&#xe158;";
-            } else if (fileType == textArr[i]) {
+            } else if (fileType === textArr[i]) {
                 return "&#xe160;";
             } else {
                 return "&#xe11B"; // default 
@@ -237,6 +237,7 @@
         return { title: dataItem.title.toUpperCase().charAt(0) };
     }
 
+    // Suggestion in AutoSuggestBox
     function suggestionsRequestedHandler(eventObject) {
         let queryText = eventObject.detail.queryText,
             query = queryText.toLowerCase(),
@@ -252,6 +253,7 @@
         }
     }
 
+    // Scroll to choosen suggestion item location
     function querySubmittedHandler(eventObject) {
         let queryText = eventObject.detail.queryText;
 
@@ -265,7 +267,7 @@
         element = document.createElement("div");
         element.className = "listview-template-item";
 
-        // create temporary DOM - copy from original in MainWindow.html
+        // Create temporary DOM - copy from original in MainWindow.html
         element.innerHTML = "<div class='listview-template-item-icon' style='opacity: 0;'>" +
             "</div> <div class='listview-template-item-detail'>" +
             "<div class='listview-template-item-title'></div>" +
@@ -274,12 +276,12 @@
         icon = element.querySelector(".listview-template-item-icon");
 
         title = element.querySelector(".listview-template-item-title");
-        title.innerHTML = "..."; // title by default
+        title.innerHTML = "..."; // Title by default
 
         text = element.querySelector(".listview-template-item-date");
-        text.innerHTML = "..."; // text by default
+        text.innerHTML = "..."; // Text by default
 
-        // return the element as the placeholder, and a callback to update it when data is available
+        // Return the element as the placeholder, and a callback to update it when data is available
         return {
             element: element,
 
@@ -314,9 +316,9 @@
         };
     }
 
-    // function placeholder renderer - create placeholder for zoomOut items
+    // Function placeholder renderer - create placeholder for zoomOut items
     function placeholderRenderer(itemPromise) {
-        // create a basic template for the item which doesn't depend on the data
+        // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
         element.className = "zoomed-out-item";
         element.innerHTML = "<h2 class='zoomed-out-item-title'>...</h2>";
@@ -326,10 +328,11 @@
 
             renderComplete: itemPromise.then(function (item) {
                 element.querySelector(".zoomed-out-item-title").innerText = item.data.title;
+
                 // Send clicked title to scrollToItem
-                element.querySelector(".zoomed-out-item-title").addEventListener("click", (function () {
+                element.querySelector(".zoomed-out-item-title").addEventListener("click", function () {
                     scrollToItem(item.data.title);
-                }), true);
+                }, false);
             })
         };
     }
@@ -337,6 +340,8 @@
     function scrollToItem(title) {
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemOffset;
+
+        console.log("recieve click");
 
         // Get characteristics of item
         itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
@@ -354,7 +359,7 @@
     function stopAnimateScroll(listView, position, destinationPoint, animateInterval) {
         let currentLocation = listView.scrollPosition;
 
-        if (position == destinationPoint || currentLocation == destinationPoint) {
+        if (position === destinationPoint || currentLocation === destinationPoint) {
             clearInterval(animateInterval);
 
             // Clear timeLapsed
@@ -366,7 +371,7 @@
     // destinationPoint - For where function should scroll in px
     function startAnimateScroll(listView, destinationPoint) {
         clearInterval(animateInterval);
-        animateInterval = setInterval(function () { loopAnimateScroll(listView, destinationPoint) }, 16);
+        animateInterval = setInterval(function () { loopAnimateScroll(listView, destinationPoint); }, 16);
     }
 
     function loopAnimateScroll(listView, destinationPoint) {
@@ -375,17 +380,17 @@
         let distance = parseInt(destinationPoint, 10) - startLocation;
        
         timeLapsed += 16;
-        percentage = (timeLapsed / parseInt(speed, 10));
+        percentage = timeLapsed / parseInt(speed, 10);
         percentage = (percentage > 1) ? 1 : percentage;
 
         // easeInOutCubic 
         pattern = percentage < 0.5 ? 4 * percentage * percentage * percentage : (percentage - 1) * (2 * percentage - 2) * (2 * percentage - 2) + 1;
-        position = startLocation + (distance * pattern);
+        position = startLocation + distance * pattern;
 
         // scroll to position
         listView.scrollPosition = Math.floor(position);
 
-        stopAnimateScroll(listView, position, destinationPoint, animateInterval)
+        stopAnimateScroll(listView, position, destinationPoint, animateInterval);
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);

@@ -14,8 +14,10 @@
     <!-- TheHeavenGuard references -->
     <link href="/css/MainWindow.css" rel="stylesheet" />
 
-    <script src="/js/libs/pouchdb-5.4.4.min.js"></script> <!-- NoSQL javascript database https://pouchdb.com/ -->
-    <script src="/js/libs/oboe-browser.min.js"></script> <!-- library for loading JSON using streaming http://oboejs.com/-->
+    <!-- NoSQL javascript database https://pouchdb.com/ -->
+    <script src="/js/libs/pouchdb-5.4.4.min.js"></script>
+    <!-- library for loading JSON using streaming http://oboejs.com/-->
+    <script src="/js/libs/oboe-browser.min.js"></script>
 
     <script src="/js/Configurations.js"></script> <!-- cloud's uri for xhr -->
     <!--
@@ -25,12 +27,18 @@
     -->
     <script src="/js/MainWindow.js"></script>
 
-    <script src="/js/Databases.js"></script> <!-- Configure databases -->
-    <script src="/js/FileBrowser.js"></script> <!-- Client side files to synchronize -->
-    <script src="/js/AuthenticationBroker.js"></script> <!-- Authenticate in cloud services -->
-    <script src="/js/AuthPanel.js"></script> <!-- Authorization panel in cloud services -->
-    <script src="/js/BackgroundTransfer.js"></script> <!-- Upload file to server -->
-    <script src="/js/XMLHttpRequest.js"></script> <!-- XHR over all -->
+    <!-- Configure databases -->
+    <script src="/js/Databases.js"></script>
+    <!-- Client side files to synchronize -->
+    <script src="/js/FileBrowser.js"></script>
+    <!-- Authenticate in cloud services -->
+    <script src="/js/AuthenticationBroker.js"></script>
+    <!-- Authorization panel in cloud services -->
+    <script src="/js/AuthPanel.js"></script>
+    <!-- Upload file to server -->
+    <script src="/js/BackgroundTransfer.js"></script>
+    <!-- XHR over all -->
+    <script src="/js/XMLHttpRequest.js"></script>
 </head>
 
 <body>
@@ -66,7 +74,8 @@
                 <!-- ZoomedOut template -->
                 <div id="zoomedOutTemplate" data-win-control="WinJS.Binding.Template">
                     <div class="zoomed-out-item">
-                        <h2 class="zoomed-out-item-title" data-win-bind="innerText: title"></h2>
+                        <h2 class="zoomed-out-item-title" 
+                            data-win-bind="innerText: title"></h2>
                     </div>
                 </div>
 

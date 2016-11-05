@@ -20,7 +20,7 @@
             let settingsBtn = document.getElementById("settingsBtn");
             settingsBtn.addEventListener("click", function () {
                 splitView.winControl.paneOpened = true;
-            }, false)
+            }, false);
 
             // Command buttons inside Setting Panel
             let SVAboutCommand = document.getElementById("aboutSVCommand");
@@ -40,6 +40,7 @@
         }
     });
 
+    // Navigate inside SplitView Body
     WinJS.Navigation.addEventListener("navigated", function (e) {
         let SVBody = document.getElementById("splitViewBody");
 
@@ -61,10 +62,10 @@
         panelBtn.addEventListener("click", function () {
             let mainPage = document.getElementById("mainPage");
 
-            mainPage.className = (mainPage.className == "minimized-panel") ? "main-page" : "minimized-panel";
+            mainPage.className = (mainPage.className === "minimized-panel") ? "main-page" : "minimized-panel"; //ignore jslint
         }, false);
 
-        // Synchronize files; functional of it placed in BackgroundTransfer.js
+        // Synchronize files; functional of it located in BackgroundTransfer.js
         let syncBtn = document.getElementById("startSyncFilesBtn");
         syncBtn.addEventListener("click", BackgroundTransfer.init, false);
 
@@ -99,7 +100,7 @@
             let elementImg = document.createElement("img");
             let elementP = document.createElement("p");
 
-            elementButton.className = "auth-panel-btn win-button"
+            elementButton.className = "auth-panel-btn win-button";
             elementButton.id = `btn-${this.title}`;
 
             elementImg.src = "/img/Avatar-48x48.png";
@@ -164,7 +165,7 @@
             this.undo(pickedButton);
         }
 
-        // Function undo() - undo change from remove function
+        // Function undo() - return removed button
         undo(button) {
             pickedButton = button;
             panel = document.getElementById("authPanel");
@@ -333,8 +334,8 @@
 
         let button = this;
 
-        menu.commands.append(new Windows.UI.Popups.UICommand("Remove", function () { onRemove(button) }));
-        menu.commands.append(new Windows.UI.Popups.UICommand("Log out", function () { onLogOut(button) }));
+        menu.commands.append(new Windows.UI.Popups.UICommand("Remove", function () { onRemove(button); }));
+        menu.commands.append(new Windows.UI.Popups.UICommand("Log out", function () { onLogOut(button); }));
 
         // Crashed here too! :c
         menu.showAsync(pageToWinRT(event.pageX, event.pageY)).done(function (invokedCommand) {

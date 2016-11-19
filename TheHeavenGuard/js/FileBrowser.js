@@ -5,21 +5,30 @@
     let messageDialog;
     let items;
 
-    let storageFileArr = []; // Array of File choosen by user to send in xhr
+    let storageFileArray = []; // Array of objects choosen by user to send in xhr
     let itemArray = [];
 
-    // File information
-    let file,
-        dateCreated,
+    // Picked object information
+    let dateCreated,
         name,
-        fileType,
-        folderRelativeId,
+        objectType,
+        relativeId,
         path;
 
+    // Icons
+    let globeIcon = "&#xe12B;";
+    let imgIcon = "&#xe158;";
+    let fileIcon = "&#xe132;";
+    let folderIcon = "&#xe188;";
+    let questionIcon = "&#xe11B;";
+
     function init() {
-        // File choose button
-        let chFilesBtn = document.getElementById("toolbarAddFilesBtn");
+        // Files/Folders pick buttons
+        let chFilesBtn = document.getElementById("addFilesBtn");
         chFilesBtn.addEventListener("click", pickFiles, false);
+
+        let chFolderBtn = document.getElementById("addFolderBtn");
+        chFolderBtn.addEventListener("click", pickFolder, false);
 
         // Remove selected item from List View and database
         let removeItemsBtn = document.getElementById("removeItemsBtn");
@@ -41,10 +50,23 @@
 
         // Start generate Items for listViews
         generateItems();
+
+        // Bad decision of autoadjusting height of SemanticZoom
+        setTimeout(function () { forceLayout() }, 1000);
+    }
+
+    function forceLayout() {
+        let zoomedInListView = document.getElementById('zoomedInListView').winControl;
+        let zoomedOutListView = document.getElementById('zoomedOutListView').winControl;
+
+        console.log("h");
+
+        zoomedInListView.forceLayout();
+        zoomedOutListView.forceLayout();
     }
 
     // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
-    // write picked files in source format and push it to the global array - storageFileArr for xhr needs (need rethink this)
+    // write picked files in source format and push it to the global array - storageFileArray for xhr needs (need rethink this)
     function pickFiles(event) {
         // Verify that we are currently not snapped, or that we can unsnap to open the picker
         let currentState = Windows.UI.ViewManagement.ApplicationView.value;
@@ -54,30 +76,39 @@
             return;
         }
 
-        let openPicker = new Windows.Storage.Pickers.FileOpenPicker();
-        openPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
-        openPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.documentsLibrary;
-        openPicker.fileTypeFilter.replaceAll(["*"]); // Open all format files 
-
         let options = {
             weekday: "narrow", year: "numeric", month: "short",
             day: "numeric", hour: "2-digit", minute: "2-digit"
         };
 
-        openPicker.pickMultipleFilesAsync().then(function (files) {
+        let fileOpenPicker = new Windows.Storage.Pickers.FileOpenPicker();
+        fileOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
+        fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
+        fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
+
+        //let requestedSize = 190;
+        //let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.picturesView;
+        //let thumbnailOptions = Windows.Storage.FileProperties.ThumbnailOptions.useCurrentScale;
+
+        fileOpenPicker.pickMultipleFilesAsync().then(function (files) {
             if (files.size > 0) {
                 for (let i = 0; i < files.size; i++) {
                     dateCreated = files[i].dateCreated.toLocaleTimeString("en-us", options);
                     name = files[i].name;
-                    fileType = files[i].fileType;
-                    folderRelativeId = files[i].folderRelativeId;
+                    objectType = files[i].fileType;
+                    relativeId = files[i].folderRelativeId;
                     path = files[i].path;
 
-                    // Send choosen files to global array for xhr
-                    storageFileArr.push(files[i]);
-
                     // Send picked file information to User Database
-                    Databases.userDatabaseWrite(dateCreated, name, fileType, folderRelativeId, path);
+                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
+
+                    // Get Thumbnail in StorageItemThumbnail format
+                    //files[i].getThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions).done(function (thumbnail) {
+                    //   
+                    //});
+
+                    // Send choosen files to global array for xhr
+                    storageFileArray.push(files[i]);
                 }
             } else {
                 // The picker was dismissed with no selected file
@@ -86,31 +117,92 @@
         });
     }
 
+    function pickFolder(event) {
+        // Verify that we are currently not snapped, or that we can unsnap to open the picker
+        let currentState = Windows.UI.ViewManagement.ApplicationView.value;
+        if (currentState === Windows.UI.ViewManagement.ApplicationViewState.snapped &&
+            !Windows.UI.ViewManagement.ApplicationView.tryUnsnap()) {
+            // Fail silently if we can't unsnap
+            return;
+        }
+
+        let options = {
+            weekday: "narrow", year: "numeric", month: "short",
+            day: "numeric", hour: "2-digit", minute: "2-digit"
+        };
+
+        let folderOpenPicker = new Windows.Storage.Pickers.FolderPicker();
+        folderOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.thumbnail;
+        folderOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
+        folderOpenPicker.fileTypeFilter.replaceAll(["*"]);
+
+        folderOpenPicker.pickSingleFolderAsync().then(function (folder) {
+            if (folder !== null) {
+                dateCreated = folder.dateCreated.toLocaleTimeString("en-us", options);
+                objectType = folder.displayType;
+                relativeId = folder.folderRelativeId;
+                name = folder.name;
+                path = folder.path;
+
+                folder.getBasicPropertiesAsync().then(function (basicProperties) {
+                    console.log("size of folder: " + basicProperties.size);
+                });
+
+                // Send picked folder to DB
+                Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
+            } else {
+                return;
+            }
+        });
+    }
+
     // Pick icon by file type
-    function iconToListView(fileType) {
-        let imgArr = [
+    function iconToListView(objectExtension) {
+        let imgArray = [
             ".png",
             ".jpeg",
             ".psd",
             ".gif",
-            ".tiff"
+            ".tiff",
+            ".bmp"
         ];
 
-        let textArr = [
+        let textArray = [
             ".txt",
             ".doc",
             ".docx",
             ".odt",
+            ".ods",
             ".pdf"
         ];
 
-        for (let i = 0; i < imgArr.length; i++) {
-            if (fileType === imgArr[i]) {
-                return "&#xe158;";
-            } else if (fileType === textArr[i]) {
-                return "&#xe160;";
+        let archiveArray = [
+            ".7z",
+            ".rar",
+            ".zip",
+            ".jar",
+            ".cab",
+            ".tar.gz",
+            ".tar",
+            ".ace",
+            ".bkf",
+            ".bz2",
+            ".gz",
+            ".lzh",
+            ".lz",
+            ".par",
+            ".par2"
+        ];
+
+        for (let i = 0; i < imgArray.length; i++) {
+            if (objectExtension === imgArray[i]) {
+                return imgIcon;
+            } else if (objectExtension === textArray[i]) {
+                return fileIcon;
+            } else if (objectExtension === "File folder") {
+                return folderIcon;
             } else {
-                return "&#xe11B"; // default 
+                return questionIcon; // default 
             }
         }
     }
@@ -132,7 +224,7 @@
     }
 
     // Function generateItems() - read from database information and write it to the objects
-    // Databases.userDB().allDocs - get all items from database and push it to FileBrowser.data when MainWindow function get information about it
+    // Databases.userDB().allDocs - get all items from database and push it to FileBrowser.data
     function generateItems() {
         Databases.userDB().allDocs({
             include_docs: true,
@@ -140,16 +232,19 @@
         }).then(function (result) {
             for (let i = 0; i < result.total_rows; i++) {
                 itemArray.push({
-                    title: result.rows[i].doc.name, text: result.rows[i].doc.dateCreated,
-                    icon: iconToListView(result.rows[i].doc.fileType)
+                    title: result.rows[i].doc.name,
+                    text: result.rows[i].doc.dateCreated,
+                    icon: iconToListView(result.rows[i].doc.objectType)
                 });
             }
 
             pushItemsToListView().then(function () {
                 onChangeDatabase();
             });
-        }).catch(function (err) {
-            console.log(err);
+        }).catch(function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog("Occured error while created item, error: " + error);
+
+            messageDialog.showAsync();
         });
     }
 
@@ -161,9 +256,14 @@
             live: true,
             include_docs: true
         }).on("change", function (change) {
+            name = change.doc.name;
+            dateCreated = change.doc.dateCreated;
+            objectType = change.doc.objectType;
+
             itemArray.push({
-                title: change.doc.name, text: change.doc.dateCreated,
-                icon: iconToListView(change.doc.fileType)
+                title: name,
+                text: dateCreated,
+                icon: iconToListView(objectType)
             });
 
             pushItemsToListView();
@@ -178,12 +278,11 @@
     // Function removeFromDatabase() - functionality for removing documents from database
     function removeFromDatabase(item) {
         Databases.userDB().get(item).then(function (doc) {
-            console.log(doc);
             return Databases.userDB().remove(doc);
-        }).then(function (result) {
-            console.log(result);
-        }).catch(function (err) {
-            console.log(err);
+        }).catch(function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog("Error while removing item from database: " + error);
+
+            messageDialog.showAsync();
         });
     }
 
@@ -222,6 +321,10 @@
         }
     }
 
+    let specialChRegex = /[-!$@#%^&*()_+|~=`{}\[\]:";'<>?,.\/]/g;
+    let numberChRegex = /[0-9]/g;
+    let engChRegex = /[a-zA-Z]/g;
+
     // Function used to sort the groups by first letter
     function compareGroups(left, right) {
         return left.toUpperCase().charCodeAt(0) - right.toUpperCase().charCodeAt(0);
@@ -229,12 +332,35 @@
 
     // Function which returns the group key that an item belongs to
     function getGroupKey(dataItem) {
-        return dataItem.title.toUpperCase().charAt(0);
+        let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
+
+        if (titleFirstLetter.search(specialChRegex) !== -1) {
+            return "&";
+        } else if (titleFirstLetter.search(numberChRegex) !== -1) {
+            return "#";
+        } else if (titleFirstLetter.search(engChRegex) !== -1) {
+            return dataItem.title.toUpperCase().charAt(0);
+        } else {
+            return globeIcon;
+        }
     }
 
     // Function which returns the data for a group
+    // All special characters goes to "#" section
+    // All numbers goes to "1" section
+    // All other go to "global" section
     function getGroupData(dataItem) {
-        return { title: dataItem.title.toUpperCase().charAt(0) };
+        let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
+
+        if (titleFirstLetter.search(specialChRegex) !== -1) {
+            return { title: "&" };
+        } else if (titleFirstLetter.search(numberChRegex) !== -1) {
+            return { title: "#" };
+        } else if (titleFirstLetter.search(engChRegex) !== -1) {
+            return { title: titleFirstLetter };
+        } else {
+            return { title: globeIcon };
+        }
     }
 
     // Suggestion in AutoSuggestBox
@@ -262,16 +388,19 @@
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
     function multistageRenderer(itemPromise) {
-        let element, icon, title, text;
+        let element,
+            icon,
+            title,
+            text;
 
         element = document.createElement("div");
         element.className = "listview-template-item";
 
-        // Create temporary DOM - copy from original in MainWindow.html
+        // Create DOM for displaying items
         element.innerHTML = "<div class='listview-template-item-icon' style='opacity: 0;'>" +
             "</div> <div class='listview-template-item-detail'>" +
-            "<div class='listview-template-item-title'></div>" +
-            "<div class='listview-template-item-date'></div> </div>";
+            "<div class='listview-template-item-title win-type-body'></div>" +
+            "<div class='listview-template-item-date win-type-body'></div> </div>";
 
         icon = element.querySelector(".listview-template-item-icon");
 
@@ -316,81 +445,20 @@
         };
     }
 
-    // Function placeholder renderer - create placeholder for zoomOut items
+    // Function placeholderRenderer - create placeholder for zoomOut items
     function placeholderRenderer(itemPromise) {
         // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
         element.className = "zoomed-out-item";
-        element.innerHTML = "<h2 class='zoomed-out-item-title'>...</h2>";
+        element.innerHTML = "<h2 class='win-type-subtitle zoomed-out-item-title'>...</h2>";
 
         return {
             element: element,
 
             renderComplete: itemPromise.then(function (item) {
-                element.querySelector(".zoomed-out-item-title").innerText = item.data.title;
-
-                // Send clicked title to scrollToItem
-                element.querySelector(".zoomed-out-item-title").addEventListener("click", function () {
-                    scrollToItem(item.data.title);
-                }, false);
+                element.querySelector(".zoomed-out-item-title").innerHTML = item.data.title;
             })
         };
-    }
-
-    function scrollToItem(title) {
-        let listView = document.getElementById("zoomedInListView").winControl;
-        let itemOffset;
-
-        console.log("recieve click");
-
-        // Get characteristics of item
-        itemOffset = listView._getItemOffsetPosition(FileBrowser.data.groups.dataSource._list._groupItems[title].firstItemIndexHint);
-
-        // Start animation on choosen listView and with destination position
-        startAnimateScroll(listView, itemOffset._value.left, itemOffset._value.width);
-    }
-
-    // Global variables for animation functions
-    let animateInterval;
-    let speed = 500;
-    let timeLapsed = 0, pattern = 0;
-    let percentage, position;
-
-    function stopAnimateScroll(listView, position, destinationPoint, animateInterval) {
-        let currentLocation = listView.scrollPosition;
-
-        if (position === destinationPoint || currentLocation === destinationPoint) {
-            clearInterval(animateInterval);
-
-            // Clear timeLapsed
-            timeLapsed = 0;
-        }
-    }
-
-    // listView - List View on which animation should be applied
-    // destinationPoint - For where function should scroll in px
-    function startAnimateScroll(listView, destinationPoint) {
-        clearInterval(animateInterval);
-        animateInterval = setInterval(function () { loopAnimateScroll(listView, destinationPoint); }, 16);
-    }
-
-    function loopAnimateScroll(listView, destinationPoint) {
-        let startLocation = listView.scrollPosition;
-        // distance to travel
-        let distance = parseInt(destinationPoint, 10) - startLocation;
-       
-        timeLapsed += 16;
-        percentage = timeLapsed / parseInt(speed, 10);
-        percentage = (percentage > 1) ? 1 : percentage;
-
-        // easeInOutCubic 
-        pattern = percentage < 0.5 ? 4 * percentage * percentage * percentage : (percentage - 1) * (2 * percentage - 2) * (2 * percentage - 2) + 1;
-        position = startLocation + distance * pattern;
-
-        // scroll to position
-        listView.scrollPosition = Math.floor(position);
-
-        stopAnimateScroll(listView, position, destinationPoint, animateInterval);
     }
 
     WinJS.Utilities.markSupportedForProcessing(multistageRenderer);
@@ -398,7 +466,7 @@
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,
-        storageFileArr: storageFileArr,
+        storageFileArray: storageFileArray,
         generateItems: generateItems,
         multistageRenderer: multistageRenderer,
         placeholderRenderer: placeholderRenderer,

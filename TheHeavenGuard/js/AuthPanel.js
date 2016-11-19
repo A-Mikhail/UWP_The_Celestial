@@ -17,7 +17,7 @@
             let splitView = document.getElementById("splitView");
 
             // Open settings panel
-            let settingsBtn = document.getElementById("settingsBtn");
+            let settingsBtn = document.getElementById("settingNavCommand");
             settingsBtn.addEventListener("click", function () {
                 splitView.winControl.paneOpened = true;
             }, false);
@@ -37,6 +37,11 @@
             SVGeneralCommand.addEventListener("click", function () {
                 WinJS.Navigation.navigate("/SVPages/general.html");
             }, false);
+
+            let SVPersonalizationCommand = document.getElementById("personalizationSVCommand");
+            SVPersonalizationCommand.addEventListener("click", function () {
+                WinJS.Navigation.navigate("/SVPages/personalization.html");
+            });
         }
     });
 
@@ -58,12 +63,12 @@
     // Function init() - main function which contains eventListeners and function calls
     function init() {
         // Minimize authPanel by clicking on hamburger button 
-        let panelBtn = document.getElementById("hamburgerBtn");
-        panelBtn.addEventListener("click", function () {
-            let mainPage = document.getElementById("mainPage");
+        //let panelBtn = document.getElementById("hamburgerBtn");
+        //panelBtn.addEventListener("click", function () {
+        //    let mainPage = document.getElementById("mainPage");
 
-            mainPage.className = (mainPage.className === "minimized-panel") ? "main-page" : "minimized-panel"; //ignore jslint
-        }, false);
+        //    mainPage.className = (mainPage.className === "minimized-panel") ? "main-page" : "minimized-panel"; //ignore jslint
+        //}, false);
 
         // Synchronize files; functional of it located in BackgroundTransfer.js
         let syncBtn = document.getElementById("startSyncFilesBtn");
@@ -94,24 +99,15 @@
         }
 
         create() {
-            panel = document.getElementById("panelBody");
+            panel = document.getElementById("authPanelNavCommands");
 
-            let elementButton = document.createElement("button");
-            let elementImg = document.createElement("img");
-            let elementP = document.createElement("p");
+            let elementButton = document.createElement("div");
 
-            elementButton.className = "auth-panel-btn win-button";
+            elementButton.className = "auth-panel-btn";
             elementButton.id = `btn-${this.title}`;
-
-            elementImg.src = "/img/Avatar-48x48.png";
-            elementImg.className = "cloud-avatar img-circle";
-
-            elementP.className = "auth-btn-text";
-            elementP.innerText = this.title;
+            new WinJS.UI.SplitViewCommand(elementButton, { label: this.title, icon: 'contact' });
 
             panel.appendChild(elementButton);
-            elementButton.appendChild(elementImg);
-            elementButton.appendChild(elementP);
         }
 
         // Remove choosen button from authPanel

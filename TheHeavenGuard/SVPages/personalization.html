@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Personalization page</title>
+
+    <link href="/SVPages/SVPages.css" rel="stylesheet" />
+    <script src="/SVPages/personalization.js"></script>
+</head>
+<body>
+    <div class="header">
+        <button data-win-control="WinJS.UI.Command" data-win-options="{
+            icon: 'back',
+            id: 'back'
+        }"></button>
+        <p class="title">Personalization</p>
+    </div>
+
+    <div class="nav-commands">
+        <div class="nav-commands-body">
+            <p class="win-type-title">Colors</p>
+            <input type="radio" id="colorDarkMode"/> <p class="win-type-base"> Dark Mode </p>            
+            <input type="radio" id="colorLightMode" /> <p class="win-type-base"> Light Mode </p>
+
+            <br />
+
+            <p calss="win-type-title">Notification</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -21,8 +21,8 @@ N. Global elements;
     ---- win-navbarcommand-button-content
     ---- win-listview 
 
-I. Main Page; Pivot
-    ---- .main-page
+I. Pivot
+    ---- #pivot
 
 II. Appbar block
     ---- .app-bar 
@@ -40,20 +40,14 @@ III. File browser block
                     ---- .zoomed-out-item
                 
 IV. Panel block
-                ---- .clouds-authorization-panel #authPanel
-                    ---- .panel-head
-                        ---- #hamburgerBtn
-                        ---- .auth-panel-btn .auth-panel-btn:hover
-                        ---- .cloud-avatar
-                        ---- .img-circle
+
+                ---- .cloud-avatar
+                ---- .img-circle
                 
                 ---- .undo-changes #undoChangeLine
                     ---- #undoChangeBtn .undo-change-btn
                     ---- #closeUndoPanelBtn .close-undo-line-btn
 
-@. Media
-    ---- @media only screen and (max-width: 500px)
-*/
 
 /*
 *   N. Global elements;
@@ -62,7 +56,7 @@ IV. Panel block
 html, body {
     width: 100%;
     height: 100%;
-    background-color: ghostwhite;
+    background-color: #fff;
     font-family: 'Segoe UI';
 }
 
@@ -73,14 +67,11 @@ img {
 }
 
 .win-pivot-header-area {
-    background-color: #fff;
-    border-bottom: 1px solid #cecece;
     height: 48px; /* value by default is 52px */
 }
 
-.win-pivot .win-pivot-navbutton {
-    height: 48px;
-    top: 0;
+.win-pivot .win-pivot-header-items {
+    overflow: hidden;
 }
 
 /* Remove Scroll from Pivotitem-content */
@@ -104,17 +95,17 @@ img {
         padding: 0;
     }
 
-/* Remove background and padding-right in hamburger button on AuthPanel */
-#hamburgerBtn .win-navbarcommand-button-content {
-    padding-right: 0;
-    position: absolute;
-    background-color: transparent;
-    background-repeat: no-repeat;
-    border: none;
-    cursor: pointer;
-    overflow: hidden;
-    outline: none;
-    color: #000;
+/* Set the background color */
+.win-appbar.customAppBar .win-appbar-actionarea,
+.win-appbar.customAppBar .win-appbar-overflowarea {
+    /* Set the AppBar background color */
+    background-color: #fff;
+}
+
+.win-appbar.customAppBar button:hover:active .win-commandimage,
+.win-appbar.customAppBar button:-ms-keyboard-active .win-commandimage,
+.win-appbar.customAppBar button[aria-checked=true] .win-commandimage {
+    /* Set the pressed state command icon to the same color as the AppBar background */
 }
 
 /* Remove backgrounds from list view items and navbar buttons */
@@ -142,181 +133,37 @@ img {
 }
 
 /*
-*   I. Main Page; Pivot
+*   I. Pivot
 */
-.main-page, .minimized-panel {
-    /*ignore jslint start*/
-    display: -ms-grid;
-    -ms-grid-columns: 256px 1fr;
-    -ms-grid-rows: 48px 1fr 48px;
-    /*ignore jslint end*/
-    width: 100%;
-    height: 100%;
-}
-
 #pivot {
     position: relative;
-    /*ignore jslint start*/
-    -ms-grid-row: 1;
-    -ms-grid-column: 2;
-    -ms-grid-row-span: 2;
-    /*ignore jslint end*/
-}
-
-.minimized-panel {
-    /*ignore jslint start*/
-    -ms-grid-columns: 48px 1fr;
-    /*ignore jslint end*/
-}
-    /* Remove Text when authorization panel is hidden */
-    .minimized-panel .auth-btn-text {
-        display: none;
-    }
-
-    /* Remove scroll and fixed height in minimized panel */
-    .minimized-panel .panel-body {
-        width: 100%;
-        height: auto;
-        overflow: auto;
-        background-color: transparent;
-    }
-
-    .minimized-panel .panel-footer {
-        display: none;
-    }
-
-    .minimized-panel .zoomed-out-btn {
-        display: block;
-    }
-
-/*
-*   II. Appbar block
-*/
-.app-bar {
-    /*ignore jslint start*/
-    -ms-grid-row: 3;
-    -ms-grid-column: 2;
-    /*ignore jslint end*/
-    position: relative;
-    width: 100%;
-    transform: translateZ(0px);
-    z-index: 1003;
+    height: calc(100% - 48px);
 }
 
 /*
-*   III. File browser block
+*  II. ListView - AuthPanel
 */
-.win-listview .win-container {
-    color: #000;
-}
-
-#zoomedInListView {
-    background-color: #e6f1f7;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+#zoomedOutListView {
+    height: 356px;
 }
 
 .zoomed-out-item {
-    color: #000;
     width: 48px;
     height: 48px;
     text-align: center;
-    line-height: 8pt;
-    white-space: nowrap;
-    font-size: 12pt;
 }
 
-.listview-template-item {
-    /*ignore jslint start*/
-    display: -ms-grid;
-    /*ignore jslint end*/
-    position: relative;
-    width: 18em;
-    height: 4em;
-    line-height: 4em;
+/* Remove line-height from win-type-subtitle */
+.zoomed-out-item-title {
+    font-family: "Segoe MDL2 Assets","Symbols";
+    line-height: 0.6;
 }
 
-    .listview-template-item .listview-template-item-icon {
-        font-family: "Segoe MDL2 Assets", "Symbols";
-        font-size: xx-large;
-        /*ignore jslint start*/
-        -ms-grid-column: 1;
-        /*ignore jslint end*/
-    }
-
-    .listview-template-item .listview-template-item-detail {
-        margin: 5px;
-        line-height: 2em;
-        /*ignore jslint start*/
-        -ms-grid-column: 2;
-        /*ignore jslint end*/
-    }
-
-.listview-template-item-title {
-    font-weight: 600;
-}
-
-.listview-template-item-date {
-    font-size: small;
-    margin: 0;
-    line-height: 1em;
-}
-
-.left-header-template-root {
-    color: #000;
-    width: 50px;
-    height: 50px;
-    padding: 8px;
-}
-
-/*
-*   IV. Panel block
-*/
-.clouds-authorization-panel {
-    position: relative;
-    display: table;
-    /*ignore jslint start*/
-    -ms-grid-row: 1;
-    -ms-grid-column: 1;
-    -ms-grid-row-span: 4;
-    /*ignore jslint end*/
-    height: 100%;
-    border-right: 1px solid #cecece;
-}
-
-.panel-head {
-    width: 100%;
-    height: 48px;
-}
-
-.panel-body {
-    width: 100%;
-    height: 162px;
-    overflow-y: scroll;
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.panel-footer {
-    display: table-footer-group;
+#settingNavCommand {
+    position: absolute;
+    bottom: 0;
     width: 100%;
 }
-
-.zoomed-out-btn {
-    display: none;
-}
-
-.auth-panel-btn, .auth-panel-btn:hover {
-    border: none;
-    height: 48px;
-    width: 100%;
-    color: #000;
-}
-
-    .auth-panel-btn:hover {
-        background-color: rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-    }
 
 .cloud-avatar {
     width: 24px;
@@ -336,17 +183,56 @@ img {
     border-radius: 50%;
 }
 
-.auth-btn-text {
-    text-align: left;
-    text-indent: 1.2em;
-    margin: 0;
+/*
+*   II. Appbar block
+*/
+.app-bar {
+    position: relative;
+    height: 48px;
+    width: 100%;
+    transform: translateZ(0px);
+    z-index: 1003;
+}
+
+/*
+*   III. File browser block
+*/
+#semanticZoomDiv {
+    height: 100%;
     width: 100%;
 }
 
-.setting-btn {
-    border-top: 1px solid #cecece;
-    bottom: 0;
-    position: fixed;
+#zoomedInListView {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.listview-template-item {
+    width: 18em;
+    height: 4em;
+    line-height: 4em;
+}
+
+    .listview-template-item .listview-template-item-icon {
+        font-family: "Segoe MDL2 Assets","Symbols";
+        font-size: xx-large;
+        float: left;
+        padding: 0 0.4em;
+    }
+
+    .listview-template-item .listview-template-item-detail {
+        margin: 0.8em;
+    }
+
+.listview-template-item-date {
+    font-size: small;
+}
+
+.left-header-template-root {
+    width: 50px;
+    height: 50px;
+    padding: 8px;
 }
 
 .undo-changes {
@@ -354,7 +240,6 @@ img {
     width: 100%;
     height: 48px;
     background-color: #FDC214;
-    color: #000;
     bottom: 0;
     display: none;
 }
@@ -390,11 +275,4 @@ img {
 
 .nav-commands-body {
     padding: 0 15px;
-}
-
-/* @Media */
-@media only screen and (max-width: 500px) {
-    .auth-btn-text {
-        display: none;
-    }
 }

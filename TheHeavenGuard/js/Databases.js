@@ -11,14 +11,15 @@
         return userFilesDB = new PouchDB("user");
     }
 
-    // destroy db: user
+    // destriyUserDB - function that destroyed userDB
+    // and clean all items from ListView array
     function destroyUserDB() {
       
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
         userDB().destroy().then(function (response) {
-            // Clear listView without destroing Binding.List
+            // Clear listView without destroying Binding.List
             itemData.splice(0, itemData.length);
 
             FileBrowser.generateItems();
@@ -29,19 +30,21 @@
         });
     }
 
-    function userDatabaseWrite(dateCreated, name, fileType, folderRelativeId, path) {
-        // Put data from let's to database - "user"
-        // _id = File name
-        // path = Absoulte file path
-        // if file success added create div in app
+    // userDatabaseWrite - function that put recieved data into UserDB 
+    // object - is files or folder
+    // dateCreated - time when object last modified
+    // name - Displayed name of object
+    // objectType - Type of object; for files - file extensions, for folder - type of folder
+    // relativeId - Unique id of objects
+    // path - Absolute path to the object
+    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path) {
         Databases.userDB().put({
             _id: name,
-            folderRelativeId: folderRelativeId,
+            relativeId: relativeId,
             dateCreated: dateCreated,
             name: name,
-            fileType: fileType,
+            objectType: objectType,
             path: path
-
         }).then(function (response) {
             console.log("response_id: " + response.id);
         }, function (err) {

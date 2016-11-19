@@ -118,7 +118,7 @@
     <Content Include="js\FileBrowser.js" />
     <Content Include="js\AuthenticationBroker.js" />
     <Content Include="js\libs\oboe-browser.min.js" />
-    <Content Include="js\libs\pouchdb-5.4.4.min.js" />
+    <Content Include="js\libs\pouchdb-6.0.7.min.js" />
     <Content Include="js\MainWindow.js" />
     <Content Include="js\XMLHttpRequest.js" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-intrinsics.css" />
@@ -141,6 +141,8 @@
     <Content Include="SVPages\general.js" />
     <Content Include="SVPages\help.html" />
     <Content Include="SVPages\help.js" />
+    <Content Include="SVPages\personalization.html" />
+    <Content Include="SVPages\personalization.js" />
     <Content Include="SVPages\SVPages.css" />
     <None Include="TheHeavenGuard_TemporaryKey.pfx" />
   </ItemGroup>

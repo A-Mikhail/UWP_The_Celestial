@@ -5,20 +5,26 @@
     let messageDialog;
     let items;
 
-    let storageFileArray = []; // Array of objects choosen by user to send in xhr
+    // LocalCache folder
+    let applicationData = Windows.Storage.ApplicationData.current;
+    let localCacheFolder = applicationData.localCacheFolder;
+
+    // Array of objects choosen by user to send in xhr (!temporary)
+    let storageFileArray = [];
     let itemArray = [];
 
     // Picked object information
-    let dateCreated,
-        name,
-        objectType,
-        relativeId,
-        path;
+    let dateCreated
+        , name
+        , objectType
+        , relativeId
+        , path
+        , size;
+
+    let attachment;
 
     // Icons
     let globeIcon = "&#xe12B;";
-    let imgIcon = "&#xe158;";
-    let fileIcon = "&#xe132;";
     let folderIcon = "&#xe188;";
     let questionIcon = "&#xe11B;";
 
@@ -48,7 +54,7 @@
             listView.selection.clear();
         }, false);
 
-        // Start generate Items for listViews
+        // Start generate items for listViews
         generateItems();
 
         // Bad decision of autoadjusting height of SemanticZoom
@@ -58,8 +64,6 @@
     function forceLayout() {
         let zoomedInListView = document.getElementById('zoomedInListView').winControl;
         let zoomedOutListView = document.getElementById('zoomedOutListView').winControl;
-
-        console.log("h");
 
         zoomedInListView.forceLayout();
         zoomedOutListView.forceLayout();
@@ -86,9 +90,16 @@
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
         fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
-        //let requestedSize = 190;
-        //let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.picturesView;
-        //let thumbnailOptions = Windows.Storage.FileProperties.ThumbnailOptions.useCurrentScale;
+        // Image size
+        let requestedSize = 40;
+        let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.documentsView;
+
+        let substrType;
+
+        let memoryStream;
+        let dataWriter;
+        let thumbBuffer;
+        let buffer;
 
         fileOpenPicker.pickMultipleFilesAsync().then(function (files) {
             if (files.size > 0) {
@@ -98,14 +109,39 @@
                     objectType = files[i].fileType;
                     relativeId = files[i].folderRelativeId;
                     path = files[i].path;
+                    size = files[i].size;
 
-                    // Send picked file information to User Database
-                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
+                    // Remove dot from name for createFileAsync naming
+                    substrType = objectType.substr(1);
 
                     // Get Thumbnail in StorageItemThumbnail format
-                    //files[i].getThumbnailAsync(thumbnailMode, requestedSize, thumbnailOptions).done(function (thumbnail) {
-                    //   
-                    //});
+                    files[i].getThumbnailAsync(thumbnailMode, requestedSize).done(function (thumbnail) {
+                        if (thumbnail) {
+                            memoryStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+                            dataWriter = new Windows.Storage.Streams.DataWriter(memoryStream);
+
+                            thumbBuffer = new Windows.Storage.Streams.Buffer(thumbnail.size);
+
+                            thumbnail.readAsync(thumbBuffer, thumbBuffer.capacity, Windows.Storage.Streams.InputStreamOptions.none).then(function (writedata) {
+                                dataWriter.writeBuffer(writedata);
+                            });
+
+                            buffer = dataWriter.detachBuffer();
+                            dataWriter.close();
+
+                            // TODO: If have existing just skip 
+                            localCacheFolder.createFileAsync(substrType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
+                            .then(function (file) {
+                                return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
+                            });
+
+                            // Send picked file information to User Database
+                            Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
+                        } else {
+                            // Send picked file information to User Database without creating thumbnail file
+                            Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
+                        }
+                    });
 
                     // Send choosen files to global array for xhr
                     storageFileArray.push(files[i]);
@@ -144,67 +180,12 @@
                 name = folder.name;
                 path = folder.path;
 
-                folder.getBasicPropertiesAsync().then(function (basicProperties) {
-                    console.log("size of folder: " + basicProperties.size);
-                });
-
                 // Send picked folder to DB
                 Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
             } else {
                 return;
             }
         });
-    }
-
-    // Pick icon by file type
-    function iconToListView(objectExtension) {
-        let imgArray = [
-            ".png",
-            ".jpeg",
-            ".psd",
-            ".gif",
-            ".tiff",
-            ".bmp"
-        ];
-
-        let textArray = [
-            ".txt",
-            ".doc",
-            ".docx",
-            ".odt",
-            ".ods",
-            ".pdf"
-        ];
-
-        let archiveArray = [
-            ".7z",
-            ".rar",
-            ".zip",
-            ".jar",
-            ".cab",
-            ".tar.gz",
-            ".tar",
-            ".ace",
-            ".bkf",
-            ".bz2",
-            ".gz",
-            ".lzh",
-            ".lz",
-            ".par",
-            ".par2"
-        ];
-
-        for (let i = 0; i < imgArray.length; i++) {
-            if (objectExtension === imgArray[i]) {
-                return imgIcon;
-            } else if (objectExtension === textArray[i]) {
-                return fileIcon;
-            } else if (objectExtension === "File folder") {
-                return folderIcon;
-            } else {
-                return questionIcon; // default 
-            }
-        }
     }
 
     // Function pushItemsToListView() get all items from array and push it to Binding.List
@@ -234,7 +215,8 @@
                 itemArray.push({
                     title: result.rows[i].doc.name,
                     text: result.rows[i].doc.dateCreated,
-                    icon: iconToListView(result.rows[i].doc.objectType)
+                    icon: result.rows[i].doc.objectType,
+                    size: result.rows[i].doc.size
                 });
             }
 
@@ -242,7 +224,8 @@
                 onChangeDatabase();
             });
         }).catch(function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Occured error while created item, error: " + error);
+            messageDialog = new Windows.UI.Popups.MessageDialog("Occured error while creating item, error: " +
+                "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
 
             messageDialog.showAsync();
         });
@@ -259,11 +242,13 @@
             name = change.doc.name;
             dateCreated = change.doc.dateCreated;
             objectType = change.doc.objectType;
+            size = change.doc.size;
 
             itemArray.push({
                 title: name,
                 text: dateCreated,
-                icon: iconToListView(objectType)
+                icon: objectType,
+                size: size,
             });
 
             pushItemsToListView();
@@ -388,26 +373,30 @@
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
     function multistageRenderer(itemPromise) {
-        let element,
-            icon,
-            title,
-            text;
+        let element
+            , img
+            , title
+            , text;
+
+        let itemTitle, itemText;
+
+        let maxLength = 25;
 
         element = document.createElement("div");
-        element.className = "listview-template-item";
+        element.className = "zoomedIn-item";
 
         // Create DOM for displaying items
-        element.innerHTML = "<div class='listview-template-item-icon' style='opacity: 0;'>" +
-            "</div> <div class='listview-template-item-detail'>" +
-            "<div class='listview-template-item-title win-type-body'></div>" +
-            "<div class='listview-template-item-date win-type-body'></div> </div>";
+        element.innerHTML = "<img class='zoomedIn-item-img' style='opacity: 0;'/>"
+            + "<div class='zoomedIn-item-detail'>"
+            + "<div class='zoomedIn-item-title win-type-body'></div>"
+            + "<div class='zoomedIn-item-date win-type-body'></div> </div>";
 
-        icon = element.querySelector(".listview-template-item-icon");
+        img = element.querySelector(".zoomedIn-item-img");
 
-        title = element.querySelector(".listview-template-item-title");
+        title = element.querySelector(".zoomedIn-item-title");
         title.innerHTML = "..."; // Title by default
 
-        text = element.querySelector(".listview-template-item-date");
+        text = element.querySelector(".zoomedIn-item-date");
         text.innerHTML = "..."; // Text by default
 
         // Return the element as the placeholder, and a callback to update it when data is available
@@ -415,30 +404,49 @@
             element: element,
 
             renderComplete: itemPromise.then(function (item) {
-                if (!title) { title = element.querySelector(".listview-template-item-title"); }
-                if (!text) { text = element.querySelector(".listview-template-item-date"); }
+                if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
+                if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
 
-                title.innerHTML = item.data.title;
-                text.innerHTML = item.data.text;
+                itemTitle = item.data.title;
+                itemText = item.data.text;
+
+                if (itemTitle.length > maxLength) {
+                    itemTitle = itemTitle.substr(0, maxLength - 1) + '&hellip;';
+                }
+
+                title.innerHTML = itemTitle;
+                text.innerHTML = itemText;
+
+                // Display full lenght title in tooltip
+                new WinJS.UI.Tooltip(element, {
+                    innerHTML: "Name: " + item.data.title + "\r" +
+                    "Size: " + item.data.size
+                });
 
                 return item.ready;
             }).then(function (item) {
-                icon.innerHTML = item.data.icon;
+                if (!img) {
+                    img = element.querySelector(".zoomedIn-item-img");
+                }
 
-                return item.isOnScreen();
+                // Read image from localCacheFolder
+                localCacheFolder.getFileAsync(item.data.icon.substr(1) + ".png").then(function (thumbnail) {
+                    return item.loadImage(img.src = URL.createObjectURL(thumbnail, { oneTimeOnly: true }), img).then(function () {
+                        return item.isOnScreen();
+                    });
+                });
             }).then(function (onscreen) {
                 if (!onscreen) {
-                    icon.style.opacity = 1;
+                    img.style.opacity = 1;
                 } else {
-                    WinJS.UI.Animation.fadeIn(icon);
+                    WinJS.UI.Animation.fadeIn(img);
                 }
             }).then(null, function (err) {
                 if (err.name === "Canceled") {
                     return WinJS.Promise.wrapError(err);
                 }
 
-                icon.innerHTML = "&#xe155;"; // icon by default for placeholder
-                icon.style.opacity = 1;
+                img.style.opacity = 1;
 
                 return;
             })

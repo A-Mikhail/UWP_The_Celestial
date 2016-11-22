@@ -37,19 +37,21 @@
     // objectType - Type of object; for files - file extensions, for folder - type of folder
     // relativeId - Unique id of objects
     // path - Absolute path to the object
-    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path) {
+    // size - Size of files
+    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size) {
         Databases.userDB().put({
             _id: name,
             relativeId: relativeId,
             dateCreated: dateCreated,
             name: name,
             objectType: objectType,
-            path: path
+            path: path,
+            size: size
         }).then(function (response) {
             console.log("response_id: " + response.id);
-        }, function (err) {
+        }, function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog("Cannot add data to DB 'user'" +
-            "; Status: " + err.name + "; Message: " + err.message, "Error: " + err.status);
+            "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
 
             messageDialog.showAsync();
         });

@@ -208,24 +208,23 @@ img {
     overflow: hidden;
 }
 
-.listview-template-item {
+.zoomedIn-item {
     width: 18em;
     height: 4em;
     line-height: 4em;
 }
 
-    .listview-template-item .listview-template-item-icon {
-        font-family: "Segoe MDL2 Assets","Symbols";
-        font-size: xx-large;
+    .zoomedIn-item .zoomedIn-item-img {
         float: left;
-        padding: 0 0.4em;
+        padding: 0.6em;
     }
 
-    .listview-template-item .listview-template-item-detail {
+
+    .zoomedIn-item .zoomedIn-item-detail {
         margin: 0.8em;
     }
 
-.listview-template-item-date {
+.zoomedIn-item-date {
     font-size: small;
 }
 

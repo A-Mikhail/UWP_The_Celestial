@@ -39,8 +39,15 @@
     // path - Absolute path to the object
     // size - Size of files
     function userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size) {
+        // Convert name to hex for avoid error with naming
+        let id = "";
+
+        for (let i = 0; i < name.length; i++) {
+            id += name[i].charCodeAt(0).toString(16);
+        }
+        
         Databases.userDB().put({
-            _id: name,
+            _id: id,
             relativeId: relativeId,
             dateCreated: dateCreated,
             name: name,
@@ -50,8 +57,11 @@
         }).then(function (response) {
             console.log("response_id: " + response.id);
         }, function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Cannot add data to DB 'user'" +
-            "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while writing in userDB"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
 
             messageDialog.showAsync();
         });

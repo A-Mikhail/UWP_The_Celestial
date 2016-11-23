@@ -91,7 +91,7 @@
         fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
         // Image size
-        let requestedSize = 40;
+        let requestedSize = 32;
         let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.documentsView;
 
         let substrType;
@@ -114,8 +114,11 @@
                     // Remove dot from name for createFileAsync naming
                     substrType = objectType.substr(1);
 
+                    // Send picked file information to User Database
+                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
+
                     // Get Thumbnail in StorageItemThumbnail format
-                    files[i].getThumbnailAsync(thumbnailMode, requestedSize).done(function (thumbnail) {
+                    files[i].getThumbnailAsync(thumbnailMode, requestedSize).then(function (thumbnail) {
                         if (thumbnail) {
                             memoryStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
                             dataWriter = new Windows.Storage.Streams.DataWriter(memoryStream);
@@ -130,16 +133,10 @@
                             dataWriter.close();
 
                             // TODO: If have existing just skip 
-                            localCacheFolder.createFileAsync(substrType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
+                            localCacheFolder.createFileAsync(substrType + ".png", Windows.Storage.CreationCollisionOption.openIfExists)
                             .then(function (file) {
                                 return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
                             });
-
-                            // Send picked file information to User Database
-                            Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
-                        } else {
-                            // Send picked file information to User Database without creating thumbnail file
-                            Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
                         }
                     });
 
@@ -457,14 +454,14 @@
     function placeholderRenderer(itemPromise) {
         // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
-        element.className = "zoomed-out-item";
-        element.innerHTML = "<h2 class='win-type-subtitle zoomed-out-item-title'>...</h2>";
+        element.className = "zoomedOut-item";
+        element.innerHTML = "<h2 class='zoomedOut-item-title win-type-subtitle'>...</h2>";
 
         return {
             element: element,
 
             renderComplete: itemPromise.then(function (item) {
-                element.querySelector(".zoomed-out-item-title").innerHTML = item.data.title;
+                element.querySelector(".zoomedOut-item-title").innerHTML = item.data.title;
             })
         };
     }

@@ -87,30 +87,30 @@
         <!-- Content Area -->
         <div id="pivot" data-win-control="WinJS.UI.Pivot">
             <div data-win-control="WinJS.UI.PivotItem" data-win-options="{ header : 'Home' }">
-                <!-- ListView Header template -->
-                <div id="leftHeaderTemplate" class="left-header-template"
+                <!-- Header for zoomed in list view -->
+                <div id="zoomedInLeftHeader" class="zoomedIn-left-header"
                      data-win-control="WinJS.Binding.Template">
-                    <div class="left-header-template-root">
-                        <div data-win-bind="innerText: title"></div>
+                    <div class="zoomedIn-left-header-root">
+                        <div data-win-bind="innerHTML: title"></div>
                     </div>
                 </div>
 
                 <div id="semanticZoomDiv" data-win-control="WinJS.UI.SemanticZoom">
-                    <!-- File browser List View -->
+                    <!-- File browser zoomed in list view -->
                     <div id="zoomedInListView"
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{
                             itemDataSource: FileBrowser.data.dataSource,
                             itemTemplate: FileBrowser.multistageRenderer,
                             groupDataSource: FileBrowser.data.groups.dataSource,
-                            groupHeaderTemplate: select('#leftHeaderTemplate'),
+                            groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
                             layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
                         }">
                     </div>
 
-                    <!-- Zoomed out List View -->
+                    <!-- Zoomed out list view -->
                     <div id="zoomedOutListView"
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{

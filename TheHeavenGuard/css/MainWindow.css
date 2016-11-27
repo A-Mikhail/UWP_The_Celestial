@@ -16,38 +16,54 @@ N. Global elements;
     ---- img 
 
     ---- win-pivot
-    ---- win-button
-    ---- win-toolbar
+    ---- win-appbar
     ---- win-navbarcommand-button-content
     ---- win-listview 
+    ---- win-commandingsurface
+    ---- win-autosuggestbox
 
-I. Pivot
-    ---- #pivot
+I. Settings SplitView
+    ---- #splitView
 
-II. Appbar block
-    ---- .app-bar 
+II. Auth SplitView
+    ---- #authPanel
+        ---- .header
 
-III. File browser block
-                ---- #fileBrowser
-                    ---- .left-header-template-root
-                    
-                    ---- .listview-template-item
-                    ---- .listview-template-item-icon
-                    ---- .listview-template-item-detail
-                    ---- .listview-template-item-title
-                    ---- .listview-template-item-date
+        ---- #authPanelNavCommands
+        ---- #settingNavCommand
 
-                    ---- .zoomed-out-item
+        II.i ---- Pivot
+            ---- #pivot
+                ---- #zoomedInLeftHeader .zoomedIn-left-header
+                ---- .zoomedIn-left-header-root
+
+                ---- #semanticZoomDiv
+                    ---- #zoomedInListView
+                    ---- #zoomedOutListView
+        II.ii ---- AppBar
+            ----- .control-app-bar 
+                ---- #startSyncFilesBtn
+                ---- #search
+                ---- #removeItemsBtn
+                ---- #selectAllItemsBtn
+                ---- #clearSelectionBtn
+                ---- #addFilesBtn
+                ---- #addFolderBtn
+
+        II.iii - Undo change Popup
+            ---- .undo-changes #undoChangeLine
+            ---- #undoChangeBtn .undo-change-btn
+            ---- #closeUndoPanelBtn .close-undo-line-btn
                 
-IV. Panel block
+III. Settings Split View
+    ---- .title 
+    ---- .nav-commands 
+    ---- .nav-commands-body 
 
-                ---- .cloud-avatar
-                ---- .img-circle
-                
-                ---- .undo-changes #undoChangeLine
-                    ---- #undoChangeBtn .undo-change-btn
-                    ---- #closeUndoPanelBtn .close-undo-line-btn
 
+IV. Other
+    ----- .cloud-avatar
+    ----- .img-circle
 
 /*
 *   N. Global elements;
@@ -96,15 +112,15 @@ img {
     }
 
 /* Set the background color */
-.win-appbar.customAppBar .win-appbar-actionarea,
-.win-appbar.customAppBar .win-appbar-overflowarea {
+.win-appbar.control-app-bar .win-appbar-actionarea,
+.win-appbar.control-app-bar .win-appbar-overflowarea {
     /* Set the AppBar background color */
     background-color: #fff;
 }
 
-.win-appbar.customAppBar button:hover:active .win-commandimage,
-.win-appbar.customAppBar button:-ms-keyboard-active .win-commandimage,
-.win-appbar.customAppBar button[aria-checked=true] .win-commandimage {
+.win-appbar.control-app-bar button:hover:active .win-commandimage,
+.win-appbar.control-app-bar button:-ms-keyboard-active .win-commandimage,
+.win-appbar.control-app-bar button[aria-checked=true] .win-commandimage {
     /* Set the pressed state command icon to the same color as the AppBar background */
 }
 
@@ -127,21 +143,17 @@ img {
     width: 100%;
 }
 
+/*
+*   I. Settings SplitView
+*/
+
 /* Change from relative to absolute */
 #splitView {
     position: absolute;
 }
 
 /*
-*   I. Pivot
-*/
-#pivot {
-    position: relative;
-    height: calc(100% - 48px);
-}
-
-/*
-*   II. Appbar block
+*   II. Auth SplitView
 */
 .app-bar {
     position: relative;
@@ -151,9 +163,19 @@ img {
     z-index: 1003;
 }
 
-/*
-*   III. File browser block
-*/
+#settingNavCommand {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.zoomedIn-left-header-root {
+    font-family: "Segoe MDL2 Assets","Symbols";
+    width: 50px;
+    height: 50px;
+    padding: 8px;
+}
+
 #semanticZoomDiv {
     height: 100%;
     width: 100%;
@@ -186,12 +208,6 @@ img {
     font-size: small;
 }
 
-.zoomedIn-left-header-root {
-    width: 50px;
-    height: 50px;
-    padding: 8px;
-}
-
 #zoomedOutListView {
     height: 356px;
 }
@@ -208,29 +224,18 @@ img {
     line-height: 0.6;
 }
 
-#settingNavCommand {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+
+/*
+*   II.i ---- Pivot
+*/
+#pivot {
+    position: relative;
+    height: calc(100% - 48px);
 }
 
-.cloud-avatar {
-    width: 24px;
-    letter-spacing: 0;
-    vertical-align: middle;
-    font-size: 16px;
-    margin: 0;
-    line-height: 24px;
-    background-position: 0 0;
-    background-origin: border-box;
-    height: 24px;
-    float: left;
-    margin-left: 0;
-}
-
-.img-circle {
-    border-radius: 50%;
-}
+/*
+*   II.iii - Undo change Popup
+*/
 .undo-changes {
     position: absolute;
     width: 100%;
@@ -255,7 +260,9 @@ img {
     color: #112233;
 }
 
-/* Settings Split View */
+/* 
+*  Settings Split View 
+*/
 .title {
     display: inline;
     font-size: x-large;
@@ -271,4 +278,25 @@ img {
 
 .nav-commands-body {
     padding: 0 15px;
+}
+
+/* 
+*   Other 
+*/
+.cloud-avatar {
+    width: 24px;
+    letter-spacing: 0;
+    vertical-align: middle;
+    font-size: 16px;
+    margin: 0;
+    line-height: 24px;
+    background-position: 0 0;
+    background-origin: border-box;
+    height: 24px;
+    float: left;
+    margin-left: 0;
+}
+
+.img-circle {
+    border-radius: 50%;
 }

@@ -48,8 +48,8 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
   <PropertyGroup>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>TheHeavenGuard_TemporaryKey.pfx</PackageCertificateKeyFile>
@@ -61,6 +61,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="css\MainWindow.css" />
+    <Content Include="html\detailedFilesManager.html" />
     <Content Include="html\Dropbox.html" />
     <Content Include="html\GoogleDrive.html" />
     <Content Include="html\MainWindow.html" />
@@ -120,6 +121,7 @@
     <Content Include="js\libs\oboe-browser.min.js" />
     <Content Include="js\libs\pouchdb-6.0.7.min.js" />
     <Content Include="js\MainWindow.js" />
+    <Content Include="js\viewLifetimeControl.js" />
     <Content Include="js\XMLHttpRequest.js" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-intrinsics.css" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-tv.css" />

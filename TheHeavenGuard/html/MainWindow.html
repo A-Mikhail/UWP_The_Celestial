@@ -28,6 +28,8 @@
         Configurator as cloud uri for xhr
     -->
     <script src="/js/MainWindow.js"></script>
+    <script src="/js/viewLifetimeControl.js"></script>
+
 
     <!-- Configure databases -->
     <script src="/js/Databases.js"></script>
@@ -45,7 +47,8 @@
 
 <body>
     <!-- Settings SplitView -->
-    <div id="splitView" data-win-control="WinJS.UI.SplitView" data-win-options="{
+    <div id="splitView" data-win-control="WinJS.UI.SplitView" 
+         data-win-options="{
                 panePlacement: 'right',
                 openedDisplayMode: 'overlay',
                 closedDisplayMode: 'none'
@@ -57,8 +60,9 @@
         </div>
     </div>
 
-    <!-- Settings SplitView -->
-    <div id="authPanel" data-win-control="WinJS.UI.SplitView" data-win-options="{
+    <!-- Authorization in services split view -->
+    <div id="authPanel" data-win-control="WinJS.UI.SplitView" 
+         data-win-options="{
                 panePlacement: 'left',
                 paneOpened: 'true',
                 openedDisplayMode: 'inline'
@@ -77,20 +81,21 @@
             </div>
 
             <!-- Setting button -->
-            <div id='settingNavCommand'
+            <div id="settingNavCommand"
                  data-win-control="WinJS.UI.SplitViewCommand"
                  data-win-options="{ label: 'Settings', icon: 'settings'}">
             </div>
-            
         </div>
 
         <!-- Content Area -->
         <div id="pivot" data-win-control="WinJS.UI.Pivot">
-            <div data-win-control="WinJS.UI.PivotItem" data-win-options="{ header : 'Home' }">
+            <div data-win-control="WinJS.UI.PivotItem" 
+                 data-win-options="{ header : 'Home' }">
+
                 <!-- Header for zoomed in list view -->
                 <div id="zoomedInLeftHeader" class="zoomedIn-left-header"
                      data-win-control="WinJS.Binding.Template">
-                    <div class="zoomedIn-left-header-root">
+                    <div class="zoomedIn-left-header-root win-type-title">
                         <div data-win-bind="innerHTML: title"></div>
                     </div>
                 </div>
@@ -127,17 +132,33 @@
 
         <!-- AppBar -->
         <div class="app-bar">
-            <div class="customAppBar" data-win-control="WinJS.UI.AppBar" data-win-options="{ placement: 'bottom' }">
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+            <div class="control-app-bar" 
+                 data-win-control="WinJS.UI.AppBar" 
+                 data-win-options="{ placement: 'bottom' }">
+
+                <button data-win-control="WinJS.UI.Command"
+                        data-win-options="{
+                                    id: 'testBtn',
+                                    label: 'testBtn',
+                                    icon: 'home'
+                                }"></button>
+
+                <button data-win-control="WinJS.UI.Command" 
+                        data-win-options="{
                                     id: 'startSyncFilesBtn',
                                     label: 'Synchronize',
                                     icon: 'sync'
                                 }"></button>
 
-                <hr data-win-control="WinJS.UI.Command" data-win-options="{ type: 'separator' }" />
+                <hr data-win-control="WinJS.UI.Command" 
+                    data-win-options="{ type: 'separator' }" />
 
-                <div data-win-control="WinJS.UI.Command" data-win-options="{ id: 'search', type: 'content' }">
-                    <div class="win-interactive" data-win-control="WinJS.UI.AutoSuggestBox"
+                <div data-win-control="WinJS.UI.Command" 
+                     data-win-options="{ 
+                     id: 'search', 
+                     type: 'content' }">
+                    <div class="win-interactive" 
+                         data-win-control="WinJS.UI.AutoSuggestBox"
                          data-win-options="{
                             placeholderText: 'Search file',
                             onsuggestionsrequested: FileBrowser.suggestionsRequestedHandler,
@@ -146,38 +167,45 @@
                     </div>
                 </div>
 
-                <hr data-win-control="WinJS.UI.Command" data-win-options="{ type: 'separator' }" />
+                <hr data-win-control="WinJS.UI.Command" 
+                    data-win-options="{ type: 'separator' }" />
 
                 <!-- Work with List View items buttons -->
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+                <button data-win-control="WinJS.UI.Command"
+                         data-win-options="{
                                     id: 'removeItemsBtn',
                                     label: 'Remove Selected',
                                     icon: 'delete'
                                 }">
                 </button>
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+                <button data-win-control="WinJS.UI.Command" 
+                        data-win-options="{
                                     id: 'selectAllItemsBtn',
                                     label: 'Select All Items',
                                     icon: 'selectall'
                                 }">
                 </button>
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+                <button data-win-control="WinJS.UI.Command" 
+                        data-win-options="{
                                     id: 'clearSelectionBtn',
                                     label: 'Clear Selection',
                                     icon: 'clearselection'
                                 }">
                 </button>
 
-                <hr data-win-control="WinJS.UI.Command" data-win-options="{ type: 'separator' }" />
+                <hr data-win-control="WinJS.UI.Command" 
+                    data-win-options="{ type: 'separator' }" />
 
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+                <button data-win-control="WinJS.UI.Command" 
+                        data-win-options="{
                                     id: 'addFilesBtn',
                                     label: 'Pick Files',
                                     icon: 'openfile'
                                 }">
                 </button>
 
-                <button data-win-control="WinJS.UI.Command" data-win-options="{
+                <button data-win-control="WinJS.UI.Command" 
+                        data-win-options="{
                             id: 'addFolderBtn',
                             label: 'Pick Folder',
                             icon: 'newfolder'
@@ -185,24 +213,24 @@
                 </button>
             </div>
         </div>
+    </div>
 
-        <!-- Undo change Popup dialog -->
-        <div class="undo-changes" id="undoChangeLine">
-            <button data-win-control="WinJS.UI.Command" data-win-options="{
+    <!-- Undo change Popup dialog -->
+    <div class="undo-changes" id="undoChangeLine">
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
                                 icon: 'undo',
                                 label: 'Undo Change',
                                 id: 'undoChangeBtn',
                                 extraClass: 'undo-change-btn win-button'
-                             }">
-            </button>
+                             }"></button>
 
-            <button data-win-control="WinJS.UI.Command" data-win-options="{
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
                                 icon: 'clear',
                                 id: 'closeUndoPanelBtn',
                                 extraClass: 'close-undo-line-btn win-button'
-                              }">
-            </button>
-        </div>
+                              }"></button>
     </div>
 </body>
 </html>

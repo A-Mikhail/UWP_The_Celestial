@@ -62,14 +62,6 @@
 
     // Function init() - main function which contains eventListeners and function calls
     function init() {
-        // Minimize authPanel by clicking on hamburger button 
-        //let panelBtn = document.getElementById("hamburgerBtn");
-        //panelBtn.addEventListener("click", function () {
-        //    let mainPage = document.getElementById("mainPage");
-
-        //    mainPage.className = (mainPage.className === "minimized-panel") ? "main-page" : "minimized-panel"; //ignore jslint
-        //}, false);
-
         // Synchronize files; functional of it located in BackgroundTransfer.js
         let syncBtn = document.getElementById("startSyncFilesBtn");
         syncBtn.addEventListener("click", BackgroundTransfer.init, false);

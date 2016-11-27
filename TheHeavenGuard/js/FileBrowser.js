@@ -5,6 +5,10 @@
     let messageDialog;
     let items;
 
+    // Variables for creating new windows
+    let viewManagement = Windows.UI.ViewManagement;
+    let viewSizePreference = viewManagement.default;
+
     // LocalCache folder
     let applicationData = Windows.Storage.ApplicationData.current;
     let localCacheFolder = applicationData.localCacheFolder;
@@ -29,7 +33,7 @@
     let questionIcon = "&#xe11B;";
 
     function init() {
-        // Files/Folders pick buttons
+        // Files/Folder pick buttons
         let chFilesBtn = document.getElementById("addFilesBtn");
         chFilesBtn.addEventListener("click", pickFiles, false);
 
@@ -58,7 +62,12 @@
         generateItems();
 
         // Bad decision of autoadjusting height of SemanticZoom
-        setTimeout(function () { forceLayout() }, 1000);
+        setTimeout(function () { forceLayout(); }, 1000);
+
+        let testBtn = document.getElementById("testBtn");
+        testBtn.addEventListener("click", function () {
+            MultipleViews.manager.createNewView("/html/detailedFilesManager.html", { title: "theTitle" });
+        }, false);
     }
 
     function forceLayout() {
@@ -90,7 +99,7 @@
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
         fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
-        // Image size
+        // Image size - 32px
         let requestedSize = 32;
         let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.documentsView;
 
@@ -101,38 +110,42 @@
         let thumbBuffer;
         let buffer;
 
-        fileOpenPicker.pickMultipleFilesAsync().then(function (files) {
-            if (files.size > 0) {
-                for (let i = 0; i < files.size; i++) {
-                    dateCreated = files[i].dateCreated.toLocaleTimeString("en-us", options);
-                    name = files[i].name;
-                    objectType = files[i].fileType;
-                    relativeId = files[i].folderRelativeId;
-                    path = files[i].path;
-                    size = files[i].size;
+        fileOpenPicker.pickMultipleFilesAsync().then(function (file) {
+            if (file.size > 0) {
+                for (let i = 0; i < file.size; i++) {
+                    dateCreated = file[i].dateCreated.toLocaleTimeString("en-us", options);
+                    name = file[i].name;
+                    objectType = file[i].fileType;
+                    relativeId = file[i].folderRelativeId;
+                    path = file[i].path;
 
                     // Remove dot from name for createFileAsync naming
                     substrType = objectType.substr(1);
 
                     // Send picked file information to User Database
-                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size);
+                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
 
                     // Get Thumbnail in StorageItemThumbnail format
-                    files[i].getThumbnailAsync(thumbnailMode, requestedSize).then(function (thumbnail) {
+                    file[i].getThumbnailAsync(thumbnailMode, requestedSize).then(function (thumbnail) {
                         if (thumbnail) {
                             memoryStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
                             dataWriter = new Windows.Storage.Streams.DataWriter(memoryStream);
 
+                            // Size of buffer
                             thumbBuffer = new Windows.Storage.Streams.Buffer(thumbnail.size);
 
-                            thumbnail.readAsync(thumbBuffer, thumbBuffer.capacity, Windows.Storage.Streams.InputStreamOptions.none).then(function (writedata) {
-                                dataWriter.writeBuffer(writedata);
+                            // Write data from thumbnail into dataWriter stream
+                            // 0 - Windows.Storage.Streams.InputStreamOptions.none
+                            thumbnail.readAsync(thumbBuffer, thumbBuffer.capacity, 0).then(function (data) {
+                                dataWriter.writeBuffer(data);
                             });
 
+                            // Close buffer and stream after work is done
                             buffer = dataWriter.detachBuffer();
                             dataWriter.close();
 
-                            // TODO: If have existing just skip 
+                            // Create new file in localCache folder.
+                            // e.g. of created file - pdf.png
                             localCacheFolder.createFileAsync(substrType + ".png", Windows.Storage.CreationCollisionOption.openIfExists)
                             .then(function (file) {
                                 return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
@@ -141,7 +154,7 @@
                     });
 
                     // Send choosen files to global array for xhr
-                    storageFileArray.push(files[i]);
+                    storageFileArray.push(file[i]);
                 }
             } else {
                 // The picker was dismissed with no selected file
@@ -180,9 +193,38 @@
                 // Send picked folder to DB
                 Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
             } else {
+                // The picker was dismissed with no selected folder
                 return;
             }
         });
+    }
+
+    function closeView() {
+        function closeCompletion() {
+            if (view) {
+                view.stopViewInUse();
+            } else {
+                WinJS.log && WinJS.log("Please rewrite function in function for the sake of God", "sample", "error");
+            }
+
+            let view;
+            let zoomedInListView = document.getElementById('zoomedInListView').winControl;
+
+            zoomedInListView.selection.getItems().then(function (items) {
+                if (items.length > 0) {
+                    view = items[0].data;
+                    view.startViewInUse();
+
+                    return viewManagement.ApplicationViewSwitcher.switchAsync(
+                        viewManagement.ApplicationView.getForCurrentView().id,
+                        view.viewId,
+                        viewManagement.ApplicationViewSwitchingOptions.consolidateViews
+                    );
+                }
+
+                return WinJS.Promise.wrap();
+            }).done(closeCompletion, closeCompletion);
+        }
     }
 
     // Function pushItemsToListView() get all items from array and push it to Binding.List
@@ -196,8 +238,14 @@
 
             // Clear array of item each time function is called
             itemArray.length = 0;
-        }, function (err) {
-            reject(err);
+        }, function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while create list of items in Binding.List"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
+
+            messageDialog.showAsync();
         });
     }
 
@@ -212,8 +260,7 @@
                 itemArray.push({
                     title: result.rows[i].doc.name,
                     text: result.rows[i].doc.dateCreated,
-                    icon: result.rows[i].doc.objectType,
-                    size: result.rows[i].doc.size
+                    icon: result.rows[i].doc.objectType
                 });
             }
 
@@ -221,8 +268,11 @@
                 onChangeDatabase();
             });
         }).catch(function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Occured error while creating item, error: " +
-                "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while generate items into ListView"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
 
             messageDialog.showAsync();
         });
@@ -239,19 +289,20 @@
             name = change.doc.name;
             dateCreated = change.doc.dateCreated;
             objectType = change.doc.objectType;
-            size = change.doc.size;
 
             itemArray.push({
                 title: name,
                 text: dateCreated,
-                icon: objectType,
-                size: size,
+                icon: objectType
             });
 
             pushItemsToListView();
         }).on("error", function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Fail to listen changes in database 'user'" +
-                "; Status: " + error.name + "; Message: " + error.message, "Error: " + error.status);
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while adding new items in userDB"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
 
             messageDialog.showAsync();
         });
@@ -328,8 +379,8 @@
     }
 
     // Function which returns the data for a group
-    // All special characters goes to "#" section
-    // All numbers goes to "1" section
+    // All special characters goes to "&" section
+    // All numbers goes to "#" section
     // All other go to "global" section
     function getGroupData(dataItem) {
         let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
@@ -347,13 +398,12 @@
 
     // Suggestion in AutoSuggestBox
     function suggestionsRequestedHandler(eventObject) {
-        let queryText = eventObject.detail.queryText,
-            query = queryText.toLowerCase(),
-            suggestionCollection = eventObject.detail.searchSuggestionCollection,
-            suggestionList = FileBrowser.data._groupedItems;
+        let query = eventObject.detail.queryText.toLowerCase();
+        let suggestionCollection = eventObject.detail.searchSuggestionCollection;
+        let suggestionList = FileBrowser.data._groupedItems;
 
-        if (queryText.length > 0) {
-            for (let i = 1, len = FileBrowser.data.length; i < len; i++) {
+        if (query.length > 0) {
+            for (let i = 1; i < FileBrowser.data._lastNotifyLength; i++) {
                 if (suggestionList[i].data.title.substr(0, query.length).toLowerCase() === query) {
                     suggestionCollection.appendQuerySuggestion(suggestionList[i].data.title);
                 }
@@ -361,11 +411,9 @@
         }
     }
 
-    // Scroll to choosen suggestion item location
+    // Work with picked files
     function querySubmittedHandler(eventObject) {
         let queryText = eventObject.detail.queryText;
-
-        scrollToItem(queryText.toUpperCase().charAt(0));
     }
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
@@ -414,10 +462,9 @@
                 title.innerHTML = itemTitle;
                 text.innerHTML = itemText;
 
-                // Display full lenght title in tooltip
+                // Display full lenght title in a tooltip
                 new WinJS.UI.Tooltip(element, {
-                    innerHTML: "Name: " + item.data.title + "\r" +
-                    "Size: " + item.data.size
+                    innerHTML: "Name: " + item.data.title
                 });
 
                 return item.ready;
@@ -478,5 +525,10 @@
         data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups),
         suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),
         querySubmittedHandler: WinJS.UI.eventHandler(querySubmittedHandler)
+    });
+
+    WinJS.Namespace.define("MultipleViews", {
+        manager: new SecondaryViewsHelper.ViewManager(),
+        disableMainViewKey: "DisableShowingMainViewOnAction"
     });
 })();

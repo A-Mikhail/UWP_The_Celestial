@@ -32,13 +32,13 @@
 
     // userDatabaseWrite - function that put recieved data into UserDB 
     // object - is files or folder
+    //
     // dateCreated - time when object last modified
     // name - Displayed name of object
     // objectType - Type of object; for files - file extensions, for folder - type of folder
     // relativeId - Unique id of objects
     // path - Absolute path to the object
-    // size - Size of files
-    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path, size) {
+    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path) {
         // Convert name to hex for avoid error with naming
         let id = "";
 
@@ -52,8 +52,7 @@
             dateCreated: dateCreated,
             name: name,
             objectType: objectType,
-            path: path,
-            size: size
+            path: path
         }).then(function (response) {
             console.log("response_id: " + response.id);
         }, function (error) {

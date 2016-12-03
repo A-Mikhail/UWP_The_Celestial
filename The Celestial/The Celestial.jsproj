@@ -52,16 +52,15 @@
     <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>$(VersionNumberMajor).$(VersionNumberMinor)</MinimumVisualStudioVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageCertificateKeyFile>TheHeavenGuard_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>7DBB662976EA34B16D4525F50EC3F1717B86C2CB</PackageCertificateThumbprint>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <JSLintSkip>|\Microsoft.WinJS.4.4\|\js\libs\</JSLintSkip>
+    <PackageCertificateKeyFile>The Celestial_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>72A4563B52A086C93DEB718F988EF56F4933941F</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
+    <AppxManifest Include="package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
     <Content Include="css\MainWindow.css" />
-    <Content Include="html\detailedFilesManager.html" />
+    <Content Include="html\DetailedFilesManager.html" />
     <Content Include="html\Dropbox.html" />
     <Content Include="html\GoogleDrive.html" />
     <Content Include="html\MainWindow.html" />
@@ -111,17 +110,16 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
-    <Content Include="img\Avatar-48x48.png" />
     <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />
     <Content Include="js\Databases.js" />
+    <Content Include="js\DetailedFilesManager.js" />
     <Content Include="js\FileBrowser.js" />
     <Content Include="js\AuthenticationBroker.js" />
     <Content Include="js\libs\oboe-browser.min.js" />
     <Content Include="js\libs\pouchdb-6.0.7.min.js" />
     <Content Include="js\MainWindow.js" />
-    <Content Include="js\viewLifetimeControl.js" />
     <Content Include="js\XMLHttpRequest.js" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-intrinsics.css" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-tv.css" />
@@ -146,19 +144,9 @@
     <Content Include="SVPages\personalization.html" />
     <Content Include="SVPages\personalization.js" />
     <Content Include="SVPages\SVPages.css" />
-    <None Include="TheHeavenGuard_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <AppxManifest Include="package.appxmanifest">
-      <SubType>Designer</SubType>
-    </AppxManifest>
+    <None Include="The Celestial_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties />
-    </VisualStudio>
-  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below then uncomment
        that target and the DisableFastUpToDateCheck PropertyGroup. 
        Other similar extension points exist, see Microsoft.Common.targets.

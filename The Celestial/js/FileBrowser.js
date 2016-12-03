@@ -5,10 +5,6 @@
     let messageDialog;
     let items;
 
-    // Variables for creating new windows
-    let viewManagement = Windows.UI.ViewManagement;
-    let viewSizePreference = viewManagement.default;
-
     // LocalCache folder
     let applicationData = Windows.Storage.ApplicationData.current;
     let localCacheFolder = applicationData.localCacheFolder;
@@ -32,7 +28,13 @@
     let folderIcon = "&#xe188;";
     let questionIcon = "&#xe11B;";
 
+    let FLTimeout;
+
     function init() {
+        // Global variable of listView for other functions
+        var zoomedInListView = document.getElementById('zoomedInListView');
+        var zoomedOutListView = document.getElementById('zoomedOutListView');
+
         // Files/Folder pick buttons
         let chFilesBtn = document.getElementById("addFilesBtn");
         chFilesBtn.addEventListener("click", pickFiles, false);
@@ -46,36 +48,31 @@
 
         let selectAllItemsBtn = document.getElementById("selectAllItemsBtn");
         selectAllItemsBtn.addEventListener("click", function () {
-            let listView = document.getElementById("zoomedInListView").winControl;
-
-            listView.selection.selectAll();
+            zoomedInListView.winControl.selection.selectAll();
         }, false);
 
         let clearSelectionBtn = document.getElementById("clearSelectionBtn");
         clearSelectionBtn.addEventListener("click", function () {
-            let listView = document.getElementById("zoomedInListView").winControl;
-
-            listView.selection.clear();
+            zoomedInListView.winControl.selection.clear();
         }, false);
 
         // Start generate items for listViews
         generateItems();
 
         // Bad decision of autoadjusting height of SemanticZoom
-        setTimeout(function () { forceLayout(); }, 1000);
+        FLTimeout = setTimeout(function () { forceLayout(); }, 1000);
 
         let testBtn = document.getElementById("testBtn");
         testBtn.addEventListener("click", function () {
-            MultipleViews.manager.createNewView("/html/detailedFilesManager.html", { title: "theTitle" });
-        }, false);
+            let newWindow = window.open("/html/DetailedFilesManager.html", null, "height=200, width=400, status=yes, toolbar=no, menubar=no, location=no");
+         }, false);
     }
 
     function forceLayout() {
-        let zoomedInListView = document.getElementById('zoomedInListView').winControl;
-        let zoomedOutListView = document.getElementById('zoomedOutListView').winControl;
+        zoomedInListView.winControl.forceLayout();
+        zoomedOutListView.winControl.forceLayout();
 
-        zoomedInListView.forceLayout();
-        zoomedOutListView.forceLayout();
+        clearTimeout(FLTimeout);
     }
 
     // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
@@ -99,7 +96,7 @@
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
         fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
-        // Image size - 32px
+        // Image size - 32px x 32px
         let requestedSize = 32;
         let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.documentsView;
 
@@ -146,7 +143,7 @@
 
                             // Create new file in localCache folder.
                             // e.g. of created file - pdf.png
-                            localCacheFolder.createFileAsync(substrType + ".png", Windows.Storage.CreationCollisionOption.openIfExists)
+                            localCacheFolder.createFileAsync("icon" + substrType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
                             .then(function (file) {
                                 return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
                             });
@@ -197,34 +194,6 @@
                 return;
             }
         });
-    }
-
-    function closeView() {
-        function closeCompletion() {
-            if (view) {
-                view.stopViewInUse();
-            } else {
-                WinJS.log && WinJS.log("Please rewrite function in function for the sake of God", "sample", "error");
-            }
-
-            let view;
-            let zoomedInListView = document.getElementById('zoomedInListView').winControl;
-
-            zoomedInListView.selection.getItems().then(function (items) {
-                if (items.length > 0) {
-                    view = items[0].data;
-                    view.startViewInUse();
-
-                    return viewManagement.ApplicationViewSwitcher.switchAsync(
-                        viewManagement.ApplicationView.getForCurrentView().id,
-                        view.viewId,
-                        viewManagement.ApplicationViewSwitchingOptions.consolidateViews
-                    );
-                }
-
-                return WinJS.Promise.wrap();
-            }).done(closeCompletion, closeCompletion);
-        }
     }
 
     // Function pushItemsToListView() get all items from array and push it to Binding.List
@@ -308,26 +277,14 @@
         });
     }
 
-    // Function removeFromDatabase() - functionality for removing documents from database
-    function removeFromDatabase(item) {
-        Databases.userDB().get(item).then(function (doc) {
-            return Databases.userDB().remove(doc);
-        }).catch(function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Error while removing item from database: " + error);
-
-            messageDialog.showAsync();
-        });
-    }
-
     // Function removeSelected() - removed selected items form listView and from database
     function removeSelected() {
-        let listView = document.getElementById("zoomedInListView").winControl;
         let itemsTitle;
         let itemsKey;
 
-        if (listView.selection.count() > 0) {
+        if (zoomedInListView.winControl.selection.count() > 0) {
             // Wait while selection items is correct returning it's value    
-            listView.selection.getItems().done(function (items) {
+            zoomedInListView.winControl.selection.getItems().done(function (items) {
                 // Sort the selection to ensure its in index order
                 items.sort(function CompareForSrt(item1, item2) {
                     let first = item1.index, second = item2.index;
@@ -343,9 +300,9 @@
 
                 for (let i = items.length - 1; i >= 0; i--) {
                     // Get title of selected items
-                    itemsTitle = listView.selection.getItems()._value[i].data.title;
+                    itemsTitle = zoomedInListView.winControl.selection.getItems()._value[i].data.title;
 
-                    removeFromDatabase(itemsTitle);
+                    Databases.removeFromDatabase(itemsTitle);
 
                     // Delete items from listView
                     FileBrowser.data.splice(items[i].index, 1);
@@ -473,8 +430,10 @@
                     img = element.querySelector(".zoomedIn-item-img");
                 }
 
+                let subItemIcon = item.data.icon.substr(1);
+
                 // Read image from localCacheFolder
-                localCacheFolder.getFileAsync(item.data.icon.substr(1) + ".png").then(function (thumbnail) {
+                localCacheFolder.getFileAsync("icon" + subItemIcon + ".png").then(function (thumbnail) {
                     return item.loadImage(img.src = URL.createObjectURL(thumbnail, { oneTimeOnly: true }), img).then(function () {
                         return item.isOnScreen();
                     });
@@ -525,10 +484,5 @@
         data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups),
         suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),
         querySubmittedHandler: WinJS.UI.eventHandler(querySubmittedHandler)
-    });
-
-    WinJS.Namespace.define("MultipleViews", {
-        manager: new SecondaryViewsHelper.ViewManager(),
-        disableMainViewKey: "DisableShowingMainViewOnAction"
     });
 })();

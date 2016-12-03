@@ -19,25 +19,22 @@
 
     <div class="nav-commands">
         <div class="nav-commands-body">
-            <p class="win-type-title">Databases</p>
-            <p class="win-type-subtitle">Delete all files</p>
-            <button id="destroyUserDB" class="win-button show-button delete-db-btn">Delete</button>
-            <p class="win-type-caption">Removing files from workplace won't remove files itself</p>
+            <p class="win-type-subtitle">Databases</p>
            
-            <br />
-            
-            <p class="win-type-title">Choose type of sorting</p>
-            <div id="sortType"></div>
+            <p class="win-type-subtitleAlt">Delete all files</p>
+            <button id="destroyUserDB" class="win-button win-button-primary delete-db-btn">Delete</button>
+            <p class="win-type-caption">Removing files from workplace won't remove files itself</p>
 
-            <br />
-            
-            <p class="win-type-title">Choose Timer for updating time</p>
-            <div id="updateTime"></div>
+            <p class="win-type-subtitle">Set Windows Credential on application</p>
+            <div id="winCredential">
+                <div id="winCredentialToggle"
+                     data-win-control="WinJS.UI.ToggleSwitch"
+                     data-win-options="{ title: 'App protection', checked: false, onchange: General.toggleCredential }">
+                </div>
+            </div>
 
-            <br />
-        
-            <p class="win-type-title">Return all to default status</p>
-            <button id="restoreDefaultParameters" class="win-button">Restore</button>
+            <p class="win-type-subtitle">Return all to default status</p>
+            <button id="restoreDefaultParameters" class="win-button win-button-primary">Restore</button>
             <p class="win-type-caption">Restore button return all settings and parameters to original state.</p>
         </div>
     </div>

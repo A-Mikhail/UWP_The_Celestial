@@ -18,13 +18,15 @@
 
     <div class="nav-commands">
         <div class="nav-commands-body">
-            <p class="win-type-title">Colors</p>
-            <input type="radio" id="colorDarkMode"/> <p class="win-type-base"> Dark Mode </p>            
-            <input type="radio" id="colorLightMode" /> <p class="win-type-base"> Light Mode </p>
+            <label class="win-type-subtitle">Colors</label><br />
 
-            <br />
+            <input class="win-radio" type="radio" name="themeColor" value="dark" id="colorDarkMode"/> 
+                <label for="colorDarkMode"> Dark Mode </label>
+            
+            <br/>            
 
-            <p calss="win-type-title">Notification</p>
+            <input class="win-radio" type="radio" name="themeColor" value="light" checked="checked" id="colorLightMode"/>
+                <label for="colorLightMode"> Light Mode </label>
         </div>
     </div>
 </body>

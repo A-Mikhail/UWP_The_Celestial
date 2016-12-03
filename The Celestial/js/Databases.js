@@ -6,15 +6,15 @@
 
     // create db for user files
     function userDB() {
-        let userFilesDB;
+        let userDB;
+        userDB = new PouchDB("user");
 
-        return userFilesDB = new PouchDB("user");
+        return userDB;
     }
 
     // destriyUserDB - function that destroyed userDB
     // and clean all items from ListView array
     function destroyUserDB() {
-      
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
@@ -25,8 +25,14 @@
             FileBrowser.generateItems();
 
             console.log("database 'user' destroyed");
-        }).catch(function (err) {
-            console.log(err);
+        }).catch(function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while destroying UserDB"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
+
+            messageDialog.showAsync();
         });
     }
 
@@ -66,9 +72,32 @@
         });
     }
 
+    // Function removeFromDatabase() - functionality for removing documents from database
+    function removeFromDatabase(item) {
+        // Convert name to hex for removing by using id
+        let id = "";
+
+        for (let i = 0; i < item.length; i++) {
+            id += item[i].charCodeAt(0).toString(16);
+        }
+
+        Databases.userDB().get(id).then(function (doc) {
+            return Databases.userDB().remove(doc);
+        }).catch(function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while removing items from userDB"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
+
+            messageDialog.showAsync();
+        });
+    }
+
     WinJS.Namespace.define("Databases", {
         userDB: userDB,
         destroyUserDB: destroyUserDB,
-        userDatabaseWrite: userDatabaseWrite
+        userDatabaseWrite: userDatabaseWrite,
+        removeFromDatabase: removeFromDatabase
     });
 })();

@@ -5,22 +5,51 @@
     let activation = Windows.ApplicationModel.Activation;
     let background = Windows.ApplicationModel.Background;
 
+    // Save all app settings in to storage
+    let applicationData = Windows.Storage.ApplicationData.current;
+    let roamingSettings = applicationData.roamingSettings;
+
     let itemsSet = new Map();
 
     app.onactivated = function (args) {
         if (args.detail.kind === activation.ActivationKind.launch) {
             if (args.detail.previousExecutionState !== activation.ApplicationExecutionState.terminated) {
-                // TODO: This application has been newly launched. Initialize your application here.
+                WinJS.UI.processAll().then(function () {
+                    // TODO: This application has been newly launched. Initialize your application here.
+                    let passwrodProtection = roamingSettings.values["passwordProtection"];
+                    let themeColor = roamingSettings.values["themeColor"];
+
+                    let head = document.getElementsByTagName("head")[0];
+                    let styleSheet = document.createElement("style");
+                    
+                    if (themeColor === "dark") {
+                        // Create stylesheet 
+                        styleSheet.id = "styleSheet";
+                        styleSheet.rel = "stylesheet";
+
+                        styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-dark.css";
+                        styleSheet.appendChild(document.createTextNode(styleSheet));
+                    } else {
+                        styleSheet.id = "styleSheet";
+                        styleSheet.rel = "stylesheet";
+
+                        styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-light.css";
+                        styleSheet.appendChild(document.createTextNode(styleSheet));
+                    }
+
+                    // Check if password is turn on
+                    if (passwrodProtection !== "disabled") {
+                        checkConsentAvailability();
+                    } else {
+                        // Load user depending information from js files
+                        FileBrowser.init();
+                        AuthPanel.init();
+                    }
+                });
             } else {
                 // TODO: This application was suspended and then terminated.
                 // To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
             }
-
-            args.setPromise(WinJS.UI.processAll().then(function () {
-                // Wait until main page is loaded and then init additional files
-                FileBrowser.init();
-                AuthPanel.init();
-            }));
         }
     };
 
@@ -31,6 +60,60 @@
     };
 
     app.start();
+
+    function checkConsentAvailability() {
+        try {
+            Windows.Security.Credentials.UI.UserConsentVerifier.checkAvailabilityAsync()
+            .then(function (consentAvailability) {
+                switch (consentAvailability) {
+                    case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.available:
+                        // Ask credential if available
+                        secureUserData();
+                        break;
+                    case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.deviceNotPresent:
+                        console.log("No PIN or biometric found, INSTRUCTION! ask to set it up in windows setting");
+                        break;
+                    default:
+                        console.log("Error of not currently unavailabe, send help");
+                        break;
+                }
+            });
+        }
+        catch (error) {
+            console.log("Error message: " + err.message, "sample", "error");
+        }
+    }
+
+    function secureUserData() {
+        try {
+            let message = "Please provide your credentials";
+
+            Windows.Security.Credentials.UI.UserConsentVerifier.requestVerificationAsync(message)
+                .then(function (consentResult) {
+                    switch (consentResult) {
+                        // If credential was verified then loading user data
+                        case Windows.Security.Credentials.UI.UserConsentVerificationResult.verified:
+                            FileBrowser.init();
+                            AuthPanel.init();
+
+                            break;
+                        case Windows.Security.Credentials.UI.UserConsentVerificationResult.deviceNotPresent:
+                            console.log("No pin or some else found, please install one of them");
+                            break;
+                        case Windows.Security.Credentials.UI.UserConsentVerificationResult.canceled:
+                            console.log("User consent verification canceled");
+                            break;
+                        default:
+                            console.log("Error");
+                            break;
+                    }
+                });
+        }
+        catch (error) {
+            console.log("error ", +error.message);
+        }
+    }
+
 
     // Function pushItem() - set to the Map data key of Item and it's name - headerItems
     // try..catch need for skip error that occur when loop called number 1 which doesn't exist in PivotItems array

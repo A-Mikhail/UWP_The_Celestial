@@ -1,9 +1,101 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <meta charset="utf-8" />
+
+    <title>Detailed View Browser</title>
+
+    <!-- WinJS references -->
+    <link href="/Microsoft.WinJS.4.4/css/ui-light.css" rel="stylesheet" />
+
+    <script src="/Microsoft.WinJS.4.4/js/base.js"></script>
+    <script src="/Microsoft.WinJS.4.4/js/ui.js"></script>
+
+    <!-- TheHeavenGuard references -->
+    <link href="/css/MainWindow.css" rel="stylesheet" />
+
+    <script src="/js/DetailedFilesManager.js"></script>
 </head>
 <body>
-    <div>Hello</div>
+    <!-- Header for zoomed in list view -->
+    <div id="zoomedInLeftHeader" class="zoomedIn-left-header"
+         data-win-control="WinJS.Binding.Template">
+        <div class="zoomedIn-left-header-root win-type-title">
+            <div data-win-bind="innerHTML: title"></div>
+        </div>
+    </div>
+
+    <div data-win-control="WinJS.UI.SemanticZoom">
+        <!-- File browser zoomed in list view -->
+        <div id="zoomedInListView"
+             data-win-control="WinJS.UI.ListView"
+             data-win-options="{
+                            itemDataSource: FileBrowser.data.dataSource,
+                            itemTemplate: FileBrowser.multistageRenderer,
+                            groupDataSource: FileBrowser.data.groups.dataSource,
+                            groupHeaderTemplate: select('#zoomedInLeftHeader'),
+                            selectionMode: 'multi',
+                            tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
+                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                        }">
+        </div>
+
+        <!-- Zoomed out list view -->
+        <div id="zoomedOutListView"
+             data-win-control="WinJS.UI.ListView"
+             data-win-options="{
+                                itemDataSource: FileBrowser.data.groups.dataSource,
+                                itemTemplate: FileBrowser.placeholderRenderer,
+                                selectionMode: 'none',
+                                tapBehavior: 'invoke',
+                                layout: { type: WinJS.UI.GridLayout }
+                             }">
+        </div>
+    </div>
+
+    <!-- AppBar with buttons for working with files -->
+    <div class="control-app-bar"
+         data-win-control="WinJS.UI.AppBar"
+         data-win-options="{ placement: 'bottom' }">
+
+        <!-- Work with List View items buttons -->
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
+                                    id: 'removeItemsBtn',
+                                    label: 'Remove Selected',
+                                    icon: 'delete'
+                                }"></button>
+
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
+                                    id: 'selectAllItemsBtn',
+                                    label: 'Select All Items',
+                                    icon: 'selectall'
+                                }"></button>
+
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
+                                    id: 'clearSelectionBtn',
+                                    label: 'Clear Selection',
+                                    icon: 'clearselection'
+                                }"></button>
+
+        <hr data-win-control="WinJS.UI.Command"
+            data-win-options="{ type: 'separator' }" />
+
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
+                                    id: 'addFilesBtn',
+                                    label: 'Pick Files',
+                                    icon: 'openfile'
+                                }"></button>
+
+        <button data-win-control="WinJS.UI.Command"
+                data-win-options="{
+                            id: 'addFolderBtn',
+                            label: 'Pick Folder',
+                            icon: 'newfolder'
+                        }"></button>
+    </div>
 </body>
 </html>

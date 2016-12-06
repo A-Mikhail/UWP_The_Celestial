@@ -100,11 +100,11 @@
     <Content Include="images\Square71x71Logo.scale-150.png" />
     <Content Include="images\Square71x71Logo.scale-200.png" />
     <Content Include="images\Square71x71Logo.scale-400.png" />
-    <Content Include="images\StoreLogo.scale-100.png" />
-    <Content Include="images\StoreLogo.scale-125.png" />
-    <Content Include="images\StoreLogo.scale-150.png" />
-    <Content Include="images\StoreLogo.scale-200.png" />
-    <Content Include="images\StoreLogo.scale-400.png" />
+    <Content Include="images\storelogo.scale-100.png" />
+    <Content Include="images\storelogo.scale-125.png" />
+    <Content Include="images\storelogo.scale-150.png" />
+    <Content Include="images\storelogo.scale-200.png" />
+    <Content Include="images\storelogo.scale-400.png" />
     <Content Include="images\Wide310x150Logo.scale-100.png" />
     <Content Include="images\Wide310x150Logo.scale-125.png" />
     <Content Include="images\Wide310x150Logo.scale-150.png" />

@@ -13,10 +13,26 @@
     let storageFileArray = [];
     let itemArray = [];
 
-    // Picked object information
+    // Array of image extensions for replacing by default image 
+    let mediaImageArray = [".png"
+        , ".cur"
+        , ".jps"
+        , ".jpg"
+        , ".jpe"
+        , ".jpeg"
+        , ".tif"
+        , ".tiff"
+        , ".gif"
+        , ".bmp"
+        , ".dib"
+        , ".rle"
+        , ".exif"
+        , ".ico"];
+
+    // Picked item information
     let dateCreated
         , name
-        , objectType
+        , itemType
         , relativeId
         , path
         , size;
@@ -25,10 +41,10 @@
 
     // Icons
     let globeIcon = "&#xe12B;";
-    let folderIcon = "&#xe188;";
-    let questionIcon = "&#xe11B;";
 
     let FLTimeout;
+
+    let thumbnailBatch;
 
     function init() {
         // Global variable of listView for other functions
@@ -56,8 +72,10 @@
             zoomedInListView.winControl.selection.clear();
         }, false);
 
-        // Start generate items for listViews
-        generateItems();
+        thumbnailBatch = createBatch();
+
+        // Start generate root items for listViews
+        generateItems("root");
 
         // Bad decision of autoadjusting height of SemanticZoom
         FLTimeout = setTimeout(function () { forceLayout(); }, 1000);
@@ -65,7 +83,7 @@
         let testBtn = document.getElementById("testBtn");
         testBtn.addEventListener("click", function () {
             let newWindow = window.open("/html/DetailedFilesManager.html", null, "height=200, width=400, status=yes, toolbar=no, menubar=no, location=no");
-         }, false);
+        }, false);
     }
 
     function forceLayout() {
@@ -78,19 +96,6 @@
     // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
     // write picked files in source format and push it to the global array - storageFileArray for xhr needs (need rethink this)
     function pickFiles(event) {
-        // Verify that we are currently not snapped, or that we can unsnap to open the picker
-        let currentState = Windows.UI.ViewManagement.ApplicationView.value;
-        if (currentState === Windows.UI.ViewManagement.ApplicationViewState.snapped &&
-            !Windows.UI.ViewManagement.ApplicationView.tryUnsnap()) {
-            // Fail silently if we can't unsnap
-            return;
-        }
-
-        let options = {
-            weekday: "narrow", year: "numeric", month: "short",
-            day: "numeric", hour: "2-digit", minute: "2-digit"
-        };
-
         let fileOpenPicker = new Windows.Storage.Pickers.FileOpenPicker();
         fileOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
@@ -98,7 +103,7 @@
 
         // Image size - 32px x 32px
         let requestedSize = 32;
-        let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.documentsView;
+        let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.singleItem;
 
         let substrType;
 
@@ -110,87 +115,106 @@
         fileOpenPicker.pickMultipleFilesAsync().then(function (file) {
             if (file.size > 0) {
                 for (let i = 0; i < file.size; i++) {
-                    dateCreated = file[i].dateCreated.toLocaleTimeString("en-us", options);
+                    dateCreated = file[i].dateCreated;
                     name = file[i].name;
-                    objectType = file[i].fileType;
+                    itemType = file[i].fileType;
                     relativeId = file[i].folderRelativeId;
                     path = file[i].path;
 
-                    // Remove dot from name for createFileAsync naming
-                    substrType = objectType.substr(1);
-
                     // Send picked file information to User Database
-                    Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
+                    Databases.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
 
-                    // Get Thumbnail in StorageItemThumbnail format
-                    file[i].getThumbnailAsync(thumbnailMode, requestedSize).then(function (thumbnail) {
-                        if (thumbnail) {
-                            memoryStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
-                            dataWriter = new Windows.Storage.Streams.DataWriter(memoryStream);
+                    let image = mediaImageArray.find(function (element) { return element === itemType; });
 
-                            // Size of buffer
-                            thumbBuffer = new Windows.Storage.Streams.Buffer(thumbnail.size);
+                    // If file type not an image then create file with it thumbnail
+                    if (!image) {
+                        // Get Thumbnail in StorageItemThumbnail format
+                        file[i].getThumbnailAsync(thumbnailMode, requestedSize).then(function (thumbnail) {
+                            if (thumbnail) {
+                                memoryStream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+                                dataWriter = new Windows.Storage.Streams.DataWriter(memoryStream);
 
-                            // Write data from thumbnail into dataWriter stream
-                            // 0 - Windows.Storage.Streams.InputStreamOptions.none
-                            thumbnail.readAsync(thumbBuffer, thumbBuffer.capacity, 0).then(function (data) {
-                                dataWriter.writeBuffer(data);
-                            });
+                                // Size of buffer
+                                thumbBuffer = new Windows.Storage.Streams.Buffer(thumbnail.size);
 
-                            // Close buffer and stream after work is done
-                            buffer = dataWriter.detachBuffer();
-                            dataWriter.close();
+                                // Write data from thumbnail into dataWriter stream
+                                // 0 - Windows.Storage.Streams.InputStreamOptions.none
+                                thumbnail.readAsync(thumbBuffer, thumbBuffer.capacity, 0).then(function (data) {
+                                    dataWriter.writeBuffer(data);
+                                });
 
-                            // Create new file in localCache folder.
-                            // e.g. of created file - pdf.png
-                            localCacheFolder.createFileAsync("icon" + substrType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
-                            .then(function (file) {
-                                return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
-                            });
-                        }
-                    });
+                                // Close buffer and stream after work is done
+                                buffer = dataWriter.detachBuffer();
+                                dataWriter.close();
+
+                                // Create new file in localCache folder.
+                                // e.g. of created file - pdf.png
+                                localCacheFolder.createFileAsync("icon_" + itemType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
+                                    .then(function (file) {
+                                        return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
+                                    });
+                            }
+                        });
+                    }
 
                     // Send choosen files to global array for xhr
                     storageFileArray.push(file[i]);
                 }
             } else {
                 // The picker was dismissed with no selected file
+                messageDialog = new Windows.UI.Popups.MessageDialog("File not picked");
+                messageDialog.showAsync();
+
                 return;
             }
         });
     }
 
     function pickFolder(event) {
-        // Verify that we are currently not snapped, or that we can unsnap to open the picker
-        let currentState = Windows.UI.ViewManagement.ApplicationView.value;
-        if (currentState === Windows.UI.ViewManagement.ApplicationViewState.snapped &&
-            !Windows.UI.ViewManagement.ApplicationView.tryUnsnap()) {
-            // Fail silently if we can't unsnap
-            return;
-        }
-
-        let options = {
-            weekday: "narrow", year: "numeric", month: "short",
-            day: "numeric", hour: "2-digit", minute: "2-digit"
-        };
-
         let folderOpenPicker = new Windows.Storage.Pickers.FolderPicker();
         folderOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.thumbnail;
         folderOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
         folderOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
         folderOpenPicker.pickSingleFolderAsync().then(function (folder) {
-            if (folder !== null) {
-                dateCreated = folder.dateCreated.toLocaleTimeString("en-us", options);
-                objectType = folder.displayType;
+            if (folder) {
+                dateCreated = folder.dateCreated;
+                itemType = folder.displayType;
                 relativeId = folder.folderRelativeId;
                 name = folder.name;
                 path = folder.path;
 
                 // Send picked folder to DB
-                Databases.userDatabaseWrite(dateCreated, name, objectType, relativeId, path);
+                Databases.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
+
+                // Show files inside folder
+                let query = folder.createItemQuery();
+                query.getItemsAsync().done(function (items) {
+                    if (items) {
+                        let itemName
+                            , itemDateCreated
+                            , itemDisplayType
+                            , itemRelativeId
+                            , itemPath
+                            , itemParent;
+
+                        items.forEach(function (item) {
+                            itemName = item.name;
+                            itemDateCreated = item.dateCreated;
+                            itemDisplayType = item.displayType;
+                            itemRelativeId = item.folderRelativeId;
+                            itemPath = item.path;
+                            itemParent = name;
+
+                            Databases.userDatabaseWrite(itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
+                        });
+                    }
+                });
             } else {
                 // The picker was dismissed with no selected folder
+                messageDialog = new Windows.UI.Popups.MessageDialog("Folder not picked");
+                messageDialog.showAsync();
+
                 return;
             }
         });
@@ -218,32 +242,44 @@
         });
     }
 
-    // Function generateItems() - read from database information and write it to the objects
-    // Databases.userDB().allDocs - get all items from database and push it to FileBrowser.data
-    function generateItems() {
-        Databases.userDB().allDocs({
-            include_docs: true,
-            attachments: false
-        }).then(function (result) {
-            for (let i = 0; i < result.total_rows; i++) {
-                itemArray.push({
-                    title: result.rows[i].doc.name,
-                    text: result.rows[i].doc.dateCreated,
-                    icon: result.rows[i].doc.objectType
+    function generateItems(nested, parent) {
+        /// <signature>
+        /// <summary>
+        /// Read from Database - UserDB() all information and send to listView array for displaying
+        /// </summary>
+        /// <param name="nested" type="String">
+        /// Location of curent items 'root' or 'children'.
+        /// </param>
+        /// <param name="parent" optional="true" type="String">
+        /// Parent folder of wanted 'nested' items.
+        /// </param>
+        /// </signature>
+        Databases.userDB().createIndex({
+            index: { fields: ['nested'] }
+        }).then(function () {
+            Databases.userDB().find({
+                selector: { nested: { $eq: nested } }
+            }).then(function (result) {
+                for (let i = 0; i < result.docs.length; i++) {
+                    itemArray.push({
+                        title: result.docs[i].name,
+                        text: result.docs[i].dateCreated,
+                        type: result.docs[i].objectType
+                    });
+                }
+
+                pushItemsToListView().then(function () {
+                    onChangeDatabase();
                 });
-            }
+            }).catch(function (error) {
+                messageDialog = new Windows.UI.Popups.MessageDialog(
+                    "Occured error while generate items into ListView"
+                    + " Status: " + error.name
+                    + " Message: " + error.message
+                    , " Error: " + error.status);
 
-            pushItemsToListView().then(function () {
-                onChangeDatabase();
+                messageDialog.showAsync();
             });
-        }).catch(function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog(
-                "Occured error while generate items into ListView"
-                + " Status: " + error.name
-                + " Message: " + error.message
-                , " Error: " + error.status);
-
-            messageDialog.showAsync();
         });
     }
 
@@ -252,20 +288,20 @@
     function onChangeDatabase() {
         Databases.userDB().changes({
             since: 'now',
+            timeout: false,
             live: true,
             include_docs: true
         }).on("change", function (change) {
-            name = change.doc.name;
-            dateCreated = change.doc.dateCreated;
-            objectType = change.doc.objectType;
+            // Put in listView only root elements
+            if (change.doc.nested === "root") {
+                itemArray.push({
+                    title: change.doc.name,
+                    text: change.doc.dateCreated,
+                    type: change.doc.objectType
+                });
 
-            itemArray.push({
-                title: name,
-                text: dateCreated,
-                icon: objectType
-            });
-
-            pushItemsToListView();
+                pushItemsToListView();
+            }
         }).on("error", function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while adding new items in userDB"
@@ -374,13 +410,14 @@
     }
 
     // Function multistageRendered - create temporary placeholder and update it when data is available 
-    function multistageRenderer(itemPromise) {
+    function batchRenderer(itemPromise) {
         let element
+            , item
             , img
             , title
             , text;
 
-        let itemTitle, itemText;
+        let itemTitle, itemText, itemType;
 
         let maxLength = 25;
 
@@ -405,12 +442,15 @@
         return {
             element: element,
 
-            renderComplete: itemPromise.then(function (item) {
+            renderComplete: itemPromise.then(function (i) {
+                item = i;
+
                 if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
                 if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
 
                 itemTitle = item.data.title;
                 itemText = item.data.text;
+                itemType = item.data.type;
 
                 if (itemTitle.length > maxLength) {
                     itemTitle = itemTitle.substr(0, maxLength - 1) + '&hellip;';
@@ -425,34 +465,69 @@
                 });
 
                 return item.ready;
-            }).then(function (item) {
-                if (!img) {
-                    img = element.querySelector(".zoomedIn-item-img");
-                }
+            }).then(function () {
+                let imageType = mediaImageArray.find(function (elem) { return elem === itemType; });
 
-                let subItemIcon = item.data.icon.substr(1);
-
-                // Read image from localCacheFolder
-                localCacheFolder.getFileAsync("icon" + subItemIcon + ".png").then(function (thumbnail) {
-                    return item.loadImage(img.src = URL.createObjectURL(thumbnail, { oneTimeOnly: true }), img).then(function () {
-                        return item.isOnScreen();
+                if (itemType === "File folder") {
+                    return item.loadImage("/img/folder-32x32.png");
+                } else if (itemType === imageType) {
+                    return item.loadImage("/img/image-32x32.png");
+                } else if (!imageType) {
+                    return localCacheFolder.getFileAsync("icon_" + itemType + ".png").then(function (thumbnail) {
+                        return item.loadImage(URL.createObjectURL(thumbnail, { oneTimeOnly: false }));
                     });
-                });
+                }
+            }).then(thumbnailBatch()
+            ).then(function (newImg) {
+                img.src = newImg.src;
+                return item.isOnScreen();
             }).then(function (onscreen) {
                 if (!onscreen) {
                     img.style.opacity = 1;
                 } else {
                     WinJS.UI.Animation.fadeIn(img);
                 }
-            }).then(null, function (err) {
-                if (err.name === "Canceled") {
-                    return WinJS.Promise.wrapError(err);
+            }).then(null, function (error) {
+                if (error.name === "Canceled") {
+                    return WinJS.Promise.wrapError(error);
+                } else {
+                    img = element.querySelector(".zoomedIn-item-img");
+
+                    if (img) {
+                        img.src = "/img/placeholder-32x32.png";
+                        img.style.opacity = 1;
+                    }
+
+                    return;
                 }
-
-                img.style.opacity = 1;
-
-                return;
             })
+        };
+    }
+
+    function createBatch(waitPeriod) {
+        let batchTimeout = WinJS.Promise.as();
+        let batcheItems = [];
+
+        function completeBatch() {
+            let callbacks = batcheItems;
+            batcheItems = [];
+
+            for (let i = 0; i < callbacks.length; i++) {
+                callbacks[i]();
+            }
+        }
+
+        return function () {
+            batchTimeout.cancel();
+            batchTimeout = WinJS.Promise.timeout(waitPeriod || 64).then(completeBatch);
+
+            let delayedPromise = new WinJS.Promise(function (c) {
+                batcheItems.push(c);
+            });
+
+            return function (v) {
+                return delayedPromise.then(function () { return v; });
+            };
         };
     }
 
@@ -472,14 +547,14 @@
         };
     }
 
-    WinJS.Utilities.markSupportedForProcessing(multistageRenderer);
+    WinJS.Utilities.markSupportedForProcessing(batchRenderer);
     WinJS.Utilities.markSupportedForProcessing(placeholderRenderer);
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,
         storageFileArray: storageFileArray,
         generateItems: generateItems,
-        multistageRenderer: multistageRenderer,
+        batchRenderer: batchRenderer,
         placeholderRenderer: placeholderRenderer,
         data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups),
         suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),

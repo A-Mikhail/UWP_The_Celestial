@@ -54,6 +54,9 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>The Celestial_TemporaryKey.pfx</PackageCertificateKeyFile>
     <PackageCertificateThumbprint>72A4563B52A086C93DEB718F988EF56F4933941F</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="package.appxmanifest">
@@ -110,6 +113,9 @@
     <Content Include="images\Wide310x150Logo.scale-150.png" />
     <Content Include="images\Wide310x150Logo.scale-200.png" />
     <Content Include="images\Wide310x150Logo.scale-400.png" />
+    <Content Include="img\folder-32x32.png" />
+    <Content Include="img\image-32x32.png" />
+    <Content Include="img\placeholder-32x32.png" />
     <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />
@@ -118,7 +124,8 @@
     <Content Include="js\FileBrowser.js" />
     <Content Include="js\AuthenticationBroker.js" />
     <Content Include="js\libs\oboe-browser.min.js" />
-    <Content Include="js\libs\pouchdb-6.0.7.min.js" />
+    <Content Include="js\libs\pouchdb-6.1.0.min.js" />
+    <Content Include="js\libs\pouchdb.find.min.js" />
     <Content Include="js\MainWindow.js" />
     <Content Include="js\XMLHttpRequest.js" />
     <Content Include="Microsoft.WinJS.4.4\css\ui-dark-intrinsics.css" />

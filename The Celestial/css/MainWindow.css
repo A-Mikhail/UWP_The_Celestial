@@ -86,6 +86,10 @@ img {
     height: 48px; /* value by default is 52px */
 }
 
+.win-splitview .win-splitview-contentwrapper {
+    z-index: auto;
+}
+
 .win-pivot .win-pivot-header-items {
     overflow: hidden;
 }
@@ -155,14 +159,6 @@ img {
 /*
 *   II. Auth SplitView
 */
-.app-bar {
-    position: relative;
-    height: 48px;
-    width: 100%;
-    transform: translateZ(0px);
-    z-index: 1003;
-}
-
 #settingNavCommand {
     position: absolute;
     bottom: 0;
@@ -174,6 +170,7 @@ img {
     width: 50px;
     height: 50px;
     padding: 8px;
+    color: #112233;
 }
 
 #semanticZoomDiv {
@@ -191,6 +188,7 @@ img {
     width: 18em;
     height: 4em;
     line-height: 4em;
+    color: #112233;
 }
 
     .zoomedIn-item .zoomedIn-item-img {
@@ -231,6 +229,18 @@ img {
 #pivot {
     position: relative;
     height: calc(100% - 48px);
+}
+
+/*
+* II.ii ----- Appbar
+*/
+.app-bar {
+    position: relative;
+    height: 48px;
+}
+
+.win-appbar {
+    position: relative !important;
 }
 
 /*

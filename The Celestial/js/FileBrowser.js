@@ -41,6 +41,7 @@
 
     // Icons
     let globeIcon = "&#xe12B;";
+    let newWindowIcon = "&#xe8A7;";
 
     let FLTimeout;
 
@@ -72,6 +73,9 @@
             zoomedInListView.winControl.selection.clear();
         }, false);
 
+        let openInNewWin = document.getElementById("openInNewWinBtn");
+        openInNewWin.addEventListener("click", openNewWindow, false);
+
         thumbnailBatch = createBatch();
 
         // Start generate root items for listViews
@@ -79,11 +83,6 @@
 
         // Bad decision of autoadjusting height of SemanticZoom
         FLTimeout = setTimeout(function () { forceLayout(); }, 1000);
-
-        let testBtn = document.getElementById("testBtn");
-        testBtn.addEventListener("click", function () {
-            let newWindow = window.open("/html/DetailedFilesManager.html", null, "height=200, width=400, status=yes, toolbar=no, menubar=no, location=no");
-        }, false);
     }
 
     function forceLayout() {
@@ -389,26 +388,6 @@
         }
     }
 
-    // Suggestion in AutoSuggestBox
-    function suggestionsRequestedHandler(eventObject) {
-        let query = eventObject.detail.queryText.toLowerCase();
-        let suggestionCollection = eventObject.detail.searchSuggestionCollection;
-        let suggestionList = FileBrowser.data._groupedItems;
-
-        if (query.length > 0) {
-            for (let i = 1; i < FileBrowser.data._lastNotifyLength; i++) {
-                if (suggestionList[i].data.title.substr(0, query.length).toLowerCase() === query) {
-                    suggestionCollection.appendQuerySuggestion(suggestionList[i].data.title);
-                }
-            }
-        }
-    }
-
-    // Work with picked files
-    function querySubmittedHandler(eventObject) {
-        let queryText = eventObject.detail.queryText;
-    }
-
     // Function multistageRendered - create temporary placeholder and update it when data is available 
     function batchRenderer(itemPromise) {
         let element
@@ -417,7 +396,10 @@
             , title
             , text;
 
-        let itemTitle, itemText, itemType;
+        let itemTitle
+            , itemText
+            , itemType
+            , imageType;
 
         let maxLength = 25;
 
@@ -466,7 +448,7 @@
 
                 return item.ready;
             }).then(function () {
-                let imageType = mediaImageArray.find(function (elem) { return elem === itemType; });
+                imageType = mediaImageArray.find(function (elem) { return elem === itemType; });
 
                 if (itemType === "File folder") {
                     return item.loadImage("/img/folder-32x32.png");
@@ -547,6 +529,10 @@
         };
     }
 
+    function openNewWindow() {
+        let newWindow = window.open("/html/DetailedFilesManager.html", null, "height=200, width=400, status=yes, toolbar=no, menubar=no, location=no");
+    }
+
     WinJS.Utilities.markSupportedForProcessing(batchRenderer);
     WinJS.Utilities.markSupportedForProcessing(placeholderRenderer);
 
@@ -556,8 +542,6 @@
         generateItems: generateItems,
         batchRenderer: batchRenderer,
         placeholderRenderer: placeholderRenderer,
-        data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups),
-        suggestionsRequestedHandler: WinJS.UI.eventHandler(suggestionsRequestedHandler),
-        querySubmittedHandler: WinJS.UI.eventHandler(querySubmittedHandler)
+        data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups)
     });
 })();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
 
-    <title>The Celestial </title>
+    <title>The Celestial</title>
 
     <!-- WinJS references -->
     <link id="stylesheet" href="/Microsoft.WinJS.4.4/css/ui-light.css" rel="stylesheet" />
@@ -45,7 +45,7 @@
     <script src="/js/XMLHttpRequest.js"></script>
 </head>
 
-<body>
+<body class="win-type-body">
     <!-- Settings SplitView -->
     <div id="splitView" data-win-control="WinJS.UI.SplitView"
          data-win-options="{
@@ -102,6 +102,7 @@
                 <button data-win-control="WinJS.UI.Command"
                         data-win-options="{
                                     id: 'openInNewWinBtn',
+                                    disabled: true,
                                     label: 'Open in new window',
                                     icon: '\uE8A7'
                                 }"></button>

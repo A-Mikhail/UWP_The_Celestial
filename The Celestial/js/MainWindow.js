@@ -5,53 +5,82 @@
     let activation = Windows.ApplicationModel.Activation;
     let background = Windows.ApplicationModel.Background;
 
+    let isFirstActivation = true;
+
     // Save all app settings in to storage
     let applicationData = Windows.Storage.ApplicationData.current;
     let roamingSettings = applicationData.roamingSettings;
 
-    let itemsSet = new Map();
-
     app.onactivated = function (args) {
-        if (args.detail.kind === activation.ActivationKind.launch) {
-            if (args.detail.previousExecutionState !== activation.ApplicationExecutionState.terminated) {
-                WinJS.UI.processAll().then(function () {
-                    // TODO: This application has been newly launched. Initialize your application here.
-                    let passwrodProtection = roamingSettings.values["passwordProtection"];
-                    let themeColor = roamingSettings.values["themeColor"];
-
-                    let head = document.getElementsByTagName("head")[0];
-                    let styleSheet = document.createElement("style");
-                    
-                    if (themeColor === "dark") {
-                        // Create stylesheet 
-                        styleSheet.id = "styleSheet";
-                        styleSheet.rel = "stylesheet";
-
-                        styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-dark.css";
-                        styleSheet.appendChild(document.createTextNode(styleSheet));
-                    } else {
-                        styleSheet.id = "styleSheet";
-                        styleSheet.rel = "stylesheet";
-
-                        styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-light.css";
-                        styleSheet.appendChild(document.createTextNode(styleSheet));
-                    }
-
-                    // Check if password is turn on
-                    if (passwrodProtection !== "disabled") {
-                        checkConsentAvailability();
-                    } else {
-                        // Load user depending information from js files
-                        FileBrowser.init();
-                        AuthPanel.init();
-                    }
-                });
-            } else {
-                // TODO: This application was suspended and then terminated.
+        if (args.detail.kind === activation.ActivationKind.voiceCommand) {
+            // TODO: Handle relevant ActivationKinds. For example, if your app can be started by voice commands,
+            // this is a good place to decide whether to populate an input field or choose a different initial view.
+        }
+        else if (args.detail.kind === activation.ActivationKind.launch) {
+            // A Launch activation happens when the user launches your app via the tile
+            // or invokes a toast notification by clicking or tapping on the body.
+            if (args.detail.arguments) {
+                // TODO: If the app supports toasts, use this value from the toast payload to determine where in the app
+                // to take the user in response to them invoking a toast notification.
+            }
+            else if (args.detail.previousExecutionState === activation.ApplicationExecutionState.terminated) {
+                // TODO: This application had been suspended and was then terminated to reclaim memory.
                 // To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
+                // Note: You may want to record the time when the app was last suspended and only restore state if they've returned after a short period.
             }
         }
+
+        if (!args.detail.prelaunchActivated) {
+            // TODO: If prelaunchActivated were true, it would mean the app was prelaunched in the background as an optimization.
+            // In that case it would be suspended shortly thereafter.
+            // Any long-running operations (like expensive network or disk I/O) or changes to user state which occur at launch
+            // should be done here (to avoid doing them in the prelaunch case).
+            // Alternatively, this work can be done in a resume or visibilitychanged handler.
+        }
+
+        if (isFirstActivation) {
+            // TODO: The app was activated and had not been running. Do general startup initialization here.
+            document.addEventListener("visibilitychange", onVisibilityChanged);
+            args.setPromise(WinJS.UI.processAll().then(function () {
+                // TODO: This application has been newly launched. Initialize your application here.
+                let passwrodProtection = roamingSettings.values["passwordProtection"];
+                let themeColor = roamingSettings.values["themeColor"];
+
+                let head = document.getElementsByTagName("head")[0];
+                let styleSheet = document.createElement("style");
+
+                if (themeColor === "dark") {
+                    // Create stylesheet 
+                    styleSheet.id = "styleSheet";
+                    styleSheet.rel = "stylesheet";
+
+                    styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-dark.css";
+                    styleSheet.appendChild(document.createTextNode(styleSheet));
+                } else {
+                    styleSheet.id = "styleSheet";
+                    styleSheet.rel = "stylesheet";
+
+                    styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-light.css";
+                    styleSheet.appendChild(document.createTextNode(styleSheet));
+                }
+
+                // Check if password is turn on
+                if (passwrodProtection !== "disabled") {
+                    checkConsentAvailability();
+                } else {
+                    initializeApp();
+                }
+            }));
+        }
+
+        isFirstActivation = false;
     };
+
+    function onVisibilityChanged(args) {
+        if (!document.hidden) {
+            // TODO: The app just became visible. This may be a good time to refresh the view.
+        }
+    }
 
     app.oncheckpoint = function (args) {
         // TODO: This application is about to be suspended. Save any state that needs to persist across suspensions here.
@@ -60,6 +89,18 @@
     };
 
     app.start();
+
+    function initializeApp() {
+        // Load user depending information from js files
+        FileBrowser.init();
+        AuthPanel.init();
+
+        let pivot = document.getElementById("pivot").winControl;
+
+        pivot.addEventListener("itemanimationed", function () {
+            changePivotType();
+        }, false);
+    }
 
     function checkConsentAvailability() {
         try {
@@ -93,8 +134,7 @@
                     switch (consentResult) {
                         // If credential was verified then loading user data
                         case Windows.Security.Credentials.UI.UserConsentVerificationResult.verified:
-                            FileBrowser.init();
-                            AuthPanel.init();
+                            initializeApp();
 
                             break;
                         case Windows.Security.Credentials.UI.UserConsentVerificationResult.deviceNotPresent:
@@ -114,61 +154,61 @@
         }
     }
 
-
-    // Function pushItem() - set to the Map data key of Item and it's name - headerItems
-    // try..catch need for skip error that occur when loop called number 1 which doesn't exist in PivotItems array
-    function pushItems() {
-        let pivotItems = document.getElementById("pivot").winControl.items;
-        let keyItems, headerItems;
-
-        for (let i = 0; i <= pivotItems.length; i++) {
-            try {
-                keyItems = pivotItems._keyMap[i].key;
-                headerItems = pivotItems._keyMap[i].data._header;
-
-                itemsSet.set(keyItems, headerItems);
-            } catch (error) {
-                console.log("Error occured while creating the Item ", error);
-            }
-        }
-    }
-
     // Function renderPivotItems create dynamically PivotItems in Pivot Menu
     // pivotName - set displayed menu name
     // pagePath - set path of html page 
-    function renderPivotItems(pivotName, pagePath) {
-        return new Promise(function (resolve, reject) {
-            let pivot = document.getElementById("pivot").winControl;
+    function renderPivotItems(pivotName, pagePath, pivotType) {
+        let pivot = document.getElementById("pivot").winControl;
+        let pivotArray = pivot.items._getArray();
+        let pivotHeader;
 
-            let createDiv = document.createElement("div");
-            createDiv.id = pivotName;
-
-            let pivotItem = new WinJS.UI.PivotItem(createDiv, { isHeaderStatic: true, header: pivotName });
-            let pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
-
-            WinJS.UI.Pages.render(pagePath, pivotItemContent).then(function () {
-                resolve(pivot.items.push(pivotItem));
-            }, function (err) {
-                reject(err);
+        for (let i = 0; i < pivotArray.length; i++) {
+            pivotHeader = pivotArray.find(function (element) {
+                return element.header === pivotName;
             });
-        });
+        }
+
+        if (!pivotHeader) {
+            return new Promise(function (resolve, reject) {
+                let createDiv = document.createElement("div");
+
+                let pivotItem = new WinJS.UI.PivotItem(createDiv, { header: pivotName });
+                let pivotItemContent = pivotItem.element.querySelector(".win-pivot-item-content");
+
+                WinJS.UI.Pages.render(pagePath, pivotItemContent).then(function () {
+                    resolve(pivot.items.push(pivotItem));
+                });
+            });
+        } else {
+            return;
+        }
     }
 
     // Function removePivotItems get name of pivot and remove it from DOM and from pivot items array
     function removePivotItems(pivotName) {
         return new Promise(function (done, error) {
-            let pivotItems = document.getElementById("pivot").winControl.items;
+            let deletedItem;
+            let pivot = document.getElementById("pivot").winControl.items;
+            let pivotItem;
 
-            pushItems();
+            pivot._keys.forEach(function (element) {
+                pivotItem = pivot.getItemFromKey(element);
 
-            for (let key of itemsSet.entries()) {
-                if (key[1] === pivotName) {
-                    done(pivotItems.dataSource.remove(`${key[0]}`));
-                    itemsSet.delete(key[0]);
+                if (pivotItem.data.header === pivotName) {
+                    // release memory
+                    pivotItem.data.dispose();
 
-                    pivotItems._currentKey = pivotItems._lastNotifyLength; // "normalize" _currentKey of items after deleting 
+                    done(pivot.dataSource.remove(element));
+
+                    // "normalize" _currentKey of items after deleting 
+                    pivot._currentKey = pivot._lastNotifyLength;
+
+                    // For Debug!
+                    if (performance && performance.mark) {
+                        performance.mark("Deleted pivot");
+                    }
                 }
-            }
+            });
         });
     }
 

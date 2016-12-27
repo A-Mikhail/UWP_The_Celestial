@@ -73,8 +73,29 @@
             zoomedInListView.winControl.selection.clear();
         }, false);
 
-        let openInNewWin = document.getElementById("openInNewWinBtn");
-        openInNewWin.addEventListener("click", openNewWindow, false);
+        let openInNewPivot = document.getElementById("openInNewWinBtn");
+        let itemType, itemTitle;
+
+        openInNewPivot.addEventListener("click", function () { openNewPivot(itemTitle); }, false);
+
+        zoomedInListView.winControl.addEventListener("selectionchanged", function () {
+            zoomedInListView.winControl.selection.getItems().then(function (items) {
+                if (items !== 0) {
+                    items.forEach(function (item) {
+                        itemType = item.data.type;
+                        itemTitle = item.data.title;
+                    });
+
+                    if (itemType === "File folder") {
+                        openInNewPivot.winControl.disabled = false;
+                    } else {
+                        openInNewPivot.winControl.disabled = true;
+                    }
+                } else {
+                    openInNewPivot.winControl.disabled = true;
+                }
+            });
+        }, false);
 
         thumbnailBatch = createBatch();
 
@@ -460,29 +481,29 @@
                     });
                 }
             }).then(thumbnailBatch()
-            ).then(function (newImg) {
-                img.src = newImg.src;
-                return item.isOnScreen();
-            }).then(function (onscreen) {
-                if (!onscreen) {
-                    img.style.opacity = 1;
-                } else {
-                    WinJS.UI.Animation.fadeIn(img);
-                }
-            }).then(null, function (error) {
-                if (error.name === "Canceled") {
-                    return WinJS.Promise.wrapError(error);
-                } else {
-                    img = element.querySelector(".zoomedIn-item-img");
-
-                    if (img) {
-                        img.src = "/img/placeholder-32x32.png";
+                ).then(function (newImg) {
+                    img.src = newImg.src;
+                    return item.isOnScreen();
+                }).then(function (onscreen) {
+                    if (!onscreen) {
                         img.style.opacity = 1;
+                    } else {
+                        WinJS.UI.Animation.fadeIn(img);
                     }
+                }).then(null, function (error) {
+                    if (error.name === "Canceled") {
+                        return WinJS.Promise.wrapError(error);
+                    } else {
+                        img = element.querySelector(".zoomedIn-item-img");
 
-                    return;
-                }
-            })
+                        if (img) {
+                            img.src = "/img/placeholder-32x32.png";
+                            img.style.opacity = 1;
+                        }
+
+                        return;
+                    }
+                })
         };
     }
 
@@ -529,8 +550,13 @@
         };
     }
 
-    function openNewWindow() {
-        let newWindow = window.open("/html/DetailedFilesManager.html", null, "height=200, width=400, status=yes, toolbar=no, menubar=no, location=no");
+    function openNewPivot(title) {
+        window.open("/html/DetailedFilesManager.html");
+
+        // For Debug!
+        if (performance && performance.mark) {
+            performance.mark("Creating new Pivot");
+        }
     }
 
     WinJS.Utilities.markSupportedForProcessing(batchRenderer);

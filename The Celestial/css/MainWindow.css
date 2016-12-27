@@ -73,7 +73,6 @@ html, body {
     width: 100%;
     height: 100%;
     background-color: #fff;
-    font-family: 'Segoe UI';
 }
 
 /* Make image responsive http://www.w3schools.com/css/css_rwd_images.asp */
@@ -83,16 +82,13 @@ img {
 }
 
 .win-pivot-header-area {
-    height: 48px; /* value by default is 52px */
+    background-color: #eeeeee;
 }
 
 .win-splitview .win-splitview-contentwrapper {
     z-index: auto;
 }
 
-.win-pivot .win-pivot-header-items {
-    overflow: hidden;
-}
 
 /* Remove Scroll from Pivotitem-content */
 .win-pivot .win-pivot-surface {

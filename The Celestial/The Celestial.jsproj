@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|AnyCPU">
       <Configuration>Debug</Configuration>
@@ -97,6 +97,7 @@
     <Content Include="images\Square44x44Logo.targetsize-16_altform-unplated.png" />
     <Content Include="images\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="images\Square44x44Logo.targetsize-256_altform-unplated.png" />
+    <Content Include="images\Square44x44Logo.targetsize-32_altform-unplated.png" />
     <Content Include="images\Square44x44Logo.targetsize-48_altform-unplated.png" />
     <Content Include="images\Square71x71Logo.scale-100.png" />
     <Content Include="images\Square71x71Logo.scale-125.png" />
@@ -142,6 +143,7 @@
     <Content Include="Microsoft.WinJS.4.4\js\ui.js" />
     <Content Include="Microsoft.WinJS.4.4\js\WinJS.intellisense-setup.js" />
     <Content Include="Microsoft.WinJS.4.4\js\WinJS.intellisense.js" />
+    <Content Include="packages.config" />
     <Content Include="SVPages\about.html" />
     <Content Include="SVPages\about.js" />
     <Content Include="SVPages\general.html" />

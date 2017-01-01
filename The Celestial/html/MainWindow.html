@@ -11,7 +11,7 @@
     <script src="/Microsoft.WinJS.4.4/js/base.js"></script>
     <script src="/Microsoft.WinJS.4.4/js/ui.js"></script>
 
-    <!-- TheHeavenGuard references -->
+    <!-- The Celestial references -->
     <link href="/css/MainWindow.css" rel="stylesheet" />
 
     <!-- NoSQL javascript database https://pouchdb.com/ -->
@@ -31,8 +31,8 @@
     -->
     <script src="/js/MainWindow.js"></script>
 
-    <!-- Configure databases -->
-    <script src="/js/Databases.js"></script>
+    <!-- Configure Database -->
+    <script src="/js/Database.js"></script>
     <!-- Client side files to synchronize -->
     <script src="/js/FileBrowser.js"></script>
     <!-- Authenticate in cloud services -->
@@ -168,9 +168,9 @@
                     <div id="zoomedInListView"
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{
-                            itemDataSource: FileBrowser.data.dataSource,
+                            itemDataSource: Database.data.dataSource,
                             itemTemplate: FileBrowser.batchRenderer,
-                            groupDataSource: FileBrowser.data.groups.dataSource,
+                            groupDataSource: Database.data.groups.dataSource,
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
@@ -182,7 +182,7 @@
                     <div id="zoomedOutListView"
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{
-                                itemDataSource: FileBrowser.data.groups.dataSource,
+                                itemDataSource: Database.data.groups.dataSource,
                                 itemTemplate: FileBrowser.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke',

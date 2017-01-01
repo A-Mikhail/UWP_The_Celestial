@@ -95,11 +95,8 @@
         FileBrowser.init();
         AuthPanel.init();
 
-        let pivot = document.getElementById("pivot").winControl;
-
-        pivot.addEventListener("itemanimationed", function () {
-            changePivotType();
-        }, false);
+        // Start generate root items for listView
+        Database.generateItems("root");
     }
 
     function checkConsentAvailability() {

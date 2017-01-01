@@ -4,28 +4,124 @@
     <meta charset="utf-8" />
 
     <title>Detailed View File Browser</title>
+
     <!-- WinJS references -->
     <link id="stylesheet" href="/Microsoft.WinJS.4.4/css/ui-light.css" rel="stylesheet" />
 
     <script src="/Microsoft.WinJS.4.4/js/base.js"></script>
     <script src="/Microsoft.WinJS.4.4/js/ui.js"></script>
 
+    <!-- The Celestial references -->
+    <link href="/css/MainWindow.css" rel="stylesheet" />
+
+    <!-- NoSQL javascript database https://pouchdb.com/ -->
+    <script src="/js/libs/pouchdb-6.1.0.min.js"></script>
+    <script src="/js/libs/pouchdb.find.min.js"></script>
+
+    <!-- Configure Database -->
+    <script src="/js/Database.js"></script>
+
+    <script src="/js/FileBrowser.js"></script>
     <script src="/js/DetailedFilesManager.js"></script>
 </head>
+
 <body class="win-type-body">
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
-    <p class="win-type-header">All hail files</p>
+    <!-- AppBar -->
+    <div class="app-bar">
+        <div class="control-app-bar"
+             data-win-control="WinJS.UI.AppBar"
+             data-win-options="{ placement: 'top' }">
+
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'openInNewWinBtn',
+                                    disabled: true,
+                                    label: 'Open in new window',
+                                    icon: '\uE8A7'
+                                }"></button>
+
+            <hr data-win-control="WinJS.UI.Command"
+                data-win-options="{ type: 'separator' }" />
+
+            <!-- Work with List View items buttons -->
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'removeItemsBtn',
+                                    label: 'Remove Selected',
+                                    icon: 'delete'
+                                }"></button>
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'selectAllItemsBtn',
+                                    label: 'Select All Items',
+                                    icon: 'selectall'
+                                }"></button>
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'clearSelectionBtn',
+                                    label: 'Clear Selection',
+                                    icon: 'clearselection'
+                                }"></button>
+
+            <hr data-win-control="WinJS.UI.Command"
+                data-win-options="{ type: 'separator' }" />
+
+            <!-- Add files/folder commands -->
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                            id: 'addFolderBtn',
+                            label: 'Pick Folder',
+                            icon: 'newfolder'
+                        }"></button>
+
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'addFilesBtn',
+                                    label: 'Pick Files',
+                                    icon: 'add'
+                                }"></button>
+        </div>
+    </div>
+
+    <!-- Content Area -->
+    <div id="pivot" data-win-control="WinJS.UI.Pivot">
+        <div id="pivotItem" data-win-control="WinJS.UI.PivotItem">
+            <!-- Header for zoomed in list view -->
+            <div id="zoomedInLeftHeader" class="zoomedIn-left-header"
+                 data-win-control="WinJS.Binding.Template">
+                <div class="zoomedIn-left-header-root win-type-title">
+                    <div data-win-bind="innerHTML: title"></div>
+                </div>
+            </div>
+
+            <div id="semanticZoomDiv" data-win-control="WinJS.UI.SemanticZoom">
+                <!-- File browser zoomed in list view -->
+                <div id="zoomedInListView"
+                     data-win-control="WinJS.UI.ListView"
+                     data-win-options="{
+                            itemDataSource: Database.data.dataSource,
+                            itemTemplate: FileBrowser.batchRenderer,
+                            groupDataSource: Database.data.groups.dataSource,
+                            groupHeaderTemplate: select('#zoomedInLeftHeader'),
+                            selectionMode: 'multi',
+                            tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
+                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                        }">
+                </div>
+
+                <!-- Zoomed out list view -->
+                <div id="zoomedOutListView"
+                     data-win-control="WinJS.UI.ListView"
+                     data-win-options="{
+                                itemDataSource: Database.data.groups.dataSource,
+                                itemTemplate: FileBrowser.placeholderRenderer,
+                                selectionMode: 'none',
+                                tapBehavior: 'invoke',
+                                layout: { type: WinJS.UI.GridLayout }
+                             }">
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

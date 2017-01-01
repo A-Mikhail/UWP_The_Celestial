@@ -120,7 +120,7 @@
     <Content Include="js\AuthPanel.js" />
     <Content Include="js\BackgroundTransfer.js" />
     <Content Include="js\Configurations.js" />
-    <Content Include="js\Databases.js" />
+    <Content Include="js\Database.js" />
     <Content Include="js\DetailedFilesManager.js" />
     <Content Include="js\FileBrowser.js" />
     <Content Include="js\AuthenticationBroker.js" />

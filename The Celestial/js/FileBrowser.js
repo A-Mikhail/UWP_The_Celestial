@@ -11,7 +11,6 @@
 
     // Array of objects choosen by user to send in xhr (!temporary)
     let storageFileArray = [];
-    let itemArray = [];
 
     // Array of image extensions for replacing by default image 
     let mediaImageArray = [".png"
@@ -73,10 +72,10 @@
             zoomedInListView.winControl.selection.clear();
         }, false);
 
-        let openInNewPivot = document.getElementById("openInNewWinBtn");
+        let openInNewWindow = document.getElementById("openInNewWinBtn");
         let itemType, itemTitle;
 
-        openInNewPivot.addEventListener("click", function () { openNewPivot(itemTitle); }, false);
+        openInNewWindow.addEventListener("click", function () { openNewWindow(itemTitle); }, false);
 
         zoomedInListView.winControl.addEventListener("selectionchanged", function () {
             zoomedInListView.winControl.selection.getItems().then(function (items) {
@@ -87,20 +86,17 @@
                     });
 
                     if (itemType === "File folder") {
-                        openInNewPivot.winControl.disabled = false;
+                        openInNewWindow.winControl.disabled = false;
                     } else {
-                        openInNewPivot.winControl.disabled = true;
+                        openInNewWindow.winControl.disabled = true;
                     }
                 } else {
-                    openInNewPivot.winControl.disabled = true;
+                    openInNewWindow.winControl.disabled = true;
                 }
             });
         }, false);
 
         thumbnailBatch = createBatch();
-
-        // Start generate root items for listViews
-        generateItems("root");
 
         // Bad decision of autoadjusting height of SemanticZoom
         FLTimeout = setTimeout(function () { forceLayout(); }, 1000);
@@ -142,7 +138,7 @@
                     path = file[i].path;
 
                     // Send picked file information to User Database
-                    Databases.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
+                    Database.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
 
                     let image = mediaImageArray.find(function (element) { return element === itemType; });
 
@@ -205,7 +201,7 @@
                 path = folder.path;
 
                 // Send picked folder to DB
-                Databases.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
+                Database.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
 
                 // Show files inside folder
                 let query = folder.createItemQuery();
@@ -226,7 +222,7 @@
                             itemPath = item.path;
                             itemParent = name;
 
-                            Databases.userDatabaseWrite(itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
+                            Database.userDatabaseWrite(itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
                         });
                     }
                 });
@@ -237,99 +233,6 @@
 
                 return;
             }
-        });
-    }
-
-    // Function pushItemsToListView() get all items from array and push it to Binding.List
-    function pushItemsToListView() {
-        return new Promise(function (resolve, reject) {
-            resolve(
-                itemArray.forEach(function (item) {
-                    FileBrowser.data.push(item);
-                })
-            );
-
-            // Clear array of item each time function is called
-            itemArray.length = 0;
-        }, function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog(
-                "Occured error while create list of items in Binding.List"
-                + " Status: " + error.name
-                + " Message: " + error.message
-                , " Error: " + error.status);
-
-            messageDialog.showAsync();
-        });
-    }
-
-    function generateItems(nested, parent) {
-        /// <signature>
-        /// <summary>
-        /// Read from Database - UserDB() all information and send to listView array for displaying
-        /// </summary>
-        /// <param name="nested" type="String">
-        /// Location of curent items 'root' or 'children'.
-        /// </param>
-        /// <param name="parent" optional="true" type="String">
-        /// Parent folder of wanted 'nested' items.
-        /// </param>
-        /// </signature>
-        Databases.userDB().createIndex({
-            index: { fields: ['nested'] }
-        }).then(function () {
-            Databases.userDB().find({
-                selector: { nested: { $eq: nested } }
-            }).then(function (result) {
-                for (let i = 0; i < result.docs.length; i++) {
-                    itemArray.push({
-                        title: result.docs[i].name,
-                        text: result.docs[i].dateCreated,
-                        type: result.docs[i].objectType
-                    });
-                }
-
-                pushItemsToListView().then(function () {
-                    onChangeDatabase();
-                });
-            }).catch(function (error) {
-                messageDialog = new Windows.UI.Popups.MessageDialog(
-                    "Occured error while generate items into ListView"
-                    + " Status: " + error.name
-                    + " Message: " + error.message
-                    , " Error: " + error.status);
-
-                messageDialog.showAsync();
-            });
-        });
-    }
-
-    // Function onChangeDatabase() - listen to change created in user database and write this change to the itemArray
-    // Databases.userDB().changes - watch for change in database and add new file/files
-    function onChangeDatabase() {
-        Databases.userDB().changes({
-            since: 'now',
-            timeout: false,
-            live: true,
-            include_docs: true
-        }).on("change", function (change) {
-            // Put in listView only root elements
-            if (change.doc.nested === "root") {
-                itemArray.push({
-                    title: change.doc.name,
-                    text: change.doc.dateCreated,
-                    type: change.doc.objectType
-                });
-
-                pushItemsToListView();
-            }
-        }).on("error", function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog(
-                "Occured error while adding new items in userDB"
-                + " Status: " + error.name
-                + " Message: " + error.message
-                , " Error: " + error.status);
-
-            messageDialog.showAsync();
         });
     }
 
@@ -358,58 +261,16 @@
                     // Get title of selected items
                     itemsTitle = zoomedInListView.winControl.selection.getItems()._value[i].data.title;
 
-                    Databases.removeFromDatabase(itemsTitle);
+                    Database.removeFromDatabase(itemsTitle);
 
                     // Delete items from listView
-                    FileBrowser.data.splice(items[i].index, 1);
+                    Database.data.splice(items[i].index, 1);
                 }
             });
         }
     }
 
-    let specialChRegex = /[-!$@#%^&*()_+|~=`{}\[\]:";'<>?,.\/]/g;
-    let numberChRegex = /[0-9]/g;
-    let engChRegex = /[a-zA-Z]/g;
-
-    // Function used to sort the groups by first letter
-    function compareGroups(left, right) {
-        return left.toUpperCase().charCodeAt(0) - right.toUpperCase().charCodeAt(0);
-    }
-
-    // Function which returns the group key that an item belongs to
-    function getGroupKey(dataItem) {
-        let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
-
-        if (titleFirstLetter.search(specialChRegex) !== -1) {
-            return "&";
-        } else if (titleFirstLetter.search(numberChRegex) !== -1) {
-            return "#";
-        } else if (titleFirstLetter.search(engChRegex) !== -1) {
-            return dataItem.title.toUpperCase().charAt(0);
-        } else {
-            return globeIcon;
-        }
-    }
-
-    // Function which returns the data for a group
-    // All special characters goes to "&" section
-    // All numbers goes to "#" section
-    // All other go to "global" section
-    function getGroupData(dataItem) {
-        let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
-
-        if (titleFirstLetter.search(specialChRegex) !== -1) {
-            return { title: "&" };
-        } else if (titleFirstLetter.search(numberChRegex) !== -1) {
-            return { title: "#" };
-        } else if (titleFirstLetter.search(engChRegex) !== -1) {
-            return { title: titleFirstLetter };
-        } else {
-            return { title: globeIcon };
-        }
-    }
-
-    // Function multistageRendered - create temporary placeholder and update it when data is available 
+    // BatchRenderer - functionality for order and seamless rendering items in listView 
     function batchRenderer(itemPromise) {
         let element
             , item
@@ -444,7 +305,7 @@
         // Return the element as the placeholder, and a callback to update it when data is available
         return {
             element: element,
-
+            
             renderComplete: itemPromise.then(function (i) {
                 item = i;
 
@@ -550,8 +411,9 @@
         };
     }
 
-    function openNewPivot(title) {
-        window.open("/html/DetailedFilesManager.html");
+    function openNewWindow(title) {
+        var newWindow = window.open("/html/DetailedFilesManager.html", title);
+        newWindow.postMessage(title, "*");
 
         // For Debug!
         if (performance && performance.mark) {
@@ -565,9 +427,7 @@
     WinJS.Namespace.define("FileBrowser", {
         init: init,
         storageFileArray: storageFileArray,
-        generateItems: generateItems,
         batchRenderer: batchRenderer,
-        placeholderRenderer: placeholderRenderer,
-        data: new WinJS.Binding.List(items).createGrouped(getGroupKey, getGroupData, compareGroups)
+        placeholderRenderer: placeholderRenderer
     });
 })();

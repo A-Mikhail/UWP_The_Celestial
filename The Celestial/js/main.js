@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     "use strict";
 
     let app = WinJS.Application;
@@ -54,13 +54,13 @@
                     styleSheet.id = "styleSheet";
                     styleSheet.rel = "stylesheet";
 
-                    styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-dark.css";
+                    styleSheet.href = "/libs/Microsoft.WinJS.4.4/css/ui-dark.css";
                     styleSheet.appendChild(document.createTextNode(styleSheet));
                 } else {
                     styleSheet.id = "styleSheet";
                     styleSheet.rel = "stylesheet";
 
-                    styleSheet.href = "/Microsoft.WinJS.4.4/css/ui-light.css";
+                    styleSheet.href = "/libs/Microsoft.WinJS.4.4/css/ui-light.css";
                     styleSheet.appendChild(document.createTextNode(styleSheet));
                 }
 
@@ -102,20 +102,22 @@
     function checkConsentAvailability() {
         try {
             Windows.Security.Credentials.UI.UserConsentVerifier.checkAvailabilityAsync()
-            .then(function (consentAvailability) {
-                switch (consentAvailability) {
-                    case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.available:
-                        // Ask credential if available
-                        secureUserData();
-                        break;
-                    case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.deviceNotPresent:
-                        console.log("No PIN or biometric found, INSTRUCTION! ask to set it up in windows setting");
-                        break;
-                    default:
-                        console.log("Error of not currently unavailabe, send help");
-                        break;
-                }
-            });
+                .then(function (consentAvailability) {
+                    switch (consentAvailability) {
+                        case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.available:
+                            // Ask credential if available
+                            secureUserData();
+                            break;
+                        case Windows.Security.Credentials.UI.UserConsentVerifierAvailability.deviceNotPresent:
+                            initializeApp();
+
+                            console.log("No PIN or biometric found, INSTRUCTION! ask to set it up in windows setting");
+                            break;
+                        default:
+                            console.log("Error of not currently unavailabe, send help");
+                            break;
+                    }
+                });
         }
         catch (error) {
             console.log("Error message: " + err.message, "sample", "error");
@@ -209,7 +211,7 @@
         });
     }
 
-    WinJS.Namespace.define("MainWindow", {
+    WinJS.Namespace.define("main", {
         renderPivotItems: renderPivotItems,
         removePivotItems: removePivotItems
     });

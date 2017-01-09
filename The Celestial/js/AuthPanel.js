@@ -12,7 +12,7 @@
         buttons,
         undoPanel;
 
-    WinJS.UI.Pages.define("/html/SVSettings.html", {
+    WinJS.UI.Pages.define("/html/splitViewSettings.html", {
         ready: function (element, options) {
             let splitView = document.getElementById("splitView");
 
@@ -25,22 +25,22 @@
             // Command buttons inside Setting Panel
             let SVAboutCommand = document.getElementById("aboutSVCommand");
             SVAboutCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/SVPages/about.html");
+                WinJS.Navigation.navigate("/splitViewPages/about.html");
             }, false);
 
             let SVHelpCommand = document.getElementById("helpSVCommand");
             SVHelpCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/SVPages/help.html");
+                WinJS.Navigation.navigate("/splitViewPages/help.html");
             }, false);
 
             let SVGeneralCommand = document.getElementById("generalSVCommand");
             SVGeneralCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/SVPages/general.html");
+                WinJS.Navigation.navigate("/splitViewPages/general.html");
             }, false);
 
             let SVPersonalizationCommand = document.getElementById("personalizationSVCommand");
             SVPersonalizationCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/SVPages/personalization.html");
+                WinJS.Navigation.navigate("/splitViewPages/personalization.html");
             });
         }
     });
@@ -62,10 +62,6 @@
 
     // Function init() - main function which contains eventListeners and function calls
     function init() {
-        // Synchronize files; functional of it located in BackgroundTransfer.js
-        let syncBtn = document.getElementById("startSyncFilesBtn");
-        syncBtn.addEventListener("click", BackgroundTransfer.init, false);
-
         // Create Buttons for panel and set eventListener on it
         createButton().then(function () {
             buttons = document.querySelectorAll(".auth-panel-btn");
@@ -223,11 +219,11 @@
     }
 
     function ButtonTest() {
-        MainWindow.renderPivotItems("ButtonTest", "/html/Dropbox.html");
+        main.renderPivotItems("ButtonTest", "/html/dropbox.html");
     }
 
     function Test() {
-        MainWindow.renderPivotItems("Test", "/html/Dropbox.html");
+        main.renderPivotItems("Test", "/html/dropbox.html");
     }
 
     function dropboxAuth(elementImage, elementText) {
@@ -238,7 +234,7 @@
 
         let oauth = new AuthenticationBroker.Authentication("Dropbox", auth, oauthUrl, clientId, clientSecret).connect().then(function (token) {
             // Create page for dropbox files and folders
-            MainWindow.renderPivotItems("Dropbox", "/html/Dropbox.html");
+            main.renderPivotItems("Dropbox", "/html/dropbox.html");
 
             // ---------------------------------------
             // Block of xhr requests
@@ -260,7 +256,7 @@
 
         let oauth = new AuthenticationBroker.Authentication("OneDrive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
             // Create page for oneDrive files and folders
-            MainWindow.renderPivotItems("OneDrive", "/html/OneDrive.html");
+            main.renderPivotItems("OneDrive", "/html/oneDrive.html");
 
             // ---------------------------------------
             // Block of xhr requests
@@ -279,7 +275,7 @@
 
         let oauth = new AuthenticationBroker.Authentication("Google Drive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
             // Create page for google drive files and folders
-            MainWindow.renderPivotItems("Google Drive", "/html/GoogleDrive.html");
+            main.renderPivotItems("Google Drive", "/html/googleDrive.html");
 
             // ---------------------------------------
             // Block of xhr requests
@@ -354,7 +350,7 @@
         document.getElementById(buttonId).childNodes[0].src = "/img/Avatar-48x48.png";
         document.getElementById(buttonId).childNodes[1].innerText = removePrefix;
 
-        MainWindow.removePivotItems(removePrefix);
+        main.removePivotItems(removePrefix);
 
         try {
             // reg expression removed 'btn-' from id 

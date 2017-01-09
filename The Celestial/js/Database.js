@@ -24,8 +24,6 @@
             itemData.splice(0, itemData.length);
 
             generateItems();
-
-            console.log("database 'user' destroyed");
         }).catch(function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while destroying UserDB"
@@ -183,11 +181,8 @@
     function pushItemsToListView() {
         /// <signature>
         /// <summary>
-        /// Get items from given array and added to listView.data
+        /// Get items from array and added to Database.data
         /// </summary>
-        /// <param name="itemsArray" type="Array">
-        /// Array of items for listView
-        /// </param>
         /// </signature>
 
         return new Promise(function (resolve, reject) {

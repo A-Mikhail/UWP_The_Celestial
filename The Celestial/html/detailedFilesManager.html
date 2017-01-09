@@ -6,23 +6,23 @@
     <title>Detailed View File Browser</title>
 
     <!-- WinJS references -->
-    <link id="stylesheet" href="/Microsoft.WinJS.4.4/css/ui-light.css" rel="stylesheet" />
+    <link id="stylesheet" href="/libs/WinJS.4.4/css/ui-light.css" rel="stylesheet" />
 
-    <script src="/Microsoft.WinJS.4.4/js/base.js"></script>
-    <script src="/Microsoft.WinJS.4.4/js/ui.js"></script>
+    <script src="/libs/WinJS.4.4/js/base.js"></script>
+    <script src="/libs/WinJS.4.4/js/ui.js"></script>
 
     <!-- The Celestial references -->
-    <link href="/css/MainWindow.css" rel="stylesheet" />
+    <link href="/css/default.css" rel="stylesheet" />
 
     <!-- NoSQL javascript database https://pouchdb.com/ -->
-    <script src="/js/libs/pouchdb-6.1.0.min.js"></script>
-    <script src="/js/libs/pouchdb.find.min.js"></script>
+    <script src="/libs/pouchdb-6.1.0.min.js"></script>
+    <script src="/libs/pouchdb.find.min.js"></script>
 
     <!-- Configure Database -->
-    <script src="/js/Database.js"></script>
+    <script src="/js/database.js"></script>
 
-    <script src="/js/FileBrowser.js"></script>
-    <script src="/js/DetailedFilesManager.js"></script>
+    <script src="/js/fileBrowser.js"></script>
+    <script src="/js/detailedFilesManager.js"></script>
 </head>
 
 <body class="win-type-body">
@@ -34,7 +34,14 @@
 
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                                    id: 'openInNewWinBtn',
+                                    id: 'SyncItemsCmd',
+                                    label: 'Synchronize',
+                                    icon: 'sync'
+                                }"></button>
+
+            <button data-win-control="WinJS.UI.Command"
+                    data-win-options="{
+                                    id: 'openInNewWinCmd',
                                     disabled: true,
                                     label: 'Open in new window',
                                     icon: '\uE8A7'
@@ -46,19 +53,19 @@
             <!-- Work with List View items buttons -->
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                                    id: 'removeItemsBtn',
+                                    id: 'removeSelectedCmd',
                                     label: 'Remove Selected',
                                     icon: 'delete'
                                 }"></button>
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                                    id: 'selectAllItemsBtn',
+                                    id: 'selectAllItemsCmd',
                                     label: 'Select All Items',
                                     icon: 'selectall'
                                 }"></button>
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                                    id: 'clearSelectionBtn',
+                                    id: 'clearSelectionCmd',
                                     label: 'Clear Selection',
                                     icon: 'clearselection'
                                 }"></button>
@@ -69,14 +76,14 @@
             <!-- Add files/folder commands -->
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                            id: 'addFolderBtn',
+                            id: 'addFolderCmd',
                             label: 'Pick Folder',
                             icon: 'newfolder'
                         }"></button>
 
             <button data-win-control="WinJS.UI.Command"
                     data-win-options="{
-                                    id: 'addFilesBtn',
+                                    id: 'addFileCmd',
                                     label: 'Pick Files',
                                     icon: 'add'
                                 }"></button>

@@ -9,9 +9,6 @@
     let applicationData = Windows.Storage.ApplicationData.current;
     let localCacheFolder = applicationData.localCacheFolder;
 
-    // Array of objects choosen by user to send in xhr (!temporary)
-    let storageFileArray = [];
-
     // Array of image extensions for replacing by default image 
     let mediaImageArray = [".png"
         , ".cur"
@@ -36,46 +33,57 @@
         , path
         , size;
 
-    let attachment;
-
     // Icons
     let globeIcon = "&#xe12B;";
     let newWindowIcon = "&#xe8A7;";
 
     let FLTimeout;
-
     let thumbnailBatch;
 
     function init() {
+        /// <signature>
+        /// <summary>
+        /// Initialize all functions after calling
+        /// </summary>
+        /// </signature>
+
         // Global variable of listView for other functions
         var zoomedInListView = document.getElementById('zoomedInListView');
         var zoomedOutListView = document.getElementById('zoomedOutListView');
 
-        // Files/Folder pick buttons
-        let chFilesBtn = document.getElementById("addFilesBtn");
-        chFilesBtn.addEventListener("click", pickFiles, false);
+        // Synchronize all items in listView; functionality of it located in BackgroundTransfer.js file
+        let syncItemsCmd = document.getElementById("SyncItemsCmd");
+        syncItemsCmd.addEventListener("click", function () {
+            BackgroundTransfer.init();
+        }, false);
 
-        let chFolderBtn = document.getElementById("addFolderBtn");
-        chFolderBtn.addEventListener("click", pickFolder, false);
+        // Add file to listView and database
+        let chFileCmd = document.getElementById("addFileCmd");
+        chFileCmd.addEventListener("click", pickFiles, false);
+
+        // Add folder to listView and database
+        let chFolderCmd = document.getElementById("addFolderCmd");
+        chFolderCmd.addEventListener("click", pickFolder, false);
 
         // Remove selected item from List View and database
-        let removeItemsBtn = document.getElementById("removeItemsBtn");
-        removeItemsBtn.addEventListener("click", removeSelected, false);
+        let removeSelectedCmd = document.getElementById("removeSelectedCmd");
+        removeSelectedCmd.addEventListener("click", removeSelected, false);
 
-        let selectAllItemsBtn = document.getElementById("selectAllItemsBtn");
-        selectAllItemsBtn.addEventListener("click", function () {
+        let selectAllItemsCmd = document.getElementById("selectAllItemsCmd");
+        selectAllItemsCmd.addEventListener("click", function () {
             zoomedInListView.winControl.selection.selectAll();
         }, false);
 
-        let clearSelectionBtn = document.getElementById("clearSelectionBtn");
-        clearSelectionBtn.addEventListener("click", function () {
+        let clearSelectionCmd = document.getElementById("clearSelectionCmd");
+        clearSelectionCmd.addEventListener("click", function () {
             zoomedInListView.winControl.selection.clear();
         }, false);
 
-        let openInNewWindow = document.getElementById("openInNewWinBtn");
-        let itemType, itemTitle;
+        // Open selected folder in new window
+        let openInNewWindowCmd = document.getElementById("openInNewWinCmd");
+        openInNewWindowCmd.addEventListener("click", function () { openNewWindow(itemTitle); }, false);
 
-        openInNewWindow.addEventListener("click", function () { openNewWindow(itemTitle); }, false);
+        let itemType, itemTitle;
 
         zoomedInListView.winControl.addEventListener("selectionchanged", function () {
             zoomedInListView.winControl.selection.getItems().then(function (items) {
@@ -86,12 +94,12 @@
                     });
 
                     if (itemType === "File folder") {
-                        openInNewWindow.winControl.disabled = false;
+                        openInNewWindowCmd.winControl.disabled = false;
                     } else {
-                        openInNewWindow.winControl.disabled = true;
+                        openInNewWindowCmd.winControl.disabled = true;
                     }
                 } else {
-                    openInNewWindow.winControl.disabled = true;
+                    openInNewWindowCmd.winControl.disabled = true;
                 }
             });
         }, false);
@@ -109,9 +117,12 @@
         clearTimeout(FLTimeout);
     }
 
-    // Function pickFiles() - use FileOpenPicker interface, get picked files splice to string data for send into user database
-    // write picked files in source format and push it to the global array - storageFileArray for xhr needs (need rethink this)
     function pickFiles(event) {
+        /// <signature>
+        /// <summary>
+        /// Get picked files, send all available informations about it to userDatabase; saved icon of file to localCache folder.
+        /// </summary>
+        /// </signature>
         let fileOpenPicker = new Windows.Storage.Pickers.FileOpenPicker();
         fileOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
@@ -164,7 +175,7 @@
                                 dataWriter.close();
 
                                 // Create new file in localCache folder.
-                                // e.g. of created file - pdf.png
+                                // e.g. of created file - icon_.pdf.png
                                 localCacheFolder.createFileAsync("icon_" + itemType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
                                     .then(function (file) {
                                         return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
@@ -172,9 +183,6 @@
                             }
                         });
                     }
-
-                    // Send choosen files to global array for xhr
-                    storageFileArray.push(file[i]);
                 }
             } else {
                 // The picker was dismissed with no selected file
@@ -187,6 +195,11 @@
     }
 
     function pickFolder(event) {
+        /// <signature>
+        /// <summary>
+        /// Get picked folder, send all available informations about it to userDatabase.
+        /// </summary>
+        /// </signature>
         let folderOpenPicker = new Windows.Storage.Pickers.FolderPicker();
         folderOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.thumbnail;
         folderOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
@@ -236,8 +249,12 @@
         });
     }
 
-    // Function removeSelected() - removed selected items form listView and from database
     function removeSelected() {
+        /// <signature>
+        /// <summary>
+        /// Removed selected items from listView and database
+        /// </summary>
+        /// </signature>
         let itemsTitle;
         let itemsKey;
 
@@ -270,8 +287,14 @@
         }
     }
 
-    // BatchRenderer - functionality for order and seamless rendering items in listView 
     function batchRenderer(itemPromise) {
+        /// <signature>
+        /// <summary>
+        /// Ordered and seamless rendering items in listView; 
+        /// Loading icon from localCache folder into img element;
+        /// Create tooltip for each items for displaying additional information.
+        /// </summary>
+        /// </signature>
         let element
             , item
             , img
@@ -395,8 +418,14 @@
         };
     }
 
-    // Function placeholderRenderer - create placeholder for zoomOut items
+
     function placeholderRenderer(itemPromise) {
+        /// <signature>
+        /// <summary>
+        /// Simple rendering of items in listView; 
+        /// </summary>
+        /// </signature>
+
         // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
         element.className = "zoomedOut-item";
@@ -426,7 +455,6 @@
 
     WinJS.Namespace.define("FileBrowser", {
         init: init,
-        storageFileArray: storageFileArray,
         batchRenderer: batchRenderer,
         placeholderRenderer: placeholderRenderer
     });

@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Index page of all clouds service</title>
+</head>
+
+<body class="win-type-body">
+    <!-- Header for zoomed in list view -->
+    <div id="zoomedInLeftHeader" class="zoomedIn-left-header"
+         data-win-control="WinJS.Binding.Template">
+        <div class="zoomedIn-left-header-root win-type-title">
+            <div data-win-bind="innerHTML: title"></div>
+        </div>
+    </div>
+
+    <div id="semanticZoomDiv" data-win-control="WinJS.UI.SemanticZoom">
+        <!-- File browser zoomed in list view -->
+        <div id="zoomedInListView"
+             data-win-control="WinJS.UI.ListView"
+             data-win-options="{
+                            itemDataSource: Database.data.dataSource,
+                            itemTemplate: FileBrowser.batchRenderer,
+                            groupDataSource: Database.data.groups.dataSource,
+                            groupHeaderTemplate: select('#zoomedInLeftHeader'),
+                            selectionMode: 'multi',
+                            tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
+                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                        }">
+        </div>
+
+        <!-- Zoomed out list view -->
+        <div id="zoomedOutListView"
+             data-win-control="WinJS.UI.ListView"
+             data-win-options="{
+                                itemDataSource: Database.data.groups.dataSource,
+                                itemTemplate: FileBrowser.placeholderRenderer,
+                                selectionMode: 'none',
+                                tapBehavior: 'invoke',
+                                layout: { type: WinJS.UI.GridLayout }
+                             }">
+        </div>
+    </div>
+</body>
+
+</html>

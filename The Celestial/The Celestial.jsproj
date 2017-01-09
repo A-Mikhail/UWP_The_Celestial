@@ -122,6 +122,7 @@
     <Content Include="js\fileBrowser.js" />
     <Content Include="js\main.js" />
     <Content Include="css\default.css" />
+    <Content Include="js\settingControl.js" />
     <Content Include="js\xmlHttpRequest.js" />
     <Content Include="libs\oboe-browser.min.js" />
     <Content Include="libs\pouchdb-6.1.0.min.js" />
@@ -140,15 +141,10 @@
     <Content Include="libs\WinJS.4.4\js\ui.js" />
     <Content Include="libs\WinJS.4.4\js\WinJS.intellisense-setup.js" />
     <Content Include="libs\WinJS.4.4\js\WinJS.intellisense.js" />
-    <Content Include="splitViewPages\about.html" />
-    <Content Include="splitViewPages\about.js" />
-    <Content Include="splitViewPages\general.html" />
-    <Content Include="splitViewPages\general.js" />
-    <Content Include="splitViewPages\help.html" />
-    <Content Include="splitViewPages\help.js" />
-    <Content Include="splitViewPages\personalization.html" />
-    <Content Include="splitViewPages\personalization.js" />
-    <Content Include="splitViewPages\SVPages.css" />
+    <Content Include="html\settings_about.html" />
+    <Content Include="html\settings_general.html" />
+    <Content Include="html\settings_help.html" />
+    <Content Include="html\settings_personalization.html" />
     <None Include="The Celestial_TemporaryKey.pfx" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />

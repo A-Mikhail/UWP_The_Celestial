@@ -54,13 +54,13 @@
                     styleSheet.id = "styleSheet";
                     styleSheet.rel = "stylesheet";
 
-                    styleSheet.href = "/libs/Microsoft.WinJS.4.4/css/ui-dark.css";
+                    styleSheet.href = "/libs/WinJS.4.4/css/ui-dark.css";
                     styleSheet.appendChild(document.createTextNode(styleSheet));
                 } else {
                     styleSheet.id = "styleSheet";
                     styleSheet.rel = "stylesheet";
 
-                    styleSheet.href = "/libs/Microsoft.WinJS.4.4/css/ui-light.css";
+                    styleSheet.href = "/libs/WinJS.4.4/css/ui-light.css";
                     styleSheet.appendChild(document.createTextNode(styleSheet));
                 }
 

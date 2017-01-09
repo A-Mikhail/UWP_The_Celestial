@@ -25,22 +25,22 @@
             // Command buttons inside Setting Panel
             let SVAboutCommand = document.getElementById("aboutSVCommand");
             SVAboutCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/splitViewPages/about.html");
+                WinJS.Navigation.navigate("/html/settings_about.html");
             }, false);
 
             let SVHelpCommand = document.getElementById("helpSVCommand");
             SVHelpCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/splitViewPages/help.html");
+                WinJS.Navigation.navigate("/html/settings_help.html");
             }, false);
 
             let SVGeneralCommand = document.getElementById("generalSVCommand");
             SVGeneralCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/splitViewPages/general.html");
+                WinJS.Navigation.navigate("/html/settings_general.html");
             }, false);
 
             let SVPersonalizationCommand = document.getElementById("personalizationSVCommand");
             SVPersonalizationCommand.addEventListener("click", function () {
-                WinJS.Navigation.navigate("/splitViewPages/personalization.html");
+                WinJS.Navigation.navigate("/html/settings_personalization.html");
             });
         }
     });

@@ -60,9 +60,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="html\detailedFilesManager.html" />
-    <Content Include="html\dropbox.html" />
-    <Content Include="html\googleDrive.html" />
-    <Content Include="html\oneDrive.html" />
+    <Content Include="html\clouds_index.html" />
     <Content Include="html\splitViewSettings.html" />
     <Content Include="images\BadgeLogo.scale-100.png" />
     <Content Include="images\BadgeLogo.scale-125.png" />

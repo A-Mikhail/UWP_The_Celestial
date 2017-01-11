@@ -179,7 +179,7 @@
     // Creating 3 buttons - Google Drive, Dropbox, OneDrive
     function createButton() {
         return new Promise(function (done) {
-            let createButtonArr = [
+            let btnToCreateArray = [
                 new Button("Google Drive"),
                 new Button("Dropbox"),
                 new Button("OneDrive"),
@@ -187,43 +187,19 @@
                 new Button("ButtonTest")
             ];
 
-            for (let i = 0; i < createButtonArr.length; i++) {
-                done(createButtonArr[i].create());
-            }
+            btnToCreateArray.forEach(function (item) {
+                done(item.create());
+            });
         });
     }
 
-    // Temporary function
     function authInService() {
-        switch (this.id) {
-            case "btn-Google Drive":
-                // Src of image inside button and text inside p - tag 
-                googledriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
-                break;
-            case "btn-Dropbox":
-                // Src of image inside button and text inside p - tag 
-                dropboxAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
-                break;
-            case "btn-OneDrive":
-                onedriveAuth(this.getElementsByTagName("img"), this.getElementsByTagName("p"));
-                break;
-            case "btn-Test":
-                Test();
-                break;
-            case "btn-ButtonTest":
-                ButtonTest();
-                break;
-            default:
-                new Windows.UI.Popups.MessageDialog("Error by definition button, please try again!");
-        }
-    }
-
-    function ButtonTest() {
-        main.renderPivotItems("ButtonTest", "/html/dropbox.html");
-    }
-
-    function Test() {
-        main.renderPivotItems("Test", "/html/dropbox.html");
+        /// <signature>
+        /// <summary>
+        /// Create new pivot with name of clicked button
+        /// </summary>
+        /// </signature>
+        main.renderPivotItems(`${this.winControl.label}`, "/html/clouds_index.html");
     }
 
     function dropboxAuth(elementImage, elementText) {

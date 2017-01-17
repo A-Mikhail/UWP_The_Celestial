@@ -33,7 +33,7 @@ namespace UnitTest_TheCelestial
         [ClassCleanup]
         public static void TearDown()
         {
-            ApplicationSession.Dispose();
+            ApplicationSession.Quit();
             ApplicationSession = null;
         }
 
@@ -41,11 +41,7 @@ namespace UnitTest_TheCelestial
         // Different extension and special characters in files name
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\!.ods")]
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\#.bmp")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\$.rtf")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\%.txt")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\&.zip")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#\\@.odt")]
-        
+
         // Underscore folder and file name
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\_Folder\\_MegaUnderscoreFile.txt")]
 
@@ -64,29 +60,6 @@ namespace UnitTest_TheCelestial
         // Image extensions
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderBMP.bmp")]
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderCUR.cur")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderDIB.dib")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderDicom.dcm")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderEPS.eps")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderGIF.gif")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderICO.ico")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderIff.iff")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderJPE.jpe")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderJPEG2000.jpf")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderJPEGStereo.jps")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderJPG.jpg")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderMPO.mpo")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPBM.pbm")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPCX.pcx")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPDF.pdf")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPNG.png")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPSB.psb")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPSD.psd")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderPXR.pxr")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderRAW.raw")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderRLE.rle")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderSCT.sct")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderTGA.tga")]
-        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension\\FolderTIF.tif")]
 
         // Long name
         [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Long length naming\\First of the long length naming thath I don't know fit or not.txt")]
@@ -106,14 +79,89 @@ namespace UnitTest_TheCelestial
         {
             ApplicationSession.FindElementByName("Pick Files").Click();
 
-            System.Threading.Thread.Sleep(1000); // Wait for 2 second until the dialog comes up
+            // Wait for 1 second until the dialog comes up
+            System.Threading.Thread.Sleep(1000);
             // Open File Explorer
-            var openFileBox = ApplicationSession.FindElementByClassName("#32770");
+            var openFileDialog = ApplicationSession.FindElementByClassName("#32770");
 
-            openFileBox.FindElementByClassName("Edit").Click();
-            openFileBox.FindElementByClassName("Edit").SendKeys(input1 + OpenQA.Selenium.Keys.Enter);
+            openFileDialog.FindElementByClassName("Edit").Click();
+            openFileDialog.FindElementByClassName("Edit").SendKeys(input1 + OpenQA.Selenium.Keys.Enter);
 
-            System.Threading.Thread.Sleep(1000); // Wait for 1 second until the dialog close      
+            // Wait for 1 second until the dialog close
+            System.Threading.Thread.Sleep(1000);
+        }
+
+        [TestMethod]
+        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Images Extension")]
+        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\Number")]
+        [DataRow("D:\\Mikhail\\Programming\\BackupApp\\TestFilePicker\\#")]
+
+        public void AddFilesMany(string input1)
+        {
+            ApplicationSession.FindElementByName("Pick Files").Click();
+
+            // Wait for 1 second until the dialog comes up
+            System.Threading.Thread.Sleep(1000);
+            // Open File Explorer
+            var openFilesDialog = ApplicationSession.FindElementByClassName("#32770");
+
+            // Enter location folder
+            openFilesDialog.FindElementByName("All locations").Click();
+            openFilesDialog.FindElementByName("Address").SendKeys(input1 + OpenQA.Selenium.Keys.Enter);
+
+            openFilesDialog.FindElementByName("Items View").Click();
+            openFilesDialog.FindElementByName("Items View").SendKeys(OpenQA.Selenium.Keys.Control + "a");
+
+            // Open selected files
+            openFilesDialog.SendKeys(OpenQA.Selenium.Keys.Alt + "o");
+        }
+
+        [TestMethod]
+        [DataRow("D:\\Mikhail\\", "Programming")]
+        [DataRow("D:\\Mikhail\\", "Other")]
+        [DataRow("D:\\Mikhail\\", "Archive")]
+        [DataRow("D:\\Mikhail\\", "Blogging")]
+        [DataRow("D:\\Mikhail\\", "Books, PDF")]
+        [DataRow("D:\\Mikhail\\", "Gtd")]
+
+        public void AddFolder(string input1, string input2)
+        {
+            ApplicationSession.FindElementByName("Pick Folder").Click();
+
+            // Wait for 1 second until the dialog comes up
+            System.Threading.Thread.Sleep(1000);
+            // Open File Explorer
+            var openFolderDialog = ApplicationSession.FindElementByClassName("#32770");
+           
+            // Enter location folder
+            openFolderDialog.FindElementByName("All locations").Click();
+            openFolderDialog.FindElementByName("Address").SendKeys(input1 + OpenQA.Selenium.Keys.Enter);
+
+            // Enter folder name
+            openFolderDialog.FindElementByClassName("Edit").Click();
+            openFolderDialog.FindElementByClassName("Edit").SendKeys(OpenQA.Selenium.Keys.Control + "a");
+            openFolderDialog.FindElementByClassName("Edit").SendKeys(OpenQA.Selenium.Keys.Backspace);
+            openFolderDialog.FindElementByClassName("Edit").SendKeys(input2);
+            // Send 'Tab' key to focus on 'Select Folder' button
+            openFolderDialog.SendKeys(OpenQA.Selenium.Keys.Tab);
+            // Click Enter to send chosen folder into listView
+            openFolderDialog.SendKeys(OpenQA.Selenium.Keys.Enter);
+        }
+
+        [TestMethod]
+        public void TurnOnCredential()
+        {
+            // Clear items from database before starting
+            ApplicationSession.FindElementByName(" Settings").Click();
+
+            // Settings
+            // General
+            // Turn on credential
+            // Exit app
+            // Open app
+            // Enter credential
+            // Turn off credential
+            // Done!
         }
     }
 }

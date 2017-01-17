@@ -43,7 +43,7 @@
     function init() {
         /// <signature>
         /// <summary>
-        /// Initialize all functions after calling
+        /// Initialize all functions after calling.
         /// </summary>
         /// </signature>
 
@@ -87,7 +87,7 @@
 
         zoomedInListView.winControl.addEventListener("selectionchanged", function () {
             zoomedInListView.winControl.selection.getItems().then(function (items) {
-                if (items !== 0) {
+                if (items.length !== 0) {
                     items.forEach(function (item) {
                         itemType = item.data.type;
                         itemTitle = item.data.title;
@@ -99,7 +99,7 @@
                         openInNewWindowCmd.winControl.disabled = true;
                     }
                 } else {
-                    openInNewWindowCmd.winControl.disabled = true;
+                    openInNewWindowCmd.winControl.disabled = true
                 }
             });
         }, false);
@@ -120,7 +120,8 @@
     function pickFiles(event) {
         /// <signature>
         /// <summary>
-        /// Get picked files, send all available informations about it to userDatabase; saved icon of file to localCache folder.
+        /// Get picked files, send all available informations about it to database, 
+        /// save icon of file to localCache folder.
         /// </summary>
         /// </signature>
         let fileOpenPicker = new Windows.Storage.Pickers.FileOpenPicker();
@@ -128,7 +129,7 @@
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
         fileOpenPicker.fileTypeFilter.replaceAll(["*"]);
 
-        // Image size - 32px x 32px
+        // Image size - 32x32px
         let requestedSize = 32;
         let thumbnailMode = Windows.Storage.FileProperties.ThumbnailMode.singleItem;
 
@@ -149,7 +150,7 @@
                     path = file[i].path;
 
                     // Send picked file information to User Database
-                    Database.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
+                    Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path);
 
                     let image = mediaImageArray.find(function (element) { return element === itemType; });
 
@@ -176,7 +177,7 @@
 
                                 // Create new file in localCache folder.
                                 // e.g. of created file - icon_.pdf.png
-                                localCacheFolder.createFileAsync("icon_" + itemType + ".png", Windows.Storage.CreationCollisionOption.replaceExisting)
+                                localCacheFolder.createFileAsync("icon_" + itemType + ".png", Windows.Storage.CreationCollisionOption.openIfExists)
                                     .then(function (file) {
                                         return Windows.Storage.FileIO.writeBufferAsync(file, buffer);
                                     });
@@ -197,7 +198,7 @@
     function pickFolder(event) {
         /// <signature>
         /// <summary>
-        /// Get picked folder, send all available informations about it to userDatabase.
+        /// Get picked folder, send all available informations about it to database.
         /// </summary>
         /// </signature>
         let folderOpenPicker = new Windows.Storage.Pickers.FolderPicker();
@@ -214,7 +215,7 @@
                 path = folder.path;
 
                 // Send picked folder to DB
-                Database.userDatabaseWrite(dateCreated, name, itemType, relativeId, path);
+                Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path);
 
                 // Show files inside folder
                 let query = folder.createItemQuery();
@@ -235,7 +236,7 @@
                             itemPath = item.path;
                             itemParent = name;
 
-                            Database.userDatabaseWrite(itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
+                            Database.databaseWrite("user", itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
                         });
                     }
                 });
@@ -278,7 +279,7 @@
                     // Get title of selected items
                     itemsTitle = zoomedInListView.winControl.selection.getItems()._value[i].data.title;
 
-                    Database.removeFromDatabase(itemsTitle);
+                    Database.removeFromDatabase("user", itemsTitle);
 
                     // Delete items from listView
                     Database.data.splice(items[i].index, 1);
@@ -441,7 +442,7 @@
     }
 
     function openNewWindow(title) {
-        var newWindow = window.open("/html/DetailedFilesManager.html", title);
+        let newWindow = window.open("/html/windowedFileBrowser.html", title);
         newWindow.postMessage(title, "*");
 
         // For Debug!

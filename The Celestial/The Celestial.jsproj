@@ -59,7 +59,7 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="html\detailedFilesManager.html" />
+    <Content Include="html\windowedFileBrowser.html" />
     <Content Include="html\clouds_index.html" />
     <Content Include="html\splitViewSettings.html" />
     <Content Include="images\BadgeLogo.scale-100.png" />
@@ -116,7 +116,7 @@
     <Content Include="js\backgroundTransfer.js" />
     <Content Include="js\configurations.js" />
     <Content Include="js\database.js" />
-    <Content Include="js\detailedFilesManager.js" />
+    <Content Include="js\windowedFileBrowser.js" />
     <Content Include="js\fileBrowser.js" />
     <Content Include="js\main.js" />
     <Content Include="css\default.css" />

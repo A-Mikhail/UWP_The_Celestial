@@ -22,7 +22,7 @@
             navigateBack();
 
             let dstUserDb = document.getElementById("destroyUserDB");
-            dstUserDb.addEventListener("click", function () { Databases.destroyUserDB() }, false);
+            dstUserDb.addEventListener("click", function () { Database.destroyDatabase("user"); }, false);
 
             let toggleCredential = document.getElementById("winCredentialToggle").winControl;
 
@@ -87,5 +87,5 @@
 
     WinJS.Namespace.define("settingControl", {
         toggleCredential: toggleCredential
-    })
+    });
 })();

@@ -6,24 +6,40 @@
     let itemsArray = new Array;
     let items;
 
-    // Create db for user files
-    function userDB() {
-        let userDB = new PouchDB("user", { auto_compaction: true });
+    function database(database) {
+        /// <signature>
+        /// <summary>
+        /// Create or return database.
+        /// </summary>
+        /// <param name="database" type="String">
+        /// Name of database to create or get.
+        /// </param>
+        /// <returns type="Object">
+        /// A Object with database.
+        /// </returns>
+        /// </signature>
+        let db = new PouchDB(database, { auto_compaction: true });
 
-        return userDB;
+        return db;
     }
 
-    // destroyUserDB - function that destroyed userDB
-    // and clean all items from ListView array
-    function destroyUserDB() {
+    function destroyDatabase(nameOfDB) {
+        /// <signature>
+        /// <summary>
+        /// Destroy database and clear items from listView
+        /// </summary>
+        /// <param name="nameOfDB" type="String">
+        /// Name of database to be destroyed.
+        /// </param>
+        /// </signature>
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
-        userDB().destroy().then(function (response) {
+        database(nameOfDB).destroy().then(function (response) {
             // Clear listView without destroying Binding.List
             itemData.splice(0, itemData.length);
 
-            generateItems();
+            generateItems(nameOfDB);
         }).catch(function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while destroying UserDB"
@@ -35,22 +51,19 @@
         });
     }
 
-    // Close database
-    // db - Database to close
-    function closeDatabase(db) {
-        Database.db.close();
-    }
-
-    function userDatabaseWrite(dateCreated, name, objectType, relativeId, path, itemParent, nested) {
+    function databaseWrite(nameOfDB, dateCreated, name, objectType, relativeId, path, itemParent = null, nested = false) {
         /// <signature>
         /// <summary>
-        /// Write recieved parameters into UserDB();
+        /// Write recieved parameters into database.
         /// </summary>
+        /// <param name="nameOfDB" type="String">
+        /// In which database write data.
+        /// </param>
         /// <param name="dateCreated" type="String">
         /// Date when object was last modified.
         /// </param>
         /// <param name="name" type="String">
-        /// Displayed name of object
+        /// Displayed name of object.
         /// </param>
         /// <param name="objectType" type="String">
         /// Type of item; for files - file extensions.
@@ -75,28 +88,8 @@
             id += name[i].charCodeAt(0).toString(16);
         }
 
-        // If nested equal true then add folder parent name and nested key for searching by this key
-        if (nested === true) {
-            userDB().put({
-                _id: id,
-                relativeId: relativeId,
-                dateCreated: dateCreated.toLocaleString(),
-                name: name,
-                objectType: objectType,
-                path: path,
-                itemParent: itemParent,
-                nested: "children"
-            }).catch(function (error) {
-                messageDialog = new Windows.UI.Popups.MessageDialog(
-                    "Occured error while writing items in userDB"
-                    + " Status: " + error.name
-                    + " Message: " + error.message
-                    , " Error: " + error.status);
-
-                messageDialog.showAsync();
-            });
-        } else {
-            userDB().put({
+        if (nested === false) {
+            database(nameOfDB).put({
                 _id: id,
                 relativeId: relativeId,
                 dateCreated: dateCreated.toLocaleString(),
@@ -113,14 +106,37 @@
 
                 messageDialog.showAsync();
             });
+        } else {
+            // Add folder name of a parent and nested key equal -- childern; for searching by this key.
+            database(nameOfDB).put({
+                _id: "children_" + id,
+                relativeId: relativeId,
+                dateCreated: dateCreated.toLocaleString(),
+                name: name,
+                objectType: objectType,
+                path: path,
+                itemParent: itemParent,
+                nested: "children"
+            }).catch(function (error) {
+                messageDialog = new Windows.UI.Popups.MessageDialog(
+                    "Occured error while writing items in userDB"
+                    + " Status: " + error.name
+                    + " Message: " + error.message
+                    , " Error: " + error.status);
+
+                messageDialog.showAsync();
+            });
         }
     }
 
-    function removeFromDatabase(item) {
+    function removeFromDatabase(nameOfDB, item) {
         /// <signature>
         /// <summary>
-        /// Functionality for removing items from database.
+        /// Removing item from database.
         /// </summary>
+        /// <param name="nameOfDB" type="String">
+        /// From which database remove item.
+        /// </param>
         /// <param name="item" type="String">
         /// _id of removed items
         /// </param>
@@ -134,8 +150,8 @@
         }
 
         // Remove root item
-        userDB().get(id).then(function (doc) {
-            userDB().remove(doc);
+        database(nameOfDB).get(id).then(function (doc) {
+            database(nameOfDB).remove(doc);
         }).catch(function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while removing items from userDB"
@@ -148,14 +164,14 @@
 
         // Remove nested item
         // Search by name all the nested element 
-        userDB().createIndex({
+        database(nameOfDB).createIndex({
             index: { fields: ['itemParent'] }
         }).then(function () {
-            userDB().find({
+            database(nameOfDB).find({
                 selector: { itemParent: { $eq: item } }
             }).then(function (result) {
                 for (let i = 0; i < result.docs.length; i++) {
-                    userDB().remove(result.docs[i])
+                    database(nameOfDB).remove(result.docs[i])
                         .catch(function (error) {
                             messageDialog = new Windows.UI.Popups.MessageDialog(
                                 "Occured error while deleting item."
@@ -181,7 +197,7 @@
     function pushItemsToListView() {
         /// <signature>
         /// <summary>
-        /// Get items from array and added to Database.data
+        /// Get items from array and add to listView - data
         /// </summary>
         /// </signature>
 
@@ -205,11 +221,14 @@
         });
     }
 
-    function generateItems(nested, parent) {
+    function generateItems(nameOfDB, nested, parent = null) {
         /// <signature>
         /// <summary>
-        /// Read from database all information and send to listView array for displaying
+        /// Read from database all information and send to listView array for displaying.
         /// </summary>
+        /// <param name="nameOfDB" type="String">
+        /// From which database take data.
+        /// </param>
         /// <param name="nested" type="String">
         /// Location of curent items 'root' or 'children'.
         /// </param>
@@ -217,45 +236,75 @@
         /// Parent folder of wanted 'nested' items.
         /// </param>
         /// </signature>
-        userDB().createIndex({
-            index: { fields: ['nested'] }
-        }).then(function () {
-            userDB().find({
-                selector: { nested: { $eq: nested } }
-            }).then(function (result) {
-                for (let i = 0; i < result.docs.length; i++) {
-                    itemsArray.push({
-                        title: result.docs[i].name,
-                        text: result.docs[i].dateCreated,
-                        type: result.docs[i].objectType
+        if (nested === "root") {
+            database(nameOfDB).createIndex({
+                index: { fields: ['nested'] }
+            }).then(function () {
+                database(nameOfDB).find({
+                    selector: { nested: { $eq: nested } }
+                }).then(function (result) {
+                    for (let i = 0; i < result.docs.length; i++) {
+                        itemsArray.push({
+                            title: result.docs[i].name,
+                            text: result.docs[i].dateCreated,
+                            type: result.docs[i].objectType
+                        });
+                    }
+
+                    pushItemsToListView().then(function () {
+                        onChangeDatabase(nameOfDB);
                     });
-                }
+                }).catch(function (error) {
+                    messageDialog = new Windows.UI.Popups.MessageDialog(
+                        "Occured error while generate items into ListView"
+                        + " Status: " + error.name
+                        + " Message: " + error.message
+                        , " Error: " + error.status);
 
-                pushItemsToListView().then(function () {
-                    onChangeDatabase();
+                    messageDialog.showAsync();
                 });
-            }).catch(function (error) {
-                messageDialog = new Windows.UI.Popups.MessageDialog(
-                    "Occured error while generate items into ListView"
-                    + " Status: " + error.name
-                    + " Message: " + error.message
-                    , " Error: " + error.status);
-
-                messageDialog.showAsync();
             });
-        });
+        } else {
+            database(nameOfDB).createIndex({
+                index: { fields: ['nested', 'itemParent'] }
+            }).then(function () {
+                database(nameOfDB).find({
+                    selector: {
+                        nested: { $eq: nested },
+                        itemParent: { $eq: parent }
+                    }
+                }).then(function (result) {
+                    for (let i = 0; i < result.docs.length; i++) {
+                        itemsArray.push({
+                            title: result.docs[i].name,
+                            text: result.docs[i].dateCreated,
+                            type: result.docs[i].objectType
+                        });
+                    }
+
+                    pushItemsToListView().then(function () {
+                        onChangeDatabase(nameOfDB);
+                    });
+                }).catch(function (error) {
+                    messageDialog = new Windows.UI.Popups.MessageDialog(
+                        "Occured error while generate items into ListView"
+                        + " Status: " + error.name
+                        + " Message: " + error.message
+                        , " Error: " + error.status);
+
+                    messageDialog.showAsync();
+                });
+            });
+        }
     }
 
-    function onChangeDatabase() {
+    function onChangeDatabase(nameOfDB) {
         /// <signature>
         /// <summary>
-        /// Listen to changes created in database and write this changes to the itemsArray
+        /// Listen to changes created in database and write the changes to itemsArray.
         /// </summary>
-        /// <param name="itemsArray" type="Array">
-        /// Array of items for listView
-        /// </param>
         /// </signature>
-        userDB().changes({
+        database(nameOfDB).changes({
             since: 'now',
             timeout: false,
             live: true,
@@ -269,6 +318,7 @@
                     type: change.doc.objectType
                 });
 
+                // Send new item to listView
                 pushItemsToListView();
             }
         }).on("error", function (error) {
@@ -288,29 +338,10 @@
     let engChRegex = /[a-zA-Z]/g;
 
     function compareGroups(left, right) {
-        /// <signature>
-        /// <summary>
-        /// Sort the groups by first letter
-        /// </summary>
-        /// <param name="left" type="Object">
-        /// First sorted object
-        /// </param>
-        /// <param name="right" type="Object">
-        /// Second sorted object
-        /// </param>
-        /// </signature>
         return left.toUpperCase().charCodeAt(0) - right.toUpperCase().charCodeAt(0);
     }
 
     function getGroupKey(dataItem) {
-        /// <signature>
-        /// <summary>
-        /// Returns the group key that an item belongs to 
-        /// </summary>
-        /// <param name="dataItem" type="Array">
-        /// Array of sorted items
-        /// </param>
-        /// </signature>
         let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
 
         if (titleFirstLetter.search(specialChRegex) !== -1) {
@@ -325,14 +356,6 @@
     }
 
     function getGroupData(dataItem) {
-        /// <signature>
-        /// <summary>
-        /// Return the data for a group
-        /// </summary>
-        /// <param name="dataItem" type="Array">
-        /// Array of sorted items
-        /// </param>
-        /// </signature>
         let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
 
         if (titleFirstLetter.search(specialChRegex) !== -1) {
@@ -347,9 +370,9 @@
     }
 
     WinJS.Namespace.define("Database", {
-        userDB: userDB,
-        destroyUserDB: destroyUserDB,
-        userDatabaseWrite: userDatabaseWrite,
+        database: database,
+        destroyDatabase: destroyDatabase,
+        databaseWrite: databaseWrite,
         removeFromDatabase: removeFromDatabase,
         pushItemsToListView: pushItemsToListView,
         generateItems: generateItems,

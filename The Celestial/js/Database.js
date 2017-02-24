@@ -51,7 +51,7 @@
         });
     }
 
-    function databaseWrite(nameOfDB, dateCreated, name, objectType, relativeId, path, itemParent = null, nested = false) {
+    function databaseWrite(nameOfDB, dateCreated, name, objectType, relativeId, path, listItemSize, itemParent = null, nested = false) {
         /// <signature>
         /// <summary>
         /// Write recieved parameters into database.
@@ -79,6 +79,9 @@
         /// </param>
         /// <param name="nested" optional="true" type="Boolean">
         /// </param>
+        /// <param name="listItemSize" optional="false" type="String">
+        /// Size of the item in List View -- small, medium or large
+        /// </param>
         /// </signature>
 
         // Convert name to hex for avoid error with naming
@@ -96,7 +99,8 @@
                 name: name,
                 objectType: objectType,
                 path: path,
-                nested: "root"
+                nested: "root",
+                listItemSize: listItemSize
             }).catch(function (error) {
                 messageDialog = new Windows.UI.Popups.MessageDialog(
                     "Occured error while writing items in userDB"
@@ -116,7 +120,8 @@
                 objectType: objectType,
                 path: path,
                 itemParent: itemParent,
-                nested: "children"
+                nested: "children",
+                listItemSize: listItemSize
             }).catch(function (error) {
                 messageDialog = new Windows.UI.Popups.MessageDialog(
                     "Occured error while writing items in userDB"
@@ -247,7 +252,8 @@
                         itemsArray.push({
                             title: result.docs[i].name,
                             text: result.docs[i].dateCreated,
-                            type: result.docs[i].objectType
+                            type: result.docs[i].objectType,
+                            listItemSize: result.docs[i].listItemSize
                         });
                     }
 
@@ -278,7 +284,8 @@
                         itemsArray.push({
                             title: result.docs[i].name,
                             text: result.docs[i].dateCreated,
-                            type: result.docs[i].objectType
+                            type: result.docs[i].objectType,
+                            listItemSize: result.docs[i].listItemSize
                         });
                     }
 
@@ -315,7 +322,8 @@
                 itemsArray.push({
                     title: change.doc.name,
                     text: change.doc.dateCreated,
-                    type: change.doc.objectType
+                    type: change.doc.objectType,
+                    listItemSize: change.doc.listItemSize
                 });
 
                 // Send new item to listView

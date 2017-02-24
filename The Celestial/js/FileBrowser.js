@@ -150,7 +150,7 @@
                     path = file[i].path;
 
                     // Send picked file information to User Database
-                    Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path);
+                    Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "smallListItem");
 
                     let image = mediaImageArray.find(function (element) { return element === itemType; });
 
@@ -214,11 +214,9 @@
                 name = folder.name;
                 path = folder.path;
 
-                // Send picked folder to DB
-                Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path);
-
                 // Show files inside folder
                 let query = folder.createItemQuery();
+
                 query.getItemsAsync().done(function (items) {
                     if (items) {
                         let itemName
@@ -228,6 +226,9 @@
                             , itemPath
                             , itemParent;
 
+                        // Send parent item 
+                        Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "largeListItem");
+
                         items.forEach(function (item) {
                             itemName = item.name;
                             itemDateCreated = item.dateCreated;
@@ -236,8 +237,12 @@
                             itemPath = item.path;
                             itemParent = name;
 
-                            Database.databaseWrite("user", itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, itemParent, true);
+                            // Send children items
+                            Database.databaseWrite("user", itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, "smallListItem", itemParent, true);
                         });
+                    } else {
+                        // Send singular item
+                        Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "smallListItem");
                     }
                 });
             } else {
@@ -288,7 +293,40 @@
         }
     }
 
-    function batchRenderer(itemPromise) {
+    let groupInfo = WinJS.Utilities.markSupportedForProcessing(function groupInfo() {
+        return {
+            enableCellSpanning: true,
+            cellWidth: 310,
+            cellHeight: 80
+        };
+    });
+
+    let itemInfo = WinJS.Utilities.markSupportedForProcessing(function itemInfo(itemPromise) {
+        let size = { width: 310, height: 80 };
+
+        let item = Database.data;
+
+        if (item) {
+            // Get the size based on the item type
+            switch (item.listItemSize) {
+                case "smallListItem":
+                    size = { width: 310, height: 80 };
+                    break;
+                case "mediumListItem":
+                    size = { width: 310, height: 170 };
+                    break;
+                case "largeListItem":
+                    size = { width: 310, height: 260 };
+                    break;
+
+                default:
+            }
+        }
+        return size;
+
+    });
+
+    let batchRenderer = WinJS.Utilities.markSupportedForProcessing(function batchRenderer(itemPromise) {
         /// <signature>
         /// <summary>
         /// Ordered and seamless rendering items in listView; 
@@ -310,7 +348,6 @@
         let maxLength = 25;
 
         element = document.createElement("div");
-        element.className = "zoomedIn-item";
 
         // Create DOM for displaying items
         element.innerHTML = "<img class='zoomedIn-item-img' style='opacity: 0;'/>"
@@ -329,9 +366,13 @@
         // Return the element as the placeholder, and a callback to update it when data is available
         return {
             element: element,
-            
+
             renderComplete: itemPromise.then(function (i) {
                 item = i;
+
+                element.className = item.data.listItemSize;
+                console.log(item.data.listItemSize);
+                element.style.overflow = "hidden";
 
                 if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
                 if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
@@ -390,7 +431,7 @@
                     }
                 })
         };
-    }
+    });
 
     function createBatch(waitPeriod) {
         let batchTimeout = WinJS.Promise.as();
@@ -420,7 +461,7 @@
     }
 
 
-    function placeholderRenderer(itemPromise) {
+    let placeholderRenderer = WinJS.Utilities.markSupportedForProcessing(function placeholderRenderer(itemPromise) {
         /// <signature>
         /// <summary>
         /// Simple rendering of items in listView; 
@@ -439,7 +480,7 @@
                 element.querySelector(".zoomedOut-item-title").innerHTML = item.data.title;
             })
         };
-    }
+    });
 
     function openNewWindow(title) {
         let newWindow = window.open("/html/windowedFileBrowser.html", title);
@@ -451,11 +492,10 @@
         }
     }
 
-    WinJS.Utilities.markSupportedForProcessing(batchRenderer);
-    WinJS.Utilities.markSupportedForProcessing(placeholderRenderer);
-
     WinJS.Namespace.define("FileBrowser", {
         init: init,
+        groupInfo: groupInfo,
+        itemInfo: itemInfo,
         batchRenderer: batchRenderer,
         placeholderRenderer: placeholderRenderer
     });

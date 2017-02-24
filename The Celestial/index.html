@@ -64,7 +64,6 @@
     <div id="authPanel" data-win-control="WinJS.UI.SplitView"
          data-win-options="{
                 panePlacement: 'left',
-                paneOpened: 'true',
                 openedDisplayMode: 'inline'
              }">
 
@@ -174,7 +173,12 @@
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
-                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                            layout: { 
+                                groupInfo: FileBrowser.groupInfo,
+                                itemInfo: FileBrowser.itemInfo,
+                                type: WinJS.UI.CellSpanningLayout,
+                                groupHeaderPosition: 'top' 
+                            }
                         }">
                     </div>
 

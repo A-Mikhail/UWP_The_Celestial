@@ -301,10 +301,10 @@
         };
     });
 
-    let itemInfo = WinJS.Utilities.markSupportedForProcessing(function itemInfo(itemPromise) {
+    let itemInfo = WinJS.Utilities.markSupportedForProcessing(function itemInfo(itemIndex) {
         let size = { width: 310, height: 80 };
 
-        let item = Database.data;
+        let item = Database.data.getAt(itemIndex);
 
         if (item) {
             // Get the size based on the item type
@@ -334,34 +334,70 @@
         /// Create tooltip for each items for displaying additional information.
         /// </summary>
         /// </signature>
-        let element
-            , item
-            , img
-            , title
-            , text;
+        let element,
+            item,
+            img,
+            title,
+            text;
 
-        let itemTitle
-            , itemText
-            , itemType
-            , imageType;
+        let itemTitle,
+            itemText,
+            itemType,
+            imageType,
+            listItemSize;
+
+        let DOMDivItemDetail,
+            DOMDivItemTitle,
+            DOMDivItemDate,
+            DOMImgItemImg;
+
+        let DOMDivItemPreview,
+            DOMDivPreviewTitle,
+            DOMDivPreviewImg;
 
         let maxLength = 25;
 
         element = document.createElement("div");
+        DOMDivItemDetail = document.createElement("div");
 
-        // Create DOM for displaying items
-        element.innerHTML = "<img class='zoomedIn-item-img' style='opacity: 0;'/>"
-            + "<div class='zoomedIn-item-detail'>"
-            + "<div class='zoomedIn-item-title win-type-body'></div>"
-            + "<div class='zoomedIn-item-date win-type-body'></div> </div>";
+        let dynamicDOMArray = [
+            DOMImgItemImg = document.createElement("img"),
+            DOMDivItemTitle = document.createElement("div"),
+            DOMDivItemDate = document.createElement("div")
+        ];
+
+        // array for preview items inside large list item
+        let dynamicDOMPrevArray = [
+            DOMDivPreviewImg = document.createElement("img"),
+            DOMDivPreviewTitle = document.createElement("div"),
+        ]
+      
+        DOMDivItemDetail.className = "zoomedIn-item-detail";
+        DOMDivItemTitle.className = "zoomedIn-item-title win-type-body";
+        DOMDivItemDate.className = "zoomedIn-item-date win-type-body";
+        DOMImgItemImg.className = "zoomedIn-item-img";
+
+        DOMDivPreviewTitle.className = "preview-item-title win-type-body";
+        DOMDivPreviewImg.className = "preview-item-img";
+
+        // Append item template in one pice
+        let docFragment = document.createDocumentFragment();
+ 
+        dynamicDOMArray.forEach(function (item) {
+            DOMDivItemDetail.appendChild(item);
+
+            docFragment.appendChild(DOMDivItemDetail);
+        });
+
+        element.appendChild(docFragment);
 
         img = element.querySelector(".zoomedIn-item-img");
 
         title = element.querySelector(".zoomedIn-item-title");
-        title.innerHTML = "..."; // Title by default
+        title.innerText = "File name isn't found"; // Title by default
 
         text = element.querySelector(".zoomedIn-item-date");
-        text.innerHTML = "..."; // Text by default
+        text.innerText = "Date of file isn't known"; // Text by default
 
         // Return the element as the placeholder, and a callback to update it when data is available
         return {
@@ -370,16 +406,30 @@
             renderComplete: itemPromise.then(function (i) {
                 item = i;
 
-                element.className = item.data.listItemSize;
-                console.log(item.data.listItemSize);
-                element.style.overflow = "hidden";
-
-                if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
-                if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
-
                 itemTitle = item.data.title;
                 itemText = item.data.text;
                 itemType = item.data.type;
+                listItemSize = item.data.listItemSize;
+
+                // Apply size style to the item template 
+                element.className = listItemSize;
+                element.style.overflow = "hidden";
+
+                if (listItemSize === "largeListItem") {
+                    DOMDivItemPreview = document.createElement("div");
+                    DOMDivItemPreview.className = "preview-item-body";
+
+                    dynamicDOMPrevArray.forEach(function (item) {
+                        DOMDivItemPreview.appendChild(item);
+
+                        docFragment.appendChild(DOMDivItemPreview);
+                    });
+
+                    element.appendChild(docFragment);
+                }
+
+                if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
+                if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
 
                 if (itemTitle.length > maxLength) {
                     itemTitle = itemTitle.substr(0, maxLength - 1) + '&hellip;';
@@ -471,7 +521,12 @@
         // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
         element.className = "zoomedOut-item";
-        element.innerHTML = "<h2 class='zoomedOut-item-title win-type-subtitle'>...</h2>";
+
+        let itemTitle = document.createElement("h2");
+        itemTitle.className = "zoomedOut-item-title win-type-subtitle";
+        itemTitle.innerText = "...";
+
+        element.appendChild(itemTitle);
 
         return {
             element: element,

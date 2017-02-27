@@ -76,6 +76,14 @@ img {
     width: 100%;
 }
 
+/* Remove big gap setted by default between List View items
+*/
+.win-listview.win-groups .win-horizontal .win-groupleader {
+    left: 70px;
+    position: relative;
+    margin: 0em 0.4em 0em 0em;
+}
+
 /*
 *   I. Settings SplitView
 */
@@ -116,7 +124,6 @@ img {
     padding: 5px;
     overflow: hidden;
     background-color: pink;
-    display: -ms-grid;
 }
 
 .mediumListItem {
@@ -125,7 +132,6 @@ img {
     padding: 5px;
     overflow: hidden;
     background-color: lightgreen;
-    display: -ms-grid;
 }
 
 .largeListItem {
@@ -134,24 +140,22 @@ img {
     padding: 5px;
     overflow: hidden;
     background-color: lightblue;
-    display: -ms-grid;
 }
 
 .zoomedIn-item-img {
+    opacity: 0;
     width: 32px;
     height: 32px;
     position: relative;
-    background-color: white;
-    margin: 0.1em;
-    padding: 0.4em;
+    float: left;
+    margin: 0.2em 0.4em;
 }
-
 
 .zoomedIn-item-detail {
-    left: 4em;
-    top: 0.4em;
+    width: 100%;
     position: relative;
 }
+
 
 .zoomedIn-left-header-root {
     font-family: "Segoe MDL2 Assets","Symbols";
@@ -198,6 +202,25 @@ img {
 .zoomedOut-item-title {
     font-family: "Segoe MDL2 Assets","Symbols";
     line-height: 0.6;
+}
+
+.preview-item-body {
+    height: 210px;
+    background-color: #000;
+}
+
+.preview-item-img {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    float: left;
+    margin: 0.2em 0.4em;
+}
+
+.preview-item-text {
+    margin: 0;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 

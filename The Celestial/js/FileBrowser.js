@@ -323,7 +323,6 @@
             }
         }
         return size;
-
     });
 
     let batchRenderer = WinJS.Utilities.markSupportedForProcessing(function batchRenderer(itemPromise) {
@@ -351,7 +350,7 @@
             DOMDivItemDate,
             DOMImgItemImg;
 
-        let DOMDivItemPreview,
+        let DOMDivItemBody,
             DOMDivPreviewTitle,
             DOMDivPreviewImg;
 
@@ -366,23 +365,14 @@
             DOMDivItemDate = document.createElement("div")
         ];
 
-        // array for preview items inside large list item
-        let dynamicDOMPrevArray = [
-            DOMDivPreviewImg = document.createElement("img"),
-            DOMDivPreviewTitle = document.createElement("div"),
-        ]
-      
         DOMDivItemDetail.className = "zoomedIn-item-detail";
         DOMDivItemTitle.className = "zoomedIn-item-title win-type-body";
         DOMDivItemDate.className = "zoomedIn-item-date win-type-body";
         DOMImgItemImg.className = "zoomedIn-item-img";
 
-        DOMDivPreviewTitle.className = "preview-item-title win-type-body";
-        DOMDivPreviewImg.className = "preview-item-img";
-
         // Append item template in one pice
         let docFragment = document.createDocumentFragment();
- 
+
         dynamicDOMArray.forEach(function (item) {
             DOMDivItemDetail.appendChild(item);
 
@@ -415,19 +405,6 @@
                 element.className = listItemSize;
                 element.style.overflow = "hidden";
 
-                if (listItemSize === "largeListItem") {
-                    DOMDivItemPreview = document.createElement("div");
-                    DOMDivItemPreview.className = "preview-item-body";
-
-                    dynamicDOMPrevArray.forEach(function (item) {
-                        DOMDivItemPreview.appendChild(item);
-
-                        docFragment.appendChild(DOMDivItemPreview);
-                    });
-
-                    element.appendChild(docFragment);
-                }
-
                 if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
                 if (!text) { text = element.querySelector(".zoomedIn-item-date"); }
 
@@ -436,12 +413,41 @@
                 }
 
                 title.innerHTML = itemTitle;
-                text.innerHTML = itemText;
+                text.innerText = itemText;
 
                 // Display full lenght title in a tooltip
                 new WinJS.UI.Tooltip(element, {
                     innerHTML: "Name: " + item.data.title
                 });
+
+                if (listItemSize === "largeListItem") {
+                    DOMDivItemBody = document.createElement("div");
+                    DOMDivItemBody.className = "preview-item-body";
+
+                    // Get name of object
+                    Database.database("user").createIndex({
+                        index: { fields: ["nested", "itemParent"] }
+                    }).then(function () {
+                        Database.database("user").find({
+                            selector: {
+                                nested: { $eq: "children" },
+                                itemParent: { $eq: itemTitle }
+                            }
+                        }).then(function (result) {
+                            // Get childrens of parent item
+                            for (let i = 0; i < result.docs.length; i++) {
+                                DOMDivPreviewTitle = document.createElement("p");
+                                DOMDivPreviewTitle.className = "preview-item-title win-type-caption";
+
+                                DOMDivPreviewTitle.innerText += result.docs[i].name;
+
+                                DOMDivItemBody.appendChild(DOMDivPreviewTitle);
+
+                                element.appendChild(DOMDivItemBody);
+                            }
+                        });
+                    });
+                }
 
                 return item.ready;
             }).then(function () {

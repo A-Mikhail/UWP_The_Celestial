@@ -124,6 +124,7 @@ img {
     padding: 5px;
     overflow: hidden;
     background-color: pink;
+    box-shadow: 1px 12px 30px -20px rgba(0,0,0,1);
 }
 
 .mediumListItem {
@@ -140,6 +141,7 @@ img {
     padding: 5px;
     overflow: hidden;
     background-color: lightblue;
+    box-shadow: 1px 12px 30px -20px rgba(0,0,0,1);
 }
 
 .zoomedIn-item-img {
@@ -168,6 +170,7 @@ img {
 #semanticZoomDiv {
     height: 100%;
     width: 100%;
+    background-color: ghostwhite;
 }
 
 #zoomedInListView {
@@ -205,22 +208,22 @@ img {
 }
 
 .preview-item-body {
-    height: 210px;
-    background-color: #000;
+    height: 190px;
+    margin: 12px 12px 0px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    box-shadow: inset 0px 0px 44px -7px rgba(6,12,71,0.76);
 }
 
-.preview-item-img {
-    width: 16px;
-    height: 16px;
+.preview-item-title {
+    margin: 0 0 1em;
+    text-align: left;
+    word-break: break-all;
+    width: 254px;
+    height: auto;
+    background-color: rgba(255, 255, 255, 0.6);
     position: relative;
-    float: left;
-    margin: 0.2em 0.4em;
-}
-
-.preview-item-text {
-    margin: 0;
-    position: relative;
-    background-color: rgba(0, 0, 0, 0.3);
+    padding: 0.4em 1em 0.4em 1em;
 }
 
 

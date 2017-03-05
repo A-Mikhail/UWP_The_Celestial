@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Index page of all clouds service</title>
+    <script></script>
 </head>
 
 <body class="win-type-body">
@@ -20,12 +21,17 @@
              data-win-control="WinJS.UI.ListView"
              data-win-options="{
                             itemDataSource: Database.data.dataSource,
-                            itemTemplate: FileBrowser.batchRenderer,
+                            itemTemplate: FileExplorer.batchRenderer,
                             groupDataSource: Database.data.groups.dataSource,
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
-                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                            layout: { 
+                                groupInfo: FileExplorer.groupInfo,
+                                itemInfo: FileExplorer.itemInfo,
+                                type: WinJS.UI.GridLayout,
+                                groupHeaderPosition: 'top' 
+                            }
                         }">
         </div>
 
@@ -34,7 +40,7 @@
              data-win-control="WinJS.UI.ListView"
              data-win-options="{
                                 itemDataSource: Database.data.groups.dataSource,
-                                itemTemplate: FileBrowser.placeholderRenderer,
+                                itemTemplate: FileExplorer.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke',
                                 layout: { type: WinJS.UI.GridLayout }

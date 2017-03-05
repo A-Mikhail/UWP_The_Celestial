@@ -12,7 +12,7 @@
 
             let url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart";
 
-            if (FileBrowser.storageFileArray === 0) {
+            if (FileExplorer.storageFileArray === 0) {
                 let messageDialog = new Windows.UI.Popups.MessageDialog("Add file to your sync library");
                 messageDialog.showAsync();
             } else {
@@ -38,7 +38,7 @@
             let uploader = new Windows.Networking.BackgroundTransfer.BackgroundUploader();
             let uploadURI = new Windows.Foundation.Uri(url);
 
-            let storageFile = FileBrowser.storageFileArray; // Get storageFile for send
+            let storageFile = FileExplorer.storageFileArray; // Get storageFile for send
 
             let oauth = new Authentication.oauth();
 

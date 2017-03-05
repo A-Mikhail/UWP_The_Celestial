@@ -6,32 +6,22 @@
     let itemsArray = new Array;
     let items;
 
+    /**
+     * @description Create or return database.
+     * @param {string} database Name of database to create or call.
+     * @returns {object} An object with called database.
+     */
     function database(database) {
-        /// <signature>
-        /// <summary>
-        /// Create or return database.
-        /// </summary>
-        /// <param name="database" type="String">
-        /// Name of database to create or get.
-        /// </param>
-        /// <returns type="Object">
-        /// A Object with database.
-        /// </returns>
-        /// </signature>
         let db = new PouchDB(database, { auto_compaction: true });
 
         return db;
     }
 
+    /**
+     * @description Destroy database and clear items from List View
+     * @param {string} nameOfDB Name of database to destroy
+     */
     function destroyDatabase(nameOfDB) {
-        /// <signature>
-        /// <summary>
-        /// Destroy database and clear items from listView
-        /// </summary>
-        /// <param name="nameOfDB" type="String">
-        /// Name of database to be destroyed.
-        /// </param>
-        /// </signature>
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
@@ -50,40 +40,20 @@
             messageDialog.showAsync();
         });
     }
-
+    
+    /**
+     * @description Write data into database
+     * @param {string} nameOfDB Name of database to write
+     * @param {string} dateCreated Date when item was last modified
+     * @param {string} name Name of an item
+     * @param {string} objectType Type of item, for files - file extension
+     * @param {string} relativeId Unique id of item
+     * @param {string} path Absolute path of item
+     * @param {string} listItemSize Size of item to display in List View
+     * @param {string} itemParent Parent name
+     * @param {boolean} nested Children an item or parent
+     */
     function databaseWrite(nameOfDB, dateCreated, name, objectType, relativeId, path, listItemSize, itemParent = null, nested = false) {
-        /// <signature>
-        /// <summary>
-        /// Write recieved parameters into database.
-        /// </summary>
-        /// <param name="nameOfDB" type="String">
-        /// In which database write data.
-        /// </param>
-        /// <param name="dateCreated" type="String">
-        /// Date when object was last modified.
-        /// </param>
-        /// <param name="name" type="String">
-        /// Displayed name of object.
-        /// </param>
-        /// <param name="objectType" type="String">
-        /// Type of item; for files - file extensions.
-        /// </param>
-        /// <param name="relativeId" type="String">
-        /// Unique id of item.
-        /// </param>
-        /// <param name="path" type="String">
-        /// Absolute path to the item.
-        /// </param>
-        /// <param name="itemParent" optional="true" type="String">
-        /// Parent of item if it's nested.
-        /// </param>
-        /// <param name="nested" optional="true" type="Boolean">
-        /// </param>
-        /// <param name="listItemSize" optional="false" type="String">
-        /// Size of the item in List View -- small, medium or large
-        /// </param>
-        /// </signature>
-
         // Convert name to hex for avoid error with naming
         let id = "";
 
@@ -134,19 +104,12 @@
         }
     }
 
+    /**
+     * @description Removing item from database
+     * @param {string} nameOfDB Name of database from which delete an item
+     * @param {string} item _id of removed item
+     */
     function removeFromDatabase(nameOfDB, item) {
-        /// <signature>
-        /// <summary>
-        /// Removing item from database.
-        /// </summary>
-        /// <param name="nameOfDB" type="String">
-        /// From which database remove item.
-        /// </param>
-        /// <param name="item" type="String">
-        /// _id of removed items
-        /// </param>
-        /// </signature>
-
         // Convert name to hex for removing by using id
         let id = "";
 
@@ -199,13 +162,10 @@
         });
     }
 
+    /**
+     * @description Get items from itemsArray and push to List View data
+     */
     function pushItemsToListView() {
-        /// <signature>
-        /// <summary>
-        /// Get items from array and add to listView - data
-        /// </summary>
-        /// </signature>
-
         return new Promise(function (resolve, reject) {
             resolve(
                 itemsArray.forEach(function (item) {
@@ -226,21 +186,14 @@
         });
     }
 
+    /**
+     * @description Read from database requested information and sended to
+     * itemsArray for displaying in List View
+     * @param {string} nameOfDB Name of database from which read data
+     * @param {string} nested 'root' or 'children' requested items
+     * @param {string} parent Name of parent folder if requested items -- children
+     */
     function generateItems(nameOfDB, nested, parent = null) {
-        /// <signature>
-        /// <summary>
-        /// Read from database all information and send to listView array for displaying.
-        /// </summary>
-        /// <param name="nameOfDB" type="String">
-        /// From which database take data.
-        /// </param>
-        /// <param name="nested" type="String">
-        /// Location of curent items 'root' or 'children'.
-        /// </param>
-        /// <param name="parent" optional="true" type="String">
-        /// Parent folder of wanted 'nested' items.
-        /// </param>
-        /// </signature>
         if (nested === "root") {
             database(nameOfDB).createIndex({
                 index: { fields: ['nested'] }
@@ -305,12 +258,11 @@
         }
     }
 
+    /**
+     * @description Listen to changes in database and write it to itemsArray
+     * @param {string} nameOfDB Name of database from which to listen changes
+     */
     function onChangeDatabase(nameOfDB) {
-        /// <signature>
-        /// <summary>
-        /// Listen to changes created in database and write the changes to itemsArray.
-        /// </summary>
-        /// </signature>
         database(nameOfDB).changes({
             since: 'now',
             timeout: false,
@@ -362,7 +314,7 @@
             return globeIcon;
         }
     }
-
+    
     function getGroupData(dataItem) {
         let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
 

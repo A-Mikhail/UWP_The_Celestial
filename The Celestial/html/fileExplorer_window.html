@@ -21,8 +21,8 @@
     <!-- Configure Database -->
     <script src="/js/database.js"></script>
 
-    <script src="/js/fileBrowser.js"></script>
-    <script src="/js/windowedFileBrowser.js"></script>
+    <script src="/js/fileExplorer_main.js"></script>
+    <script src="/js/fileExplorer_window.js"></script>
 </head>
 
 <body class="win-type-body">
@@ -107,7 +107,7 @@
                      data-win-control="WinJS.UI.ListView"
                      data-win-options="{
                             itemDataSource: Database.data.dataSource,
-                            itemTemplate: FileBrowser.batchRenderer,
+                            itemTemplate: FileExplorer.batchRenderer,
                             groupDataSource: Database.data.groups.dataSource,
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
@@ -121,7 +121,7 @@
                      data-win-control="WinJS.UI.ListView"
                      data-win-options="{
                                 itemDataSource: Database.data.groups.dataSource,
-                                itemTemplate: FileBrowser.placeholderRenderer,
+                                itemTemplate: FileExplorer.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke',
                                 layout: { type: WinJS.UI.GridLayout }

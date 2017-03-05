@@ -34,7 +34,7 @@
     <!-- Configure Database -->
     <script src="/js/database.js"></script>
     <!-- Client side files to synchronize -->
-    <script src="/js/fileBrowser.js"></script>
+    <script src="/js/fileExplorer_main.js"></script>
     <!-- Authenticate in cloud services -->
     <script src="/js/authenticationBroker.js"></script>
     <!-- Authorization panel in cloud services -->
@@ -168,14 +168,14 @@
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{
                             itemDataSource: Database.data.dataSource,
-                            itemTemplate: FileBrowser.batchRenderer,
+                            itemTemplate: FileExplorer.batchRenderer,
                             groupDataSource: Database.data.groups.dataSource,
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
                             layout: { 
-                                groupInfo: FileBrowser.groupInfo,
-                                itemInfo: FileBrowser.itemInfo,
+                                groupInfo: FileExplorer.groupInfo,
+                                itemInfo: FileExplorer.itemInfo,
                                 type: WinJS.UI.CellSpanningLayout,
                                 groupHeaderPosition: 'top' 
                             }
@@ -187,7 +187,7 @@
                          data-win-control="WinJS.UI.ListView"
                          data-win-options="{
                                 itemDataSource: Database.data.groups.dataSource,
-                                itemTemplate: FileBrowser.placeholderRenderer,
+                                itemTemplate: FileExplorer.placeholderRenderer,
                                 selectionMode: 'none',
                                 tapBehavior: 'invoke',
                                 layout: { type: WinJS.UI.GridLayout }

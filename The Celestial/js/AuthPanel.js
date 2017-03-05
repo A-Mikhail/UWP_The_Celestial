@@ -1,11 +1,11 @@
 ﻿(function () {
     "use strict";
 
-    // Globar variable
+    // Global variable
     let messageDialog;
     let PasswordVault = Windows.Security.Credentials.PasswordVault;
 
-    // Varibale for class
+    // Variable for class
     let defaultEventTimer,
         panel,
         pickedButton,
@@ -45,7 +45,7 @@
         }
     });
 
-    // Navigate inside SplitView Body
+    // Navigate inside Split View
     WinJS.Navigation.addEventListener("navigated", function (e) {
         let SVBody = document.getElementById("splitViewBody");
 
@@ -53,6 +53,7 @@
             SVBody.winControl && SVBody.winControl.unload && SVBody.winControl.unload();
 
             WinJS.Utilities.empty(SVBody);
+
             WinJS.UI.Pages.render(e.detail.location, SVBody)
                 .then(function () {
                     return WinJS.UI.Animation.enterPage(SVBody.children);
@@ -60,32 +61,43 @@
         });
     });
 
-    // Function init() - main function which contains eventListeners and function calls
     function init() {
-        // Create Buttons for panel and set eventListener on it
+        // Create buttons for Split View panel 
+        // and set context menu on it
         createButton().then(function () {
             buttons = document.querySelectorAll(".auth-panel-btn");
 
-            // Initialize popup menu on all button from auth panel
-            for (let i = 0; i < buttons.length; i++) {
-                buttons[i].addEventListener("contextmenu", buttonMenu, false);
-                buttons[i].addEventListener("click", authInService, false);
-            }
+            buttons.forEach(function (button) {
+                button[i].addEventListener("contextmenu", buttonMenu, false);
+                button[i].addEventListener("click", authInService, false);
+            });
         }, function (error) {
-            messageDialog = new Windows.UI.Popups.MessageDialog("Occurs error while creating button, pls do something! " + error);
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while creating buttons: "
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
+
             messageDialog.showAsync();
         });
     }
 
-    // Class Button - have constructor with title and status arguments
-    // Function create() - create button inside authorization panel 
-    // Function remove(button) - remove picked button via popup menu; button argument gets from buttonMenu function
-    // Function undo(button) - undo change exactly restore "deleted" button; button arguments gets from remove function
+    /**
+     * @description Class for work with buttons inside Split View,
+     * contain create, remove and undo functions
+     */
     class Button {
+
+        /**
+         * @param {string} title Name of the button
+         */
         constructor(title) {
             this.title = title;
         }
 
+        /**
+         * @description Create Split View Command as button element
+         */
         create() {
             panel = document.getElementById("authPanelNavCommands");
 
@@ -98,8 +110,10 @@
             panel.appendChild(elementButton);
         }
 
-        // Remove choosen button from authPanel
-        // Add message to restore to default
+        /**
+         * @description removed choosen button from Split View
+         * @param {string} button Name of button to delete
+         */
         remove(button) {
             panel = document.getElementById("authPanel");
             pickedButton = document.getElementById(button);
@@ -149,7 +163,10 @@
             this.undo(pickedButton);
         }
 
-        // Function undo() - return removed button
+        /**
+         * @description Restored deleted button if cancel button was pressed
+         * @param {string} button Name of button to restore
+         */
         undo(button) {
             pickedButton = button;
             panel = document.getElementById("authPanel");
@@ -175,8 +192,9 @@
         }
     }
 
-    // Function createButton() - contain objects with button arguments in array to create all the button in one call
-    // Creating 3 buttons - Google Drive, Dropbox, OneDrive
+    /**
+     * @description Create button and apply it to Split View panel
+     */
     function createButton() {
         return new Promise(function (done) {
             let btnToCreateArray = [
@@ -193,13 +211,11 @@
         });
     }
 
+    /**
+     * @description Create new Pivot Item with the name of clicked button
+     */
     function authInService() {
-        /// <signature>
-        /// <summary>
-        /// Create new pivot with name of clicked button
-        /// </summary>
-        /// </signature>
-        main.renderPivotItems(`${this.winControl.label}`, "/html/clouds_index.html");
+        main.renderPivotItems(`${this.winControl.label}`, "/html/fileExplorer_cloud.html");
     }
 
     function dropboxAuth(elementImage, elementText) {

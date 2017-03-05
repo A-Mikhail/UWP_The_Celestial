@@ -1,4 +1,5 @@
-﻿(function () {
+﻿/// <reference path="database.js" />
+(function () {
     "use strict";
 
     // Global variables
@@ -40,13 +41,10 @@
     let FLTimeout;
     let thumbnailBatch;
 
+    /**
+     * @description Initializing function
+     */
     function init() {
-        /// <signature>
-        /// <summary>
-        /// Initialize all functions after calling.
-        /// </summary>
-        /// </signature>
-
         // Global variable of listView for other functions
         var zoomedInListView = document.getElementById('zoomedInListView');
         var zoomedOutListView = document.getElementById('zoomedOutListView');
@@ -106,7 +104,7 @@
 
         thumbnailBatch = createBatch();
 
-        // Bad decision of autoadjusting height of SemanticZoom
+        // Bad decision of auto-adjusting height of SemanticZoom
         FLTimeout = setTimeout(function () { forceLayout(); }, 1000);
     }
 
@@ -117,13 +115,10 @@
         clearTimeout(FLTimeout);
     }
 
+    /**
+     * @description Receive choosen files and send informations about them to a database
+     */
     function pickFiles(event) {
-        /// <signature>
-        /// <summary>
-        /// Get picked files, send all available informations about it to database, 
-        /// save icon of file to localCache folder.
-        /// </summary>
-        /// </signature>
         let fileOpenPicker = new Windows.Storage.Pickers.FileOpenPicker();
         fileOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.fileList;
         fileOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
@@ -195,6 +190,9 @@
         });
     }
 
+    /**
+     * @description Receive choosen folder and send informations about it to a database
+     */
     function pickFolder(event) {
         /// <signature>
         /// <summary>
@@ -255,12 +253,24 @@
         });
     }
 
+    /**
+     * @description Create new window for working with items inside folder
+     * @param {string} title Name of new window
+     */
+    function openNewWindow(title) {
+        let newWindow = window.open("/html/fileExplorer_window.html", title);
+        newWindow.postMessage(title, "*");
+
+        // For Debug!
+        if (performance && performance.mark) {
+            performance.mark("Creating new Pivot");
+        }
+    }
+
+    /**
+     * @description Removed selected items from List View and deleted from a database
+     */
     function removeSelected() {
-        /// <signature>
-        /// <summary>
-        /// Removed selected items from listView and database
-        /// </summary>
-        /// </signature>
         let itemsTitle;
         let itemsKey;
 
@@ -325,14 +335,12 @@
         return size;
     });
 
+    /**
+     * @description Ordered and seamless rendering items in List View;
+     * Loading icons from localCache folder into img element;
+     * Create Tooltip for each items for displaying additional informations.
+     */
     let batchRenderer = WinJS.Utilities.markSupportedForProcessing(function batchRenderer(itemPromise) {
-        /// <signature>
-        /// <summary>
-        /// Ordered and seamless rendering items in listView; 
-        /// Loading icon from localCache folder into img element;
-        /// Create tooltip for each items for displaying additional information.
-        /// </summary>
-        /// </signature>
         let element,
             item,
             img,
@@ -516,14 +524,10 @@
         };
     }
 
-
+    /**
+     * @description Simple render of items in List View for zoomedOut elements
+     */
     let placeholderRenderer = WinJS.Utilities.markSupportedForProcessing(function placeholderRenderer(itemPromise) {
-        /// <signature>
-        /// <summary>
-        /// Simple rendering of items in listView; 
-        /// </summary>
-        /// </signature>
-
         // Create a basic template for the item which doesn't depend on the data
         let element = document.createElement("div");
         element.className = "zoomedOut-item";
@@ -543,17 +547,7 @@
         };
     });
 
-    function openNewWindow(title) {
-        let newWindow = window.open("/html/windowedFileBrowser.html", title);
-        newWindow.postMessage(title, "*");
-
-        // For Debug!
-        if (performance && performance.mark) {
-            performance.mark("Creating new Pivot");
-        }
-    }
-
-    WinJS.Namespace.define("FileBrowser", {
+    WinJS.Namespace.define("FileExplorer", {
         init: init,
         groupInfo: groupInfo,
         itemInfo: itemInfo,

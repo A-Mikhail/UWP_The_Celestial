@@ -3,7 +3,7 @@
 
     let messageDialog;
 
-    WinJS.UI.Pages.define("/html/windowedFileBrowser.html", {
+    WinJS.UI.Pages.define("/html/fileExplorer_window.html", {
         ready: function (element, options) {
             WinJS.UI.processAll().then(function () {
                 let pivotItem = document.getElementById("pivotItem").winControl;
@@ -17,7 +17,7 @@
 
                         pivotItem.header = data;
 
-                        FileBrowser.init();
+                        FileExplorer.init();
 
                         Database.generateItems("user", "children", data);
                     },

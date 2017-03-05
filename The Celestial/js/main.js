@@ -92,7 +92,7 @@
 
     function initializeApp() {
         // Load user depending information from js files
-        FileBrowser.init();
+        FileExplorer.init();
         AuthPanel.init();
 
         // Start generate root items for listView

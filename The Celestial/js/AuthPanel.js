@@ -67,10 +67,10 @@
         createButton().then(function () {
             buttons = document.querySelectorAll(".auth-panel-btn");
 
-            buttons.forEach(function (button) {
-                button[i].addEventListener("contextmenu", buttonMenu, false);
-                button[i].addEventListener("click", authInService, false);
-            });
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].addEventListener("contextmenu", buttonMenu, false);
+                buttons[i].addEventListener("click", authInService, false);
+            }
         }, function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while creating buttons: "
@@ -216,6 +216,9 @@
      */
     function authInService() {
         main.renderPivotItems(`${this.winControl.label}`, "/html/fileExplorer_cloud.html");
+
+        // Send name of button to main function of clouds file explorer
+        FileExplorerCloud.init(this.winControl.label);
     }
 
     function dropboxAuth(elementImage, elementText) {
@@ -256,44 +259,7 @@
         });
     }
 
-    function googledriveAuth(elementImage, elementText) {
-        let output = document.getElementById("output");
-
-        let auth = googleConfig.auth,
-            oauthUrl = googleConfig.oauthUrl,
-            clientId = googleConfig.clientId,
-            clientSecret = googleConfig.clientSecret,
-            scopes = googleConfig.scopes;
-
-        let oauth = new AuthenticationBroker.Authentication("Google Drive", auth, oauthUrl, clientId, clientSecret, scopes).connect().then(function (token) {
-            // Create page for google drive files and folders
-            main.renderPivotItems("Google Drive", "/html/googleDrive.html");
-
-            // ---------------------------------------
-            // Block of xhr requests
-            // ---------------------------------------
-
-            XHR.getFiles(token.access_token).then(function (result) {
-                for (let i = 0; i < result.files.length; i++) {
-                    output.innerText += result.files[i].name + "\r"; // Get All files
-                }
-            });
-
-            XHR.getAbout(token.access_token).then(function (result) {
-                // Apply received user name to the button text
-                elementText[0].innerText = result.user.displayName;
-
-                // Apply received user avatar to the button img
-                elementImage[0].src = result.user.photoLink;
-
-                // Information from get response receive in Kib format
-                // result.storageQuota.limit; // Google Drive limit
-                // result.storageQuota.usage; // Usage memory in all places (Gmail, Image, Gdrive)
-            });
-        });
-    }
-
-    // Converts from page to WinRT coordinates, which take scale factor into consideration. 
+    // Converts from page to WinRT coordinates, which take scale factor into consideration.
     function pageToWinRT(pageX, pageY) {
         var zoomFactor = document.documentElement.msContentZoomFactor;
         return {

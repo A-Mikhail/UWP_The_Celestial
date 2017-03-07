@@ -26,13 +26,11 @@
         , ".exif"
         , ".ico"];
 
-    // Picked item information
-    let dateCreated
-        , name
-        , itemType
-        , relativeId
-        , path
-        , size;
+    let itemDateCreated,
+        itemName,
+        itemType,
+        itemRelativeId,
+        itemPath;
 
     // Icons
     let globeIcon = "&#xe12B;";
@@ -97,7 +95,7 @@
                         openInNewWindowCmd.winControl.disabled = true;
                     }
                 } else {
-                    openInNewWindowCmd.winControl.disabled = true
+                    openInNewWindowCmd.winControl.disabled = true;
                 }
             });
         }, false);
@@ -138,14 +136,15 @@
         fileOpenPicker.pickMultipleFilesAsync().then(function (file) {
             if (file.size > 0) {
                 for (let i = 0; i < file.size; i++) {
-                    dateCreated = file[i].dateCreated;
-                    name = file[i].name;
+                    itemDateCreated = file[i].dateCreated;
+                    itemName = file[i].name;
                     itemType = file[i].fileType;
-                    relativeId = file[i].folderRelativeId;
-                    path = file[i].path;
+                    itemRelativeId = file[i].folderRelativeId;
+                    itemPath = file[i].path;
 
                     // Send picked file information to User Database
-                    Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "smallListItem");
+                    Database.databaseWrite("user", itemDateCreated, itemName, itemType,
+                        itemRelativeId, itemPath, "smallListItem");
 
                     let image = mediaImageArray.find(function (element) { return element === itemType; });
 
@@ -180,13 +179,8 @@
                         });
                     }
                 }
-            } else {
-                // The picker was dismissed with no selected file
-                messageDialog = new Windows.UI.Popups.MessageDialog("File not picked");
-                messageDialog.showAsync();
-
-                return;
             }
+            return;
         });
     }
 
@@ -194,11 +188,6 @@
      * @description Receive choosen folder and send informations about it to a database
      */
     function pickFolder(event) {
-        /// <signature>
-        /// <summary>
-        /// Get picked folder, send all available informations about it to database.
-        /// </summary>
-        /// </signature>
         let folderOpenPicker = new Windows.Storage.Pickers.FolderPicker();
         folderOpenPicker.viewMode = Windows.Storage.Pickers.PickerViewMode.thumbnail;
         folderOpenPicker.suggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.desktop;
@@ -206,50 +195,48 @@
 
         folderOpenPicker.pickSingleFolderAsync().then(function (folder) {
             if (folder) {
-                dateCreated = folder.dateCreated;
+                itemDateCreated = folder.dateCreated;
                 itemType = folder.displayType;
-                relativeId = folder.folderRelativeId;
-                name = folder.name;
-                path = folder.path;
+                itemRelativeId = folder.folderRelativeId;
+                itemName = folder.name;
+                itemPath = folder.path;
 
                 // Show files inside folder
                 let query = folder.createItemQuery();
 
                 query.getItemsAsync().done(function (items) {
                     if (items) {
-                        let itemName
-                            , itemDateCreated
-                            , itemDisplayType
-                            , itemRelativeId
-                            , itemPath
-                            , itemParent;
+                        let childItemName,
+                            childItemDateCreated,
+                            childItemType,
+                            childItemRelativeId,
+                            childItemPath,
+                            childItemParent;
 
-                        // Send parent item 
-                        Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "largeListItem");
+                        // Send parent item
+                        Database.databaseWrite("user", itemDateCreated, itemName, itemType, itemRelativeId, itemPath, "largeListItem");
 
                         items.forEach(function (item) {
-                            itemName = item.name;
-                            itemDateCreated = item.dateCreated;
-                            itemDisplayType = item.displayType;
-                            itemRelativeId = item.folderRelativeId;
-                            itemPath = item.path;
-                            itemParent = name;
+                            childItemName = item.name;
+                            childItemDateCreated = item.dateCreated;
+                            childItemType = item.displayType;
+                            childItemRelativeId = item.folderRelativeId;
+                            childItemPath = item.path;
+                            childItemParent = itemName;
 
                             // Send children items
-                            Database.databaseWrite("user", itemDateCreated, itemName, itemDisplayType, itemRelativeId, itemPath, "smallListItem", itemParent, true);
+                            Database.databaseWrite("user", childItemDateCreated, childItemName,
+                                childItemType, childItemRelativeId, childItemPath,
+                                "smallListItem", true, childItemParent);
                         });
                     } else {
                         // Send singular item
-                        Database.databaseWrite("user", dateCreated, name, itemType, relativeId, path, "smallListItem");
+                        Database.databaseWrite("user", itemDateCreated, itemName, itemType, itemRelativeId, itemPath, "smallListItem");
                     }
                 });
-            } else {
-                // The picker was dismissed with no selected folder
-                messageDialog = new Windows.UI.Popups.MessageDialog("Folder not picked");
-                messageDialog.showAsync();
-
-                return;
             }
+
+            return;
         });
     }
 
@@ -318,7 +305,7 @@
 
         if (item) {
             // Get the size based on the item type
-            switch (item.listItemSize) {
+            switch (item.itemListSize) {
                 case "smallListItem":
                     size = { width: 310, height: 80 };
                     break;
@@ -351,7 +338,7 @@
             itemText,
             itemType,
             imageType,
-            listItemSize;
+            itemListSize;
 
         let DOMDivItemDetail,
             DOMDivItemTitle,
@@ -407,10 +394,10 @@
                 itemTitle = item.data.title;
                 itemText = item.data.text;
                 itemType = item.data.type;
-                listItemSize = item.data.listItemSize;
+                itemListSize = item.data.itemListSize;
 
                 // Apply size style to the item template 
-                element.className = listItemSize;
+                element.className = itemListSize;
                 element.style.overflow = "hidden";
 
                 if (!title) { title = element.querySelector(".zoomedIn-item-title"); }
@@ -428,17 +415,17 @@
                     innerHTML: "Name: " + item.data.title
                 });
 
-                if (listItemSize === "largeListItem") {
+                if (itemListSize === "largeListItem") {
                     DOMDivItemBody = document.createElement("div");
                     DOMDivItemBody.className = "preview-item-body";
 
                     // Get name of object
                     Database.database("user").createIndex({
-                        index: { fields: ["nested", "itemParent"] }
+                        index: { fields: ['itemNested', 'itemParent'] }
                     }).then(function () {
                         Database.database("user").find({
                             selector: {
-                                nested: { $eq: "children" },
+                                itemNested: { $eq: true },
                                 itemParent: { $eq: itemTitle }
                             }
                         }).then(function (result) {
@@ -447,7 +434,7 @@
                                 DOMDivPreviewTitle = document.createElement("p");
                                 DOMDivPreviewTitle.className = "preview-item-title win-type-caption";
 
-                                DOMDivPreviewTitle.innerText += result.docs[i].name;
+                                DOMDivPreviewTitle.innerText += result.docs[i].itemName;
 
                                 DOMDivItemBody.appendChild(DOMDivPreviewTitle);
 

@@ -8,28 +8,28 @@
 
     /**
      * @description Create or return database.
-     * @param {string} database Name of database to create or call.
+     * @param {string} DBName Name of database to create or call.
      * @returns {object} An object with called database.
      */
-    function database(database) {
-        let db = new PouchDB(database, { auto_compaction: true });
+    function database(DBName) {
+        let db = new PouchDB(DBName, { auto_compaction: true });
 
         return db;
     }
 
     /**
      * @description Destroy database and clear items from List View
-     * @param {string} nameOfDB Name of database to destroy
+     * @param {string} DBName Name of database to destroy
      */
-    function destroyDatabase(nameOfDB) {
+    function destroyDatabase(DBName) {
         let listView = document.getElementById("zoomedInListView").winControl;
         let itemData = listView.itemDataSource.list;
 
-        database(nameOfDB).destroy().then(function (response) {
+        database(DBName).destroy().then(function (response) {
             // Clear listView without destroying Binding.List
             itemData.splice(0, itemData.length);
 
-            generateItems(nameOfDB);
+            generateItems(DBName);
         }).catch(function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while destroying UserDB"
@@ -40,76 +40,62 @@
             messageDialog.showAsync();
         });
     }
-    
+
     /**
-     * @description Write data into database
-     * @param {string} nameOfDB Name of database to write
-     * @param {string} dateCreated Date when item was last modified
-     * @param {string} name Name of an item
-     * @param {string} objectType Type of item, for files - file extension
-     * @param {string} relativeId Unique id of item
-     * @param {string} path Absolute path of item
-     * @param {string} listItemSize Size of item to display in List View
-     * @param {string} itemParent Parent name
-     * @param {boolean} nested Children an item or parent
+     * @description Write item into database
+     * @param {any} DBName Name of database to write
+     * @param {any} iCreated Item Date created
+     * @param {any} iName Item name
+     * @param {any} iType Item type
+     * @param {any} iRelId Item relative id
+     * @param {any} iPath Item path
+     * @param {any} iListSize Item size in List View -- 'smallListItem' or 'largeListItem'
+     * @param {any} iNested Item nested or not
+     * @param {any} iParent Item parent name if it children
      */
-    function databaseWrite(nameOfDB, dateCreated, name, objectType, relativeId, path, listItemSize, itemParent = null, nested = false) {
+    function databaseWrite(DBName, iCreated, iName, iType, iRelId, iPath, iListSize = "smallListItem", iNested = false, iParent = null) {
         // Convert name to hex for avoid error with naming
-        let id = "";
+        let generatedId = "";
 
-        for (let i = 0; i < name.length; i++) {
-            id += name[i].charCodeAt(0).toString(16);
-        }
-
-        if (nested === false) {
-            database(nameOfDB).put({
-                _id: id,
-                relativeId: relativeId,
-                dateCreated: dateCreated.toLocaleString(),
-                name: name,
-                objectType: objectType,
-                path: path,
-                nested: "root",
-                listItemSize: listItemSize
-            }).catch(function (error) {
-                messageDialog = new Windows.UI.Popups.MessageDialog(
-                    "Occured error while writing items in userDB"
-                    + " Status: " + error.name
-                    + " Message: " + error.message
-                    , " Error: " + error.status);
-
-                messageDialog.showAsync();
-            });
+        // Check if item is parent or children
+        // if children add prefix '_children' to avoid collision with name
+        if (iNested === true) {
+            for (let i = 0; i < iName.length; i++) {
+                generatedId += "children_" + iName[i].charCodeAt(0).toString(16);
+            }
         } else {
-            // Add folder name of a parent and nested key equal -- childern; for searching by this key.
-            database(nameOfDB).put({
-                _id: "children_" + id,
-                relativeId: relativeId,
-                dateCreated: dateCreated.toLocaleString(),
-                name: name,
-                objectType: objectType,
-                path: path,
-                itemParent: itemParent,
-                nested: "children",
-                listItemSize: listItemSize
-            }).catch(function (error) {
-                messageDialog = new Windows.UI.Popups.MessageDialog(
-                    "Occured error while writing items in userDB"
-                    + " Status: " + error.name
-                    + " Message: " + error.message
-                    , " Error: " + error.status);
-
-                messageDialog.showAsync();
-            });
+            for (let i = 0; i < iName.length; i++) {
+                generatedId += iName[i].charCodeAt(0).toString(16);
+            }
         }
+
+        database(DBName).put({
+            _id: generatedId,
+            itemRelativeId: iRelId,
+            itemDateCreated: iCreated.toLocaleString(),
+            itemName: iName,
+            itemType: iType,
+            itemPath: iPath,
+            itemParent: iParent,
+            itemNested: iNested,
+            itemListSize: iListSize
+        }).catch(function (error) {
+            messageDialog = new Windows.UI.Popups.MessageDialog(
+                "Occured error while writing items in userDB"
+                + " Status: " + error.name
+                + " Message: " + error.message
+                , " Error: " + error.status);
+
+            messageDialog.showAsync();
+        });
     }
 
     /**
      * @description Removing item from database
-     * @param {string} nameOfDB Name of database from which delete an item
+     * @param {string} DBName Name of database from which delete an item
      * @param {string} item _id of removed item
      */
-    function removeFromDatabase(nameOfDB, item) {
+    function removeFromDatabase(DBName, item) {
         // Convert name to hex for removing by using id
         let id = "";
 
@@ -118,8 +104,8 @@
         }
 
         // Remove root item
-        database(nameOfDB).get(id).then(function (doc) {
-            database(nameOfDB).remove(doc);
+        database(DBName).get(id).then(function (doc) {
+            database(DBName).remove(doc);
         }).catch(function (error) {
             messageDialog = new Windows.UI.Popups.MessageDialog(
                 "Occured error while removing items from userDB"
@@ -132,14 +118,14 @@
 
         // Remove nested item
         // Search by name all the nested element 
-        database(nameOfDB).createIndex({
+        database(DBName).createIndex({
             index: { fields: ['itemParent'] }
         }).then(function () {
-            database(nameOfDB).find({
+            database(DBName).find({
                 selector: { itemParent: { $eq: item } }
             }).then(function (result) {
                 for (let i = 0; i < result.docs.length; i++) {
-                    database(nameOfDB).remove(result.docs[i])
+                    database(DBName).remove(result.docs[i])
                         .catch(function (error) {
                             messageDialog = new Windows.UI.Popups.MessageDialog(
                                 "Occured error while deleting item."
@@ -189,93 +175,62 @@
     /**
      * @description Read from database requested information and sended to
      * itemsArray for displaying in List View
-     * @param {string} nameOfDB Name of database from which read data
-     * @param {string} nested 'root' or 'children' requested items
-     * @param {string} parent Name of parent folder if requested items -- children
+     * @param {string} DBName Name of database from which read data
+     * @param {boolean} itemNested nested item or not
+     * @param {string} itemParent Name of parent folder if requested item nested
      */
-    function generateItems(nameOfDB, nested, parent = null) {
-        if (nested === "root") {
-            database(nameOfDB).createIndex({
-                index: { fields: ['nested'] }
-            }).then(function () {
-                database(nameOfDB).find({
-                    selector: { nested: { $eq: nested } }
-                }).then(function (result) {
-                    for (let i = 0; i < result.docs.length; i++) {
-                        itemsArray.push({
-                            title: result.docs[i].name,
-                            text: result.docs[i].dateCreated,
-                            type: result.docs[i].objectType,
-                            listItemSize: result.docs[i].listItemSize
-                        });
-                    }
-
-                    pushItemsToListView().then(function () {
-                        onChangeDatabase(nameOfDB);
+    function generateItems(DBName, itemNested = false, itemParent = null) {
+        database(DBName).createIndex({
+            index: { fields: ['itemNested', 'itemParent'] }
+        }).then(function () {
+            database(DBName).find({
+                selector: {
+                    itemNested: { $eq: itemNested },
+                    itemParent: { $eq: itemParent }
+                }
+            }).then(function (result) {
+                for (let i = 0; i < result.docs.length; i++) {
+                    itemsArray.push({
+                        title: result.docs[i].itemName,
+                        text: result.docs[i].itemDateCreated,
+                        type: result.docs[i].itemType,
+                        itemListSize: result.docs[i].itemListSize
                     });
-                }).catch(function (error) {
-                    messageDialog = new Windows.UI.Popups.MessageDialog(
-                        "Occured error while generate items into ListView"
-                        + " Status: " + error.name
-                        + " Message: " + error.message
-                        , " Error: " + error.status);
+                }
 
-                    messageDialog.showAsync();
+                pushItemsToListView().then(function () {
+                    onChangeDatabase(DBName);
                 });
-            });
-        } else {
-            database(nameOfDB).createIndex({
-                index: { fields: ['nested', 'itemParent'] }
-            }).then(function () {
-                database(nameOfDB).find({
-                    selector: {
-                        nested: { $eq: nested },
-                        itemParent: { $eq: parent }
-                    }
-                }).then(function (result) {
-                    for (let i = 0; i < result.docs.length; i++) {
-                        itemsArray.push({
-                            title: result.docs[i].name,
-                            text: result.docs[i].dateCreated,
-                            type: result.docs[i].objectType,
-                            listItemSize: result.docs[i].listItemSize
-                        });
-                    }
+            }).catch(function (error) {
+                messageDialog = new Windows.UI.Popups.MessageDialog(
+                    "Occured error while generate items into ListView"
+                    + " Status: " + error.name
+                    + " Message: " + error.message
+                    , " Error: " + error.status);
 
-                    pushItemsToListView().then(function () {
-                        onChangeDatabase(nameOfDB);
-                    });
-                }).catch(function (error) {
-                    messageDialog = new Windows.UI.Popups.MessageDialog(
-                        "Occured error while generate items into ListView"
-                        + " Status: " + error.name
-                        + " Message: " + error.message
-                        , " Error: " + error.status);
-
-                    messageDialog.showAsync();
-                });
+                messageDialog.showAsync();
             });
-        }
+        });
     }
 
     /**
      * @description Listen to changes in database and write it to itemsArray
-     * @param {string} nameOfDB Name of database from which to listen changes
+     * @param {string} DBName Name of database from which to listen changes
      */
-    function onChangeDatabase(nameOfDB) {
-        database(nameOfDB).changes({
+    function onChangeDatabase(DBName) {
+        database(DBName).changes({
             since: 'now',
             timeout: false,
             live: true,
             include_docs: true
         }).on("change", function (change) {
-            // Put in listView only root elements
-            if (change.doc.nested === "root") {
+            // Put in main List View only parent elements
+            if (change.doc.itemNested === false) {
                 itemsArray.push({
-                    title: change.doc.name,
-                    text: change.doc.dateCreated,
-                    type: change.doc.objectType,
-                    listItemSize: change.doc.listItemSize
+                    title: change.doc.itemName,
+                    text: change.doc.itemDateCreated,
+                    type: change.doc.itemType,
+                    itemListSize: change.doc.itemListSize
                 });
 
                 // Send new item to listView
@@ -314,7 +269,7 @@
             return globeIcon;
         }
     }
-    
+
     function getGroupData(dataItem) {
         let titleFirstLetter = dataItem.title.toUpperCase().charAt(0);
 

@@ -96,7 +96,7 @@
         AuthPanel.init();
 
         // Start generate root items for listView
-        Database.generateItems("user", "root");
+        Database.generateItems("user", false);
     }
 
     function checkConsentAvailability() {

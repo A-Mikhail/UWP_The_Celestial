@@ -19,7 +19,7 @@
 
                         FileExplorer.init();
 
-                        Database.generateItems("user", "children", data);
+                        Database.generateItems("user", true, data);
                     },
                     false);
 

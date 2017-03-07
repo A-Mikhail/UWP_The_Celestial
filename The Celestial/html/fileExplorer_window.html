@@ -112,7 +112,12 @@
                             groupHeaderTemplate: select('#zoomedInLeftHeader'),
                             selectionMode: 'multi',
                             tapBehavior: WinJS.UI.TapBehavior.toggleSelect,
-                            layout: { type: WinJS.UI.GridLayout, groupHeaderPosition: 'left' }
+                            layout: { 
+                                groupInfo: FileExplorer.groupInfo,
+                                itemInfo: FileExplorer.itemInfo,
+                                type: WinJS.UI.GridLayout,
+                                groupHeaderPosition: 'top' 
+                            }
                         }">
                 </div>
 
